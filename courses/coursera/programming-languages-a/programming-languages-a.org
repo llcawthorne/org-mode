@@ -1,0 +1,73 @@
+* Programming Languages - A
+** Syntax and Semantics
+*** Syntax is how you write something
+*** Semantics is what that something means
+**** Type-checking (before program runs)
+**** Evaluation (as program runs)
+*** For variable bindings
+**** Type-check expression and extend static environment
+**** Evaluate expression and extend dynamic environment
+
+** Intro to ML
+*** Comments in ML with (* *)
+#+BEGIN_SRC sml
+(* This is a comment *)
+#+END_SRC
+*** Create a variable with val
+#+BEGIN_SRC sml
+val x = 34;
+(* static environment: x : int *)
+(* dynamic environment: x --> 34 *)
+
+val y = 17;
+(* static environment: x : int, y : int *)
+(* dynamic environment: x --> 34, y --> 17 *)
+
+(* for more declarations, see 3_our_first_program.sml *)
+#+END_SRC
+*** You cannot use later bindings; only earlier
+*** if is an expression: if e1 then e2 else e3;
+**** e1 must be bool; e2 and e3 must be of the same type
+**** you cannot leave off the else
+**** no "truthiness".  e1 must be bool.
+*** End lines with semicolon in REPL, but not needed in file
+*** - is only uses for subtraction; ~ for negation
+*** ML Rules for Expressions
+**** Variables
+Syntax: sequence of letters, digits, _, not starting with a digit.
+Type-checking: Look up type in current static environment or fail.
+Evaluation: Look up value in current dynamic environment.
+**** Addition
+Syntax: e1 + e2 where e1 and e2 are expressions.
+Type-checking: if e1 and e2 have type int, then e1 + e2 have type int, or fail.
+Evaluation: If e1 evaluates to v1 and e2 evaluates to v2,
+  then e1 + e2 evaluates to the sum of v1 and v2.
+**** Values
+All values are expressions, but not all expressions are values.
+Every value "evaluates to itself" in "zero steps".
+Examples:
+  34, 17, 52 have type int.
+  true, false have type bool. 
+  () has type unit.
+**** Conditional Expressions
+Syntax: if e1 then e2 else e3, where if/then/else are keywords
+  and e1, e2, e3 are sub-expressions.
+Type-checking: e1 must be bool.  e2 and e3 can have any type t, but must have
+  the same type t.  The type of the entire expression is t.
+Evaluation: first evaluate e1 to a value v1.
+  if v1 is true, then evaluate e2 and that is the whole expression's result.
+  if v1 is false, then evaluate e3 and that is the whole expression's result. 
+**** Less-than
+Syntax: e1 < e2
+Type-checking: e1 and e2 must both be type t.  The whole expression is a bool.
+Evaluation: first evaluate e1 and e2 to values v1 and v2, then compare v1 and v2
+** Using the REPL
+*** You can type 'use filename.sml' to load a file
+*** Normally worth exiting session and restarting before using use again
+*** Errors
+**** Syntax
+What you wrote means nothing or not the construct you intended.
+**** Type-checking
+What you wrote does not type-check.
+**** Evaluation
+It runs but produces wrong answer, or an exception, or an infinite loop.
