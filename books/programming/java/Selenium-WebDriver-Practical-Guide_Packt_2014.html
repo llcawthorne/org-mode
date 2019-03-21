@@ -1,0 +1,2886 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Selenium-WebDriver-Practical-Guide_Packt_2014</title>
+<!-- 2015-05-19 Tue 15:29 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Lewis Cawthorne" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Selenium-WebDriver-Practical-Guide_Packt_2014</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">Necessary imports</a></li>
+<li><a href="#sec-2">Fetch page: get(String url)</a></li>
+<li><a href="#sec-3">Finding web elements</a>
+<ul>
+<li><a href="#sec-3-1">WebElement findElement(By by)</a>
+<ul>
+<li><a href="#sec-3-1-1">By.name(String elementName)</a></li>
+<li><a href="#sec-3-1-2">By.id(String elementId)</a></li>
+<li><a href="#sec-3-1-3">By.tagName(String elementsTag)</a></li>
+<li><a href="#sec-3-1-4">By.className(String elementClass)</a></li>
+<li><a href="#sec-3-1-5">By.linkText(String linkText)</a></li>
+<li><a href="#sec-3-1-6">By.partialLinkText(String link Text)</a></li>
+<li><a href="#sec-3-1-7">By.xpath(String xpath)</a></li>
+<li><a href="#sec-3-1-8">By.cssSelector(String elementSelector)</a></li>
+</ul>
+</li>
+<li><a href="#sec-3-2">List&lt;WebElement&gt; findElements(By by)</a></li>
+<li><a href="#sec-3-3">Using Firebug to help determine elts for Selenium</a>
+<ul>
+<li><a href="#sec-3-3-1">Inspecting a webpage element</a></li>
+<li><a href="#sec-3-3-2">Finding XPath for By.xpath(String xpath) method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-4">Basic Actions on WebElement 'elt'</a>
+<ul>
+<li><a href="#sec-4-1">String elt.getAttribute(String attName)</a></li>
+<li><a href="#sec-4-2">void elt.sendKeys(CharSequence keysToSend)</a>
+<ul>
+<li><a href="#sec-4-2-1">elt.sendKeys(Keys.ENTER);</a></li>
+<li><a href="#sec-4-2-2">elt.sendKeys(Keys.chords(Keys.SHIFT, "packt publishing"));</a></li>
+</ul>
+</li>
+<li><a href="#sec-4-3">void elt.clear()  // erase text in a WebElement; easier than sending multiple Keys.BACK_SPACE</a></li>
+<li><a href="#sec-4-4">void elt.submit() // submits a form</a></li>
+<li><a href="#sec-4-5">String elt.getCssValue(String propertyName)</a></li>
+<li><a href="#sec-4-6">Point elt.getLocation();</a></li>
+<li><a href="#sec-4-7">Dimension elt.getSize()</a></li>
+<li><a href="#sec-4-8">String elt.getText()</a></li>
+<li><a href="#sec-4-9">String elt.getTagName()</a></li>
+<li><a href="#sec-4-10">boolean elt.isDisplayed()</a></li>
+<li><a href="#sec-4-11">boolean elt.isEnabled()</a></li>
+<li><a href="#sec-4-12">boolean elt.isSelected()</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">Complex Actions</a>
+<ul>
+<li><a href="#sec-5-1">Composite/Multi-step Actions</a></li>
+<li><a href="#sec-5-2">Mouse-based Interactions</a>
+<ul>
+<li><a href="#sec-5-2-1">public Actions moveByOffset(int xOffset, int yOffSet)</a></li>
+<li><a href="#sec-5-2-2">public Actions click()</a></li>
+<li><a href="#sec-5-2-3">public Actions click(WebElement onElement)</a></li>
+<li><a href="#sec-5-2-4">public Actions clickAndHold()</a></li>
+<li><a href="#sec-5-2-5">public Actions clickAndHold(WebElement onElement)</a></li>
+<li><a href="#sec-5-2-6">public Actions release()</a></li>
+<li><a href="#sec-5-2-7">public Actions release(WebElement onElement)</a></li>
+<li><a href="#sec-5-2-8">public Actions moveToElement(WebElement toElement)</a></li>
+<li><a href="#sec-5-2-9">public Actions dragAndDropBy(WebElement source, int xOffset, int yOffset)</a></li>
+<li><a href="#sec-5-2-10">public Actions dragAndDrop(WebElement source, WebElement target)</a></li>
+<li><a href="#sec-5-2-11">public Actions doubleClick()</a></li>
+<li><a href="#sec-5-2-12">public Actions doubleClick(WebElement onElement)</a></li>
+<li><a href="#sec-5-2-13">public Actions contextClick(WebElement onElement)</a></li>
+<li><a href="#sec-5-2-14">public Actions contextClick()</a></li>
+</ul>
+</li>
+<li><a href="#sec-5-3">Keyboard-based interactions</a>
+<ul>
+<li><a href="#sec-5-3-1">public Actions keyDown(Keys theKey) throws IllegalArgumentException</a></li>
+<li><a href="#sec-5-3-2">public Actions keyUp(Keys theKey)</a></li>
+<li><a href="#sec-5-3-3">public Actions sendKeys(CharSequence keysToSend)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-6">Waiting for WebElements to load</a>
+<ul>
+<li><a href="#sec-6-1">Implicit Wait Time</a></li>
+<li><a href="#sec-6-2">Explicit Wait Time</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">Windows and iFrames</a>
+<ul>
+<li><a href="#sec-7-1">Multiple Windows</a></li>
+<li><a href="#sec-7-2">Multiple Frames</a></li>
+<li><a href="#sec-7-3">Handling Alerts is covered under special capabilities.</a></li>
+</ul>
+</li>
+<li><a href="#sec-8">Navigation</a>
+<ul>
+<li><a href="#sec-8-1">Navigation object methods</a></li>
+</ul>
+</li>
+<li><a href="#sec-9">Cookies</a>
+<ul>
+<li><a href="#sec-9-1">Fetching all loaded cookies for a page: driver.manage().getCookies();</a></li>
+<li><a href="#sec-9-2">Load a stored cookied: driver.manage().addCookie(ck);</a></li>
+</ul>
+</li>
+<li><a href="#sec-10">Special capabilities</a>
+<ul>
+<li><a href="#sec-10-1">Adding Capabilities to the WebDriver</a></li>
+<li><a href="#sec-10-2">Common capabilities</a>
+<ul>
+<li><a href="#sec-10-2-1">takesScreenShot</a></li>
+<li><a href="#sec-10-2-2">handlesAlert</a></li>
+<li><a href="#sec-10-2-3">cssSelectorsEnabled</a></li>
+<li><a href="#sec-10-2-4">javascriptEnabled</a></li>
+<li><a href="#sec-10-2-5">acceptSSLCerts</a></li>
+<li><a href="#sec-10-2-6">webStorageEnabled</a></li>
+</ul>
+</li>
+<li><a href="#sec-10-3">Using special capabilities</a>
+<ul>
+<li><a href="#sec-10-3-1">Screenshots</a></li>
+<li><a href="#sec-10-3-2">Handling alerts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-11">Firefox Specific Features</a>
+<ul>
+<li><a href="#sec-11-1">Using a specific Firefox Profile</a></li>
+<li><a href="#sec-11-2">Installing a browser extension in the WebDriver profile</a></li>
+<li><a href="#sec-11-3">Setting Profile Preferences</a></li>
+</ul>
+</li>
+<li><a href="#sec-12">Testing with Custom Events</a>
+<ul>
+<li><a href="#sec-12-1">Flow of Setting up to Capture Events during Test Execution</a></li>
+<li><a href="#sec-12-2">Creating an instance of EventListener (done one of two ways)</a>
+<ul>
+<li><a href="#sec-12-2-1">Implementing WebDriverEventListener (more verbose)</a></li>
+<li><a href="#sec-12-2-2">Extending the AbstractWebDriverEventListener</a></li>
+<li><a href="#sec-12-2-3">Example with Custom Listener and Registered Driver</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-13">Understanding the Page Object Pattern</a>
+<ul>
+<li><a href="#sec-13-1">WordPress blog Sample Test Cases - Fine Tests that are manual to maintain.</a></li>
+<li><a href="#sec-13-2">WordPress blog using PageObject pattern</a>
+<ul>
+<li><a href="#sec-13-2-1">AdminLoginPage</a></li>
+<li><a href="#sec-13-2-2">TestAddNewPostUsingPageObject</a></li>
+</ul>
+</li>
+<li><a href="#sec-13-3">Using the <b>@FindBy</b> annotation to locate elements on a page</a>
+<ul>
+<li><a href="#sec-13-3-1">Different ways to @FindBy supported by the How enumeration</a></li>
+<li><a href="#sec-13-3-2">Wordpress AdminLoginPage using How and @FindBy</a></li>
+</ul>
+</li>
+<li><a href="#sec-13-4">Using the <b>PageFactory</b> class</a>
+<ul>
+<li><a href="#sec-13-4-1">A PageFactory instantiates a Page object that uses the <b>@FindBy</b> annotations and gives it a driver</a></li>
+<li><a href="#sec-13-4-2">initElements(WebDriver driver, java.lang.Class PageObjectClass)</a></li>
+<li><a href="#sec-13-4-3">Example Use</a></li>
+</ul>
+</li>
+<li><a href="#sec-13-5">Good practices for using PageObjects</a>
+<ul>
+<li><a href="#sec-13-5-1">Use PageObjects within PageObjects</a></li>
+<li><a href="#sec-13-5-2">Consider methods in PageObjects as services and not as User Actions</a></li>
+<li><a href="#sec-13-5-3">Initialize some elements as required; especially lists (source example)</a></li>
+<li><a href="#sec-13-5-4">Keep page specific details of the test script (main goal!)</a></li>
+</ul>
+</li>
+<li><a href="#sec-13-6">Checking load()/isLoad() with <b>LoadableComponent</b> class</a>
+<ul>
+<li><a href="#sec-13-6-1">load specifies a url that should be loaded</a></li>
+<li><a href="#sec-13-6-2">isLoaded checks that the page specified in load() came up</a></li>
+<li><a href="#sec-13-6-3">the get method attempts the load() and does the isLoaded() check</a></li>
+<li><a href="#sec-13-6-4">Full example of use</a></li>
+</ul>
+</li>
+<li><a href="#sec-13-7">Full Wordpress PageObject example with TestCases</a>
+<ul>
+<li><a href="#sec-13-7-1">PageObject's</a></li>
+<li><a href="#sec-13-7-2">Tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#sec-14">Skipped Chapters: Dealing with I/O (FileHandler, isZipped, etc), RemoteWebDriver, Selenium Grid, iOS/Android</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">Necessary imports</h2>
+<div class="outline-text-2" id="text-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">Fetch page: get(String url)</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+driver.get("<a href="http://www.url.com/">http://www.url.com/</a>");     // fetch website
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.webdriver.<span style="color: #6D9CBE;">chapter1</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">NavigateToAUrl</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>) {
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+        driver.get(<span style="color: #A5C261;">"http://www.packtpub.com"</span>);
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">Finding web elements</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1">WebElement findElement(By by)</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+WebElement searchBox = driver.findElement(By.name("q"));  // find by name
+NoSuchElement Exception if there is no match on current page.
+Use findElements instead if you need zero or more matches, instead of only the first match.
+</p>
+</div>
+<div id="outline-container-sec-3-1-1" class="outline-4">
+<h4 id="sec-3-1-1">By.name(String elementName)</h4>
+<div class="outline-text-4" id="text-3-1-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchButtonByName</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    searchBox.submit();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-2" class="outline-4">
+<h4 id="sec-3-1-2">By.id(String elementId)</h4>
+<div class="outline-text-4" id="text-3-1-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchButtonById</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.id(<span style="color: #A5C261;">"gbqfba"</span>));
+    searchBox.submit();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-3" class="outline-4">
+<h4 id="sec-3-1-3">By.tagName(String elementsTag)</h4>
+<div class="outline-text-4" id="text-3-1-3">
+<p>
+More commonly used with findElements, as it is less likely to uniquely match 
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"> <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchPageByTagName</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+        driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+        <span style="color: #6D9CBE;">List</span>&lt;<span style="color: #6D9CBE;">WebElement</span>&gt; <span style="color: #C8C8FF;">buttons</span> =   driver.findElements(By.tagName(<span style="color: #A5C261;">"button"</span>));
+        System.out.println(buttons.size());
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-4" class="outline-4">
+<h4 id="sec-3-1-4">By.className(String elementClass)</h4>
+<div class="outline-text-4" id="text-3-1-4">
+<p>
+More commonly used with CSS styling, class can be unique or match a set of items
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchByClassName</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.className(<span style="color: #A5C261;">"gbqfif"</span>));
+    searchBox.sendKeys(<span style="color: #A5C261;">"Packt Publishing"</span>);
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-5" class="outline-4">
+<h4 id="sec-3-1-5">By.linkText(String linkText)</h4>
+<div class="outline-text-4" id="text-3-1-5">
+<p>
+This is the text of the link as it appears on the webpage, not a property of the &lt;a&gt; tag
+Example: "About Google"
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchByLinkText</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">aboutLink</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"About Google"</span>));
+    aboutLink.click();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-6" class="outline-4">
+<h4 id="sec-3-1-6">By.partialLinkText(String link Text)</h4>
+<div class="outline-text-4" id="text-3-1-6">
+<p>
+This matches part of the display link text, Ex: "About"
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchByPartialLinkText</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">aboutLink</span> = driver.findElement(By.partialLinkText(<span style="color: #A5C261;">"About"</span>));
+    aboutLink.click();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-1-7" class="outline-4">
+<h4 id="sec-3-1-7">By.xpath(String xpath)</h4>
+<div class="outline-text-4" id="text-3-1-7">
+<p>
+XPath is a short name for XML path. Firebug with Firepath makes it easy to find these.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchByXPath</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> =  driver.findElement(By.xpath(<span style="color: #A5C261;">"//*[@id='gbqfba']"</span>));
+    System.out.println(searchButton.getText());
+  }
+ }
+</pre>
+</div>
+</div>
+<ul class="org-ul"><li><a id="sec-3-1-7-1" name="sec-3-1-7-1"></a>XPath can be very slow, compared to other methods, and requires much scanning!<br  /></li>
+<li><a id="sec-3-1-7-2" name="sec-3-1-7-2"></a>The root element is //<br  /></li>
+<li><a id="sec-3-1-7-3" name="sec-3-1-7-3"></a>All div elemnts are //div<br  /></li>
+<li><a id="sec-3-1-7-4" name="sec-3-1-7-4"></a>Link tags within div elements are //div/a<br  /></li>
+<li><a id="sec-3-1-7-5" name="sec-3-1-7-5"></a>All the elemtns with a tag are matched by <b>.  So <i>/div</i></b> is everything in a div<br  /></li>
+<li><a id="sec-3-1-7-6" name="sec-3-1-7-6"></a>All the div elements three levels down are //*/*/div<br  /></li>
+<li><a id="sec-3-1-7-7" name="sec-3-1-7-7"></a>//*/div/a[@id='attrValue'] is the anchor element with id attrValue three levels down within a div<br  /></li></ul>
+</div>
+<div id="outline-container-sec-3-1-8" class="outline-4">
+<h4 id="sec-3-1-8">By.cssSelector(String elementSelector)</h4>
+<div class="outline-text-4" id="text-3-1-8">
+<p>
+CSS Selector is faster than XPath, but similar.
+</p>
+</div>
+<ul class="org-ul"><li><a id="sec-3-1-8-1" name="sec-3-1-8-1"></a>To identify an element using the div element with id #flrs, By.cssSelector("#flrs")<br  /></li>
+<li><a id="sec-3-1-8-2" name="sec-3-1-8-2"></a>To identify the child anchor element, By.cssSelector("#flrs &gt; a")<br  /></li>
+<li><a id="sec-3-1-8-3" name="sec-3-1-8-3"></a>To identify the anchor element with its attribute, By.cssSelector("#flrs&gt;a[a[href='/intl/en/about.html']]")<br  /><div class="outline-text-5" id="text-3-1-8-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GoogleSearchByCSSSelector</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.cssSelector(<span style="color: #A5C261;">"#flrs&gt;a[href='/intl/en/about.html']"</span>));
+    System.out.println(searchButton.getText());
+  }
+}
+</pre>
+</div>
+</div>
+</li></ul>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2">List&lt;WebElement&gt; findElements(By by)</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Same By type clause as findElement, but it doesn't throw an exception on zero matches
+</p>
+
+<p>
+Use WebDriver's findElements() method if you think you need all the WebElements that
+satisfy a locating mechanism condition.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3">Using Firebug to help determine elts for Selenium</h3>
+<div class="outline-text-3" id="text-3-3">
+</div><div id="outline-container-sec-3-3-1" class="outline-4">
+<h4 id="sec-3-3-1">Inspecting a webpage element</h4>
+<div class="outline-text-4" id="text-3-3-1">
+<p>
+Click on Firebug, in the Firebug panel there is a white box with a cursor over it.  This is the "Inspect Element"
+button.  Click it, then the element you want to inspect.  If we do this for the Google site search box, we get:
+</p>
+
+<p>
+&lt;input type="text" name="q" value="" id="searchText" maxlength="256" dir="auto" placeholder="Yahoo" 
+       autocomplete="off" aria-autocomplete="true" aria-controls="searchSuggestionTable" aria-expanded="false"/&gt;
+</p>
+
+<p>
+So, we could easily find this element by name or id.  name, class, or id are normally useful.
+The developer of the test script needs to determine teh best way to uniquely determine an element or elements.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-3-2" class="outline-4">
+<h4 id="sec-3-3-2">Finding XPath for By.xpath(String xpath) method</h4>
+<div class="outline-text-4" id="text-3-3-2">
+<p>
+Just click the FirePath tab and click inspect element.  The XPath is in the XPath box.
+Ex: Google search button is XPath: ".//*[@id='searchSubmit']"
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">Basic Actions on WebElement 'elt'</h2>
+<div class="outline-text-2" id="text-4">
+</div><div id="outline-container-sec-4-1" class="outline-3">
+<h3 id="sec-4-1">String elt.getAttribute(String attName)</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Web Elements let you fetch attributes with getAttribute(attName)
+</p>
+
+<p>
+Some popular attributes include name, class, id, href, aria-label
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GetAttributes</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(<span style="color: #A5C261;">"Name of the button is: "</span>
+                         +searchButton.getAttribute(<span style="color: #A5C261;">"name"</span>));
+    System.out.println(<span style="color: #A5C261;">"Id of the button is: "</span>                         +searchButton.getAttribute(<span style="color: #A5C261;">"id"</span>));
+    System.out.println(<span style="color: #A5C261;">"Class of the button is: "</span>
+                         +searchButton.getAttribute(<span style="color: #A5C261;">"class"</span>));
+    System.out.println(<span style="color: #A5C261;">"Label of the button is: "</span>
+                         +searchButton.getAttribute(<span style="color: #A5C261;">"aria-  label"</span>));
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-2" class="outline-3">
+<h3 id="sec-4-2">void elt.sendKeys(CharSequence keysToSend)</h3>
+<div class="outline-text-3" id="text-4-2">
+<p>
+Only appropriate for TextBoxes and other character accepting elements.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">sendKeys</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+    searchButton.sendKeys(<span style="color: #A5C261;">"Packt Publishing"</span>);
+  }
+}
+</pre>
+</div>
+
+<p>
+WebDriver contains a Keys enum for special keys
+</p>
+</div>
+<div id="outline-container-sec-4-2-1" class="outline-4">
+<h4 id="sec-4-2-1">elt.sendKeys(Keys.ENTER);</h4>
+</div>
+<div id="outline-container-sec-4-2-2" class="outline-4">
+<h4 id="sec-4-2-2">elt.sendKeys(Keys.chords(Keys.SHIFT, "packt publishing"));</h4>
+<div class="outline-text-4" id="text-4-2-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">SendKeys</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+    searchBox.sendKeys(Keys.chord(<span style="color: #6D9CBE;">Keys</span>.SHIFT,<span style="color: #A5C261;">"packt publishing"</span>));
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-3" class="outline-3">
+<h3 id="sec-4-3">void elt.clear()  // erase text in a WebElement; easier than sending multiple Keys.BACK_SPACE</h3>
+<div class="outline-text-3" id="text-4-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">Clear</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+    searchBox.sendKeys(Keys.chord(<span style="color: #6D9CBE;">Keys</span>.SHIFT,<span style="color: #A5C261;">"packt publishing"</span>));
+    searchBox.clear();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-4" class="outline-3">
+<h3 id="sec-4-4">void elt.submit() // submits a form</h3>
+<div class="outline-text-3" id="text-4-4">
+<p>
+throws NoSuchElementException if executed on an element not within a form
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">Submit</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+    searchBox.sendKeys(Keys.chord(<span style="color: #6D9CBE;">Keys</span>.SHIFT,<span style="color: #A5C261;">"packt publishing"</span>));
+    searchBox.submit();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-5" class="outline-3">
+<h3 id="sec-4-5">String elt.getCssValue(String propertyName)</h3>
+</div>
+<div id="outline-container-sec-4-6" class="outline-3">
+<h3 id="sec-4-6">Point elt.getLocation();</h3>
+<div class="outline-text-3" id="text-4-6">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GetLocation</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.getLocation());
+  }
+}
+<span style="color: #BC9458;">// </span><span style="color: #BC9458;">Snippet prints out 372, 356 currently in Google.  The (x,y) location of Google Search button.</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-7" class="outline-3">
+<h3 id="sec-4-7">Dimension elt.getSize()</h3>
+<div class="outline-text-3" id="text-4-7">
+<p>
+The width and height of the element
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GetSize</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.getSize());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-8" class="outline-3">
+<h3 id="sec-4-8">String elt.getText()</h3>
+<div class="outline-text-3" id="text-4-8">
+<p>
+Returns the visible innerText string of the WebElement or empty string.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GetText</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.getText());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-9" class="outline-3">
+<h3 id="sec-4-9">String elt.getTagName()</h3>
+<div class="outline-text-3" id="text-4-9">
+<p>
+tag name of the web element.  The following prints out 'button'
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">GetTagName</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.getTagName());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-10" class="outline-3">
+<h3 id="sec-4-10">boolean elt.isDisplayed()</h3>
+<div class="outline-text-3" id="text-4-10">
+<p>
+verifies an element is displayed on the page
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">isDisplayed</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.isDisplayed());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-11" class="outline-3">
+<h3 id="sec-4-11">boolean elt.isEnabled()</h3>
+<div class="outline-text-3" id="text-4-11">
+<p>
+verifies an element is enabled on the page
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">isDisplayed</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.isEnabled());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4-12" class="outline-3">
+<h3 id="sec-4-12">boolean elt.isSelected()</h3>
+<div class="outline-text-3" id="text-4-12">
+<p>
+Verifies a WebElement is selected on the page
+It only returns true for a radio button, options in select, or checkbox that is selected
+The following always returns false, since a search box is not one of these.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">isSelected</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>[] <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnK"</span>));
+    System.out.println(searchButton.isSelected());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5">Complex Actions</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1">Composite/Multi-step Actions</h3>
+<div class="outline-text-3" id="text-5-1">
+<p>
+You can use an Actions class to accomplish this.
+Let's say you want to hold control while clicking 1, 3, and 5.  The following would accomplish this:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ActionBuildPerform</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">one</span> = driver.findElement(By.name(<span style="color: #A5C261;">"one"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">five</span> = driver.findElement(By.name(<span style="color: #A5C261;">"five"</span>));
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Add all the actions into the Actions builder.</span>
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.keyDown(<span style="color: #6D9CBE;">Keys</span>.CONTROL)
+            .click(one)
+            .click(three)
+            .click(five)
+            .keyUp(<span style="color: #6D9CBE;">Keys</span>.CONTROL);
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Generate the composite action.</span>
+    <span style="color: #6D9CBE;">Action</span> <span style="color: #C8C8FF;">compositeAction</span> = builder.build();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Perform the composite action.</span>
+    compositeAction.perform();
+  }
+}
+</pre>
+</div>
+
+<p>
+Actually, the perform action will automatically call build, so the following is equivalent:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ActionBuildPerform</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+      <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+      driver.get(<span style="color: #A5C261;">"file://C:/selectable.html"</span>);
+      <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">one</span> = driver.findElement(By.name(<span style="color: #A5C261;">"one"</span>));
+      <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+      <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">five</span> = driver.findElement(By.name(<span style="color: #A5C261;">"five"</span>));
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Add all the actions into the Actions builder.</span>
+      <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+      builder.keyDown(<span style="color: #6D9CBE;">Keys</span>.CONTROL)
+              .click(one)
+              .click(three)
+              .click(five)
+              .keyUp(<span style="color: #6D9CBE;">Keys</span>.CONTROL);
+       <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Perform the action.</span>
+       builder.perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2">Mouse-based Interactions</h3>
+<div class="outline-text-3" id="text-5-2">
+<p>
+This is the web, so you often want to interact using the mouse.  
+There are eight different mouse actions that can be performed using the Actions class.
+</p>
+</div>
+<div id="outline-container-sec-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1">public Actions moveByOffset(int xOffset, int yOffSet)</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+The mouse is considered to be at (0, 0) initially, unless some other focus is declared.
+Offset values are measured in pixels.
+xOffset moves left for positive, right for negative values.  
+yOffset moves down for positive, up for negative.
+This throws MoveTargetOutOfBoundsException if you move the cursor out of the document.
+</p>
+
+<p>
+In this example, we add 1 to the X and Y because the  the element has a 1 pixel border in the example page.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">MoveByOffSet</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    System.out.println(<span style="color: #A5C261;">"X coordinate: "</span>+three.getLocation().getX()
+                       +<span style="color: #A5C261;">"  Y coordinate: "</span>+three.getLocation().getY());
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.moveByOffset(three.getLocation().getX()+1, three.getLocation().getY()+1);
+    builder.perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-2" class="outline-4">
+<h4 id="sec-5-2-2">public Actions click()</h4>
+<div class="outline-text-4" id="text-5-2-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">MoveByOffsetAndClick</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">seven</span> = driver.findElement(By.name(<span style="color: #A5C261;">"seven"</span>));
+    System.out.println(<span style="color: #A5C261;">"X coordinate: "</span>+seven.getLocation().getX()
+                       +<span style="color: #A5C261;">" Y coordinate: "</span>+seven.getLocation().getY());
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.moveByOffset(seven.getLocation().getX()+1, seven.getLocation().getY()+1).click();
+    builder.perform();
+  }
+}
+</pre>
+</div>
+
+<p>
+A more complex usage (which we see a much cleaner version of in click(onElement) desc) follows:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">MoveByOffsetAndClick</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">one</span> = driver.findElement(By.name(<span style="color: #A5C261;">"one"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">eleven</span> = driver.findElement(By.name(<span style="color: #A5C261;">"eleven"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">five</span> = driver.findElement(By.name(<span style="color: #A5C261;">"five"</span>));
+    <span style="color: #6D9CBE;">int</span> <span style="color: #C8C8FF;">border</span> = 1;
+    <span style="color: #6D9CBE;">int</span> <span style="color: #C8C8FF;">tileWidth</span> = 100;
+    <span style="color: #6D9CBE;">int</span> <span style="color: #C8C8FF;">tileHeight</span> = 80;
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Click on One</span>
+    builder.moveByOffset(one.getLocation().getX()+border, one.getLocation().getY()+border).click();
+    builder.build().perform();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Click on Eleven</span>
+    builder.moveByOffset(2*tileWidth+4*border, 2*tileHeight+4*border).click();
+    builder.build().perform();
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Click on Five</span>
+    builder.moveByOffset(-2*tileWidth-4*border,-tileHeight-2*border).click();
+    builder.build().perform();
+   }
+ }
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-3" class="outline-4">
+<h4 id="sec-5-2-3">public Actions click(WebElement onElement)</h4>
+<div class="outline-text-4" id="text-5-2-3">
+<p>
+This overloaded version directly clicks an element without having to work with offsets.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickOnWebElement</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">one</span> = driver.findElement(By.name(<span style="color: #A5C261;">"one"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">eleven</span> = driver.findElement(By.name(<span style="color: #A5C261;">"eleven"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">five</span> = driver.findElement(By.name(<span style="color: #A5C261;">"five"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Click on One</span>
+    builder.click(one);
+    builder.build().perform();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Click on Eleven</span>
+    builder.click(eleven);
+    builder.build().perform();
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Click on Five</span>
+    builder.click(five)
+    builder.build().perform();
+  }
+}
+</pre>
+</div>
+
+<p>
+This is a lot cleaner than the example in the click() method, and is a great reason to set 
+identifiers for WebElements.  We can simplify this example yet again by building all the 
+actions before performing them as follows:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickOnWebElement</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Selectable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">one</span> = driver.findElement(By.name(<span style="color: #A5C261;">"one"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">eleven</span> = driver.findElement(By.name(<span style="color: #A5C261;">"eleven"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">five</span> = driver.findElement(By.name(<span style="color: #A5C261;">"five"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Click on One, Eleven and Five</span>
+    builder.click(one).click(eleven).click(five);
+    builder.build().perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-4" class="outline-4">
+<h4 id="sec-5-2-4">public Actions clickAndHold()</h4>
+<div class="outline-text-4" id="text-5-2-4">
+<p>
+This is equivalent to clicking somewhere and holding down the mouse button.  You generally want
+to move somewhere else afterwards to highlight a region.  You should use release at some point 
+(likely very soon) after using this.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickAndHold</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Sortable.html"</span>);
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Move tile3 to the position of tile2</span>
+    builder.moveByOffset(200, 20)
+           .clickAndHold()
+           .moveByOffset(120, 0)
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-5" class="outline-4">
+<h4 id="sec-5-2-5">public Actions clickAndHold(WebElement onElement)</h4>
+<div class="outline-text-4" id="text-5-2-5">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickAndHold</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Sortable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Move tile3 to the position of tile2</span>
+    builder.clickAndHold(three)
+           .moveByOffset(120, 0)
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-6" class="outline-4">
+<h4 id="sec-5-2-6">public Actions release()</h4>
+<div class="outline-text-4" id="text-5-2-6">
+<p>
+Note: using either of these release methods without calling clickAndHold() first results
+in undefined behavior.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickAndHoldAndRelease</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Sortable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Move tile3 to the position of tile2</span>
+    builder.clickAndHold(three)
+           .moveByOffset(120, 0)
+           .release()
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-7" class="outline-4">
+<h4 id="sec-5-2-7">public Actions release(WebElement onElement)</h4>
+<div class="outline-text-4" id="text-5-2-7">
+<p>
+Note: using either of these release methods without calling clickAndHold() first results
+in undefined behavior.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickAndHoldAndReleaseOnWebElement</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Sortable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">two</span> = driver.findElement(By.name(<span style="color: #A5C261;">"two"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Move tile3 to the position of tile2</span>
+    builder.clickAndHold(three)
+           .release(two)
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-8" class="outline-4">
+<h4 id="sec-5-2-8">public Actions moveToElement(WebElement toElement)</h4>
+<div class="outline-text-4" id="text-5-2-8">
+<p>
+Moves the mouse cursor to the specified element on the webpage.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ClickAndHold</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/Sortable.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">three</span> = driver.findElement(By.name(<span style="color: #A5C261;">"three"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    <span style="color: #BC9458;">//</span><span style="color: #BC9458;">Move tile3 to the position of tile2</span>
+    builder.moveToElement(three)
+           .clickAndHold()
+           .moveByOffset(120, 0)
+           .release()
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-9" class="outline-4">
+<h4 id="sec-5-2-9">public Actions dragAndDropBy(WebElement source, int xOffset, int yOffset)</h4>
+<div class="outline-text-4" id="text-5-2-9">
+<p>
+This drags and drops the source element by x,y pixels. 
+</p>
+
+<p>
+Ex: Drag and drop elt where id=draggable by 300px horizontally, 200px vertically.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">DragMe</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/DragMe.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">dragMe</span> = driver.findElement(By.id(<span style="color: #A5C261;">"draggable"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.dragAndDropBy(dragMe, 300, 200).perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-10" class="outline-4">
+<h4 id="sec-5-2-10">public Actions dragAndDrop(WebElement source, WebElement target)</h4>
+<div class="outline-text-4" id="text-5-2-10">
+<p>
+This drags and drops source element onto target element.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">DragAndDrop</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/DragAndDrop.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">src</span> = driver.findElement(By.id(<span style="color: #A5C261;">"draggable"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">trgt</span> = driver.findElement(By.id(<span style="color: #A5C261;">"droppable"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.dragAndDrop(src, trgt).perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-11" class="outline-4">
+<h4 id="sec-5-2-11">public Actions doubleClick()</h4>
+<div class="outline-text-4" id="text-5-2-11">
+<p>
+Double click whatever the mouse is over.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">DoubleClick</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/DoubleClick.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">dblClick</span>= driver.findElement(By.name(<span style="color: #A5C261;">"dblClick"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.moveToElement(dblClick).doubleClick().perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-12" class="outline-4">
+<h4 id="sec-5-2-12">public Actions doubleClick(WebElement onElement)</h4>
+<div class="outline-text-4" id="text-5-2-12">
+<p>
+Often we want to doubleClick on some element.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">DoubleClick</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/DoubleClick.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">dblClick</span> = driver.findElement(By.name(<span style="color: #A5C261;">"dblClick"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.doubleClick(dblClick).perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-13" class="outline-4">
+<h4 id="sec-5-2-13">public Actions contextClick(WebElement onElement)</h4>
+<div class="outline-text-4" id="text-5-2-13">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ContextClick</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/ContextClick.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">contextMenu</span> = driver.findElement(By.id(<span style="color: #A5C261;">"div-context"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.contextClick(contextMenu)
+       .click(driver.findElement(By.name(<span style="color: #A5C261;">"Item 4"</span>)))
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-2-14" class="outline-4">
+<h4 id="sec-5-2-14">public Actions contextClick()</h4>
+<div class="outline-text-4" id="text-5-2-14">
+<p>
+This moves to div-context, context clicks it (right click), then selects Item 4 from the 
+list by name.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ContextClick</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"file://C:/ContextClick.html"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">contextMenu</span> = driver.findElement(By.id(<span style="color: #A5C261;">"div-context"</span>));
+    <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+    builder.moveToElement(contextMenu)
+           .contextClick()
+           .click(driver.findElement(By.name(<span style="color: #A5C261;">"Item 4"</span>)))
+           .perform();
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-5-3" class="outline-3">
+<h3 id="sec-5-3">Keyboard-based interactions</h3>
+<div class="outline-text-3" id="text-5-3">
+</div><div id="outline-container-sec-5-3-1" class="outline-4">
+<h4 id="sec-5-3-1">public Actions keyDown(Keys theKey) throws IllegalArgumentException</h4>
+<div class="outline-text-4" id="text-5-3-1">
+<p>
+The only legal arguments are one of Shift, Ctrl, and Alt
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5-3-2" class="outline-4">
+<h4 id="sec-5-3-2">public Actions keyUp(Keys theKey)</h4>
+<div class="outline-text-4" id="text-5-3-2">
+<p>
+Causes unexpected results if we have not already held the key down
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5-3-3" class="outline-4">
+<h4 id="sec-5-3-3">public Actions sendKeys(CharSequence keysToSend)</h4>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6">Waiting for WebElements to load</h2>
+<div class="outline-text-2" id="text-6">
+</div><div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1">Implicit Wait Time</h3>
+<div class="outline-text-3" id="text-6-1">
+<p>
+Used to configure wait time for all get/find operations of application under test.
+The driver throws NoSuchElementException when time is exceeded.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ImplicitWaitTime</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.manage().timeouts().implicitlyWait(10,   <span style="color: #6D9CBE;">TimeUnit</span>.SECONDS);
+    driver.get(<span style="color: #A5C261;">"www.google.com"</span>);
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-6-2" class="outline-3">
+<h3 id="sec-6-2">Explicit Wait Time</h3>
+<div class="outline-text-3" id="text-6-2">
+<p>
+Sometimes you have a single element you want to wait longer for, so you set an explicit wait time.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">ExplicitWaitTime</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span> = (<span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">WebDriverWait</span>(driver, 20)).until(<span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">ExpectedCondition</span>&lt;<span style="color: #6D9CBE;">WebElement</span>&gt;() { 
+       <span style="color: #6D9CBE;">@Override</span>
+       <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">WebElement</span> <span style="color: #FFC66D;">apply</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">d</span>) {
+         <span style="color: #CC7833;">return</span> d.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+       }
+     });
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7">Windows and iFrames</h2>
+<div class="outline-text-2" id="text-7">
+</div><div id="outline-container-sec-7-1" class="outline-3">
+<h3 id="sec-7-1">Multiple Windows</h3>
+<div class="outline-text-3" id="text-7-1">
+<p>
+String window1 = driver.getWindowHandle();  <i>/ store a handle for the current window
+driver.switchTo().window(window1);          /</i> switch back to the window
+driver.getWindowHandles();                  // returns all window handles opened by driver so far
+Ex:
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">WindowHandling</span> {
+   <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+      <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+      driver.get(<span style="color: #A5C261;">"file://C:/Window.html"</span>);
+
+      <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">window1</span> = driver.getWindowHandle();
+      System.out.println(<span style="color: #A5C261;">"First Window Handle is: "</span>+window1);
+
+      <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">link</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"Google Search"</span>));
+      link.click();
+
+      <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">window2</span> = driver.getWindowHandle();
+      System.out.println(<span style="color: #A5C261;">"Second Window Handle is: "</span>+window2);
+      System.out.println(<span style="color: #A5C261;">"Number of Window Handles so for: "</span>
+            +driver.getWindowHandles().size());
+
+      driver.switchTo().window(window1);
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-7-2" class="outline-3">
+<h3 id="sec-7-2">Multiple Frames</h3>
+<div class="outline-text-3" id="text-7-2">
+<p>
+driver.switchTo().frame(int index);
+driver.switchTo().frame(Strign frameNameOrFrameId);
+driver.switchTo().frame(WebElement frameElement);
+driver.switchTo().defaultContent();  // you need to use before switching to another frame!
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">SwitchBetweenFrames</span> {
+   <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+      <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+      driver.get(<span style="color: #A5C261;">"file://C:/Frames.html"</span>);
+
+      <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">action</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+
+      driver.switchTo().frame(0);
+      <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">txt</span> = driver.findElement(By.name(<span style="color: #A5C261;">"1"</span>));
+      txt.sendKeys(<span style="color: #A5C261;">"I'm Frame One"</span>);
+
+      driver.switchTo().defaultContent();
+
+      driver.switchTo().frame(1);
+      txt = driver.findElement(By.name(<span style="color: #A5C261;">"2"</span>));
+      txt.sendKeys(<span style="color: #A5C261;">"I'm Frame Two"</span>);
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-7-3" class="outline-3">
+<h3 id="sec-7-3">Handling Alerts is covered under special capabilities.</h3>
+</div>
+</div>
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8">Navigation</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+Navigate allows WebDriver to use native browse Back/Forward/Refresh, among other things.
+WebDriver.Navigation navigate() allows us to get an object to use these features.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">WebDriverNavigate</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.navigate().to(<span style="color: #A5C261;">"http://www.google.com"</span>);
+
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchBox</span> = driver.findElement(By.name(<span style="color: #A5C261;">"q"</span>));
+    searchBox.sendKeys(<span style="color: #A5C261;">"Selenium WebDriver"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchButton</span> = driver.findElement(By.name(<span style="color: #A5C261;">"btnG"</span>));
+    searchButton.click();
+    searchBox.clear();
+    searchBox.sendKeys(<span style="color: #A5C261;">"Packt Publishing"</span>);
+    searchButton.click();
+
+    driver.navigate().back();
+    driver.navigate().forward();
+    driver.navigate().refresh();
+  }
+}
+</pre>
+</div>
+</div>
+<div id="outline-container-sec-8-1" class="outline-3">
+<h3 id="sec-8-1">Navigation object methods</h3>
+<div class="outline-text-3" id="text-8-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #6D9CBE;">void</span> driver.<span style="color: #FFC66D;">navigate</span>().to(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">url</span>);
+<span style="color: #6D9CBE;">void</span> driver.<span style="color: #FFC66D;">navigate</span>().back();
+<span style="color: #6D9CBE;">void</span> driver.<span style="color: #FFC66D;">navigate</span>().forward();
+<span style="color: #6D9CBE;">void</span> driver.<span style="color: #FFC66D;">navigate</span>().refresh();
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-9" class="outline-2">
+<h2 id="sec-9">Cookies</h2>
+<div class="outline-text-2" id="text-9">
+</div><div id="outline-container-sec-9-1" class="outline-3">
+<h3 id="sec-9-1">Fetching all loaded cookies for a page: driver.manage().getCookies();</h3>
+<div class="outline-text-3" id="text-9-1">
+<p>
+Full program to store all current session cookie information to a 'browser.data' file
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.webdriver.<span style="color: #6D9CBE;">chapter3</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">BufferedWriter</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">File</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">FileWriter</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">By</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">Cookie</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">StoreCookieInfo</span> {
+
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.facebook.com"</span>);
+    driver.findElement(By.name(<span style="color: #A5C261;">"email"</span>)).sendKeys(<span style="color: #A5C261;">"&lt;&lt;ur mailID&gt;&gt;"</span>);
+    driver.findElement(By.name(<span style="color: #A5C261;">"pass"</span>)).sendKeys(<span style="color: #A5C261;">"&lt;&lt;ur password&gt;&gt;"</span>);
+    driver.findElement(By.name(<span style="color: #A5C261;">"persistent"</span>)).click();
+    driver.findElement(By.name(<span style="color: #A5C261;">"pass"</span>)).submit();
+
+    <span style="color: #6D9CBE;">File</span> <span style="color: #C8C8FF;">f</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">File</span>(<span style="color: #A5C261;">"browser.data"</span>);
+    <span style="color: #CC7833;">try</span>{
+         f.delete();
+         f.createNewFile();
+         <span style="color: #6D9CBE;">FileWriter</span> <span style="color: #C8C8FF;">fos</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FileWriter</span>(f);
+         <span style="color: #6D9CBE;">BufferedWriter</span> <span style="color: #C8C8FF;">bos</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">BufferedWriter</span>(fos);
+
+         <span style="color: #CC7833;">for</span>(<span style="color: #6D9CBE;">Cookie</span> <span style="color: #C8C8FF;">ck</span> : driver.manage().getCookies()) {
+           bos.write((ck.getName()+<span style="color: #A5C261;">";"</span>+ck.getValue()+<span style="color: #A5C261;">";"</span>+ck.getDomain()
+                      +<span style="color: #A5C261;">";"</span>+ck.getPath()+<span style="color: #A5C261;">";"</span>+ck.getExpiry()+<span style="color: #A5C261;">";"</span>+ck.isSecure()));
+           bos.newLine();
+         }
+         bos.flush();
+         bos.close();
+         fos.close();
+     } <span style="color: #CC7833;">catch</span>(<span style="color: #6D9CBE;">Exception</span> <span style="color: #C8C8FF;">ex</span>){
+         ex.printStackTrace();
+     }
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-9-2" class="outline-3">
+<h3 id="sec-9-2">Load a stored cookied: driver.manage().addCookie(ck);</h3>
+<div class="outline-text-3" id="text-9-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.webdriver.<span style="color: #6D9CBE;">chapter3</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">BufferedReader</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">File</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">io</span>.<span style="color: #6D9CBE;">FileReader</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">util</span>.<span style="color: #6D9CBE;">Date</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">util</span>.<span style="color: #6D9CBE;">StringTokenizer</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">Cookie</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">LoadCookieInfo</span> {
+
+   <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+      <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+      driver.get(<span style="color: #A5C261;">"http://www.facebook.com"</span>);
+      <span style="color: #CC7833;">try</span>{
+           <span style="color: #6D9CBE;">File</span> <span style="color: #C8C8FF;">f</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">File</span>(<span style="color: #A5C261;">"browser.data"</span>);
+           <span style="color: #6D9CBE;">FileReader</span> <span style="color: #C8C8FF;">fr</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FileReader</span>(f2);
+           <span style="color: #6D9CBE;">BufferedReader</span> <span style="color: #C8C8FF;">br</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">BufferedReader</span>(fr);
+           <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">line</span>;
+           <span style="color: #CC7833;">while</span>((line=br.readLine())!=<span style="color: #6D9CBE;">null</span>){
+               <span style="color: #6D9CBE;">StringTokenizer</span> <span style="color: #C8C8FF;">str</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">StringTokenizer</span>(line,<span style="color: #A5C261;">";"</span>);
+               <span style="color: #CC7833;">while</span>(str.hasMoreTokens()){
+                   <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">name</span> = str.nextToken();
+                   <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">value</span> = str.nextToken();
+                   <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">domain</span> = str.nextToken();
+                   <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">path</span> = str.nextToken();
+                   <span style="color: #6D9CBE;">Date</span> <span style="color: #C8C8FF;">expiry</span> = <span style="color: #6D9CBE;">null</span>;
+                   <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">dt</span>;
+                   <span style="color: #CC7833;">if</span>(!(dt=str.nextToken()).equals(<span style="color: #A5C261;">"null"</span>)){
+                       expiry = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Date</span>(dt);
+                   }
+                   <span style="color: #6D9CBE;">boolean</span> <span style="color: #C8C8FF;">isSecure</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Boolean</span>(str.nextToken()).booleanValue();
+                   <span style="color: #6D9CBE;">Cookie</span> <span style="color: #C8C8FF;">ck</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Cookie</span>(name,value,domain,path,expiry,isSecure);
+                   driver.manage().addCookie(ck);
+               }
+           }
+      }<span style="color: #CC7833;">catch</span>(<span style="color: #6D9CBE;">Exception</span> <span style="color: #C8C8FF;">ex</span>){
+           ex.printStackTrace();
+      }
+      driver.get(<span style="color: #A5C261;">"http://www.facebook.com"</span>);
+   }
+}
+</pre>
+</div>
+
+<p>
+The two driver.get calls above are necessary, since you need to go to the site, 
+then load the cookies for the site, then reload the site.  
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-10" class="outline-2">
+<h2 id="sec-10">Special capabilities</h2>
+<div class="outline-text-2" id="text-10">
+</div><div id="outline-container-sec-10-1" class="outline-3">
+<h3 id="sec-10-1">Adding Capabilities to the WebDriver</h3>
+<div class="outline-text-3" id="text-10-1">
+<p>
+Capabilities is an interface implemented in the DesiredCapabilities class
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">BrowserCapabilities</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">Map</span> <span style="color: #C8C8FF;">capabilitiesMap</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">HashMap</span>();
+    capabilitiesMap.put(<span style="color: #A5C261;">"takesScreenShot"</span>, <span style="color: #6D9CBE;">true</span>);
+    <span style="color: #6D9CBE;">DesiredCapabilities</span> <span style="color: #C8C8FF;">capabilities</span> 
+               = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">DesiredCapabilities</span>(capabilitiesMap);
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(capabilities);
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-10-2" class="outline-3">
+<h3 id="sec-10-2">Common capabilities</h3>
+<div class="outline-text-3" id="text-10-2">
+</div><div id="outline-container-sec-10-2-1" class="outline-4">
+<h4 id="sec-10-2-1">takesScreenShot</h4>
+</div>
+<div id="outline-container-sec-10-2-2" class="outline-4">
+<h4 id="sec-10-2-2">handlesAlert</h4>
+</div>
+<div id="outline-container-sec-10-2-3" class="outline-4">
+<h4 id="sec-10-2-3">cssSelectorsEnabled</h4>
+</div>
+<div id="outline-container-sec-10-2-4" class="outline-4">
+<h4 id="sec-10-2-4">javascriptEnabled</h4>
+</div>
+<div id="outline-container-sec-10-2-5" class="outline-4">
+<h4 id="sec-10-2-5">acceptSSLCerts</h4>
+</div>
+<div id="outline-container-sec-10-2-6" class="outline-4">
+<h4 id="sec-10-2-6">webStorageEnabled</h4>
+</div>
+</div>
+<div id="outline-container-sec-10-3" class="outline-3">
+<h3 id="sec-10-3">Using special capabilities</h3>
+<div class="outline-text-3" id="text-10-3">
+</div><div id="outline-container-sec-10-3-1" class="outline-4">
+<h4 id="sec-10-3-1">Screenshots</h4>
+<div class="outline-text-4" id="text-10-3-1">
+</div><ul class="org-ul"><li><a id="sec-10-3-1-1" name="sec-10-3-1-1"></a>Enabling<br  /><div class="outline-text-5" id="text-10-3-1-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">BrowserCapabilities</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">Map</span> <span style="color: #C8C8FF;">capabilitiesMap</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">HashMap</span>();
+    capabilitiesMap.put(<span style="color: #A5C261;">"takesScreenShot"</span>, <span style="color: #6D9CBE;">true</span>);
+    <span style="color: #6D9CBE;">DesiredCapabilities</span> <span style="color: #C8C8FF;">capabilities</span> 
+               = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">DesiredCapabilities</span>(capabilitiesMap);
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(capabilities);
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+  }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-10-3-1-2" name="sec-10-3-1-2"></a>API<br  /><div class="outline-text-5" id="text-10-3-1-2">
+<p>
+public &lt;X&gt; X getScreenshotAs(OutputType&lt;X&gt; target)
+</p>
+
+<p>
+Output type is one of: OutputType.BASE64, OutputType.BYTES (raw data), OutputType.FILE
+</p>
+</div>
+</li>
+<li><a id="sec-10-3-1-3" name="sec-10-3-1-3"></a>Using<br  /><div class="outline-text-5" id="text-10-3-1-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TakesScreenShotExample</span>{
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    driver.get(<span style="color: #A5C261;">"http://www.packtpub.com/"</span>);
+    <span style="color: #6D9CBE;">File</span> <span style="color: #C8C8FF;">scrFile</span> = ((<span style="color: #6D9CBE;">TakesScreenShot</span>)driver).getScreenshotAs(<span style="color: #6D9CBE;">OutputType</span>.FILE);
+    System.out.println(scrFile.getAbsolutePath());
+    <span style="color: #CC7833;">try</span> {
+      FileHandler.copy(scrFile, <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">File</span>(<span style="color: #A5C261;">"C:\\Dest\\"</span>));
+    } <span style="color: #CC7833;">catch</span> (<span style="color: #6D9CBE;">IOException</span> <span style="color: #C8C8FF;">e</span>) {
+      e.printStackTrace();
+    }
+  }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-10-3-1-4" name="sec-10-3-1-4"></a>Warning<br  /><div class="outline-text-5" id="text-10-3-1-4">
+<p>
+The file returned for OutputType.FILE is temporarily and is deleted once the JVM exits, so 
+you will need to copy the file somewhere before the test completes.
+</p>
+</div>
+</li>
+<li><a id="sec-10-3-1-5" name="sec-10-3-1-5"></a>Browser dependency<br  /><div class="outline-text-5" id="text-10-3-1-5">
+<p>
+The method tries to take as large a screenshot as possible, but what it can actually do is
+dependent upon the browser.  In Firefox, the screenshot will be of the entire page.  In 
+Chrome, it will take a picture of the visibile area.
+</p>
+</div>
+</li></ul>
+</div>
+<div id="outline-container-sec-10-3-2" class="outline-4">
+<h4 id="sec-10-3-2">Handling alerts</h4>
+<div class="outline-text-4" id="text-10-3-2">
+</div><ul class="org-ul"><li><a id="sec-10-3-2-1" name="sec-10-3-2-1"></a>Enabling<br  /><div class="outline-text-5" id="text-10-3-2-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">BrowserCapabilities</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">Map</span> <span style="color: #C8C8FF;">capabilitiesMap</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">HashMap</span>();
+    capabilitiesMap.put(<span style="color: #A5C261;">"handlesAlert"</span>, <span style="color: #6D9CBE;">true</span>);
+    <span style="color: #6D9CBE;">DesiredCapabilities</span> <span style="color: #C8C8FF;">capabilities</span> 
+               = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">DesiredCapabilities</span>(capabilitiesMap);
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(capabilities);
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+  }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-10-3-2-2" name="sec-10-3-2-2"></a>API<br  /><div class="outline-text-5" id="text-10-3-2-2">
+<p>
+Alert alert(): switch to currently active modal dialog on the page or throw NoAlertPresentException
+</p>
+
+<p>
+void accept(): equivalent to OK on dialog
+void dismiss(): equivalent to CANCEL
+String getText(): return text in dialog
+void sendKeys(String keysToSend): type text into alert
+</p>
+</div>
+</li></ul>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-11" class="outline-2">
+<h2 id="sec-11">Firefox Specific Features</h2>
+<div class="outline-text-2" id="text-11">
+</div><div id="outline-container-sec-11-1" class="outline-3">
+<h3 id="sec-11-1">Using a specific Firefox Profile</h3>
+<div class="outline-text-3" id="text-11-1">
+<p>
+The driver creates a new anonymous profile each time it launches a browser.  Instead, we can use a specific
+profile with a FirefoxProfile object:  public FirefoxProfile(java.io.File profileDir)
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">FirefoxCustomProfile</span> {  
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">FirefoxProfile</span> <span style="color: #C8C8FF;">profile</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxProfile</span>();
+
+    <span style="color: #6D9CBE;">FirefoxDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(profile);
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);                
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-11-2" class="outline-3">
+<h3 id="sec-11-2">Installing a browser extension in the WebDriver profile</h3>
+<div class="outline-text-3" id="text-11-2">
+<p>
+Profile objects have an addExtension method.  It will throw IOException if it cannot find the file.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AddExtensionToProfile</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">FirefoxProfile</span> <span style="color: #C8C8FF;">profile</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxProfile</span>();
+
+    <span style="color: #CC7833;">try</span> {
+      profile.addExtension(<span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">File</span>(<span style="color: #A5C261;">"C:\\firebug-1.12.0-fx.xpi"</span>));
+    } <span style="color: #CC7833;">catch</span> (<span style="color: #6D9CBE;">IOException</span> <span style="color: #C8C8FF;">e</span>) {
+      e.printStackTrace();
+    }
+
+    <span style="color: #6D9CBE;">FirefoxDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(profile);          
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-11-3" class="outline-3">
+<h3 id="sec-11-3">Setting Profile Preferences</h3>
+<div class="outline-text-3" id="text-11-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">SettingPreferences</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">FirefoxProfile</span> <span style="color: #C8C8FF;">profile</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxProfile</span>();
+
+    profile.setPreference(<span style="color: #A5C261;">"general.useragent.override"</span>, <span style="color: #A5C261;">"Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7"</span>);
+
+    <span style="color: #6D9CBE;">FirefoxDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>(profile);
+    driver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);                
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-12" class="outline-2">
+<h2 id="sec-12">Testing with Custom Events</h2>
+<div class="outline-text-2" id="text-12">
+<p>
+The "How" seems well explained&#x2026;  When/Why?
+</p>
+</div>
+
+<div id="outline-container-sec-12-1" class="outline-3">
+<h3 id="sec-12-1">Flow of Setting up to Capture Events during Test Execution</h3>
+<div class="outline-text-3" id="text-12-1">
+<ol class="org-ol">
+<li>Create an EventListener Class
+</li>
+<li>Create a WebDriver instance
+</li>
+<li>Create an instance of EventFiringWebDriver to wrap the WebDriver
+</li>
+<li>Create an instance of EventListener class created above
+</li>
+<li>Register the EventListener with the EventFiringWebDriver
+</li>
+<li>Execute the events with the EventFiringWebDriver
+</li>
+<li>Verify Listener got informed of events occurence
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-sec-12-2" class="outline-3">
+<h3 id="sec-12-2">Creating an instance of EventListener (done one of two ways)</h3>
+<div class="outline-text-3" id="text-12-2">
+<p>
+You can do this either way, and experience will help you choose which might be easiest for a situation
+</p>
+</div>
+<div id="outline-container-sec-12-2-1" class="outline-4">
+<h4 id="sec-12-2-1">Implementing WebDriverEventListener (more verbose)</h4>
+<div class="outline-text-4" id="text-12-2-1">
+<p>
+Requires you to implement the 15 methods declared in the WebDriverEventListener interface
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">IAmTheEventListener</span> <span style="color: #CC7833;">implements</span> <span style="color: #6D9CBE;">WebDriverEventListener</span>{
+
+<span style="color: #BC9458;">////////// </span><span style="color: #BC9458;">NAVIGATION RELATED METHODS ////////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateTo</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">url</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      System.out.println(<span style="color: #A5C261;">"Before Navigate To "</span>+url);
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterNavigateTo</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">url</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateBack</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      System.out.println(<span style="color: #A5C261;">"Before Navigate Back. Right now I'm at "</span>+driver.getCurrentUrl());
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterNavigateBack</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateForward</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterNavigateForward</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+<span style="color: #BC9458;">/////////////////// </span><span style="color: #BC9458;">FINDBY RELATED METHODS ///////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeFindBy</span>(<span style="color: #6D9CBE;">By</span> <span style="color: #C8C8FF;">by</span>, <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterFindBy</span>(<span style="color: #6D9CBE;">By</span> <span style="color: #C8C8FF;">by</span>, <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+<span style="color: #BC9458;">//////////////////// </span><span style="color: #BC9458;">CLICKON RELATED METHODS ///////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeClickOn</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterClickOn</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+<span style="color: #BC9458;">///////////////// </span><span style="color: #BC9458;">CHANGE OF VALUE RELATED METHODS //////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeChangeValueOf</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterChangeValueOf</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">element</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+<span style="color: #BC9458;">/////////////// </span><span style="color: #BC9458;">SCRIPT EXECUTION RELATED METHODS ///////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeScript</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">script</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">afterScript</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">script</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+
+<span style="color: #BC9458;">/////////////// </span><span style="color: #BC9458;">EXCEPTION RELATED METHODS ///////////////////////</span>
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">onException</span>(<span style="color: #6D9CBE;">Throwable</span> <span style="color: #C8C8FF;">throwable</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      <span style="color: #BC9458;">// </span><span style="color: #BC9458;">TODO Auto-generated method stub</span>
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-12-2-2" class="outline-4">
+<h4 id="sec-12-2-2">Extending the AbstractWebDriverEventListener</h4>
+<div class="outline-text-4" id="text-12-2-2">
+<p>
+Dummy implementations of all 15 methods in the above interface are provided, so you only have to 
+override the methods you are interested in.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">IAmTheEventListener2</span> <span style="color: #CC7833;">extends</span> <span style="color: #6D9CBE;">AbstractWebDriverEventListener</span>{
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateTo</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">url</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      System.out.println(<span style="color: #A5C261;">"Before Navigate To "</span>+url);
+   }
+
+   <span style="color: #6D9CBE;">@Override</span>
+   <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateBack</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+      System.out.println(<span style="color: #A5C261;">"Before Navigate Back. Right now I'm at "</span>+driver.getCurrentUrl());
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-12-2-3" class="outline-4">
+<h4 id="sec-12-2-3">Example with Custom Listener and Registered Driver</h4>
+<div class="outline-text-4" id="text-12-2-3">
+<p>
+// CustomEventListener.java
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.<span style="color: #6D9CBE;">webdriver</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">events</span>.<span style="color: #6D9CBE;">AbstractWebDriverEventListener</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">CustomEventListener</span> <span style="color: #CC7833;">extends</span> <span style="color: #6D9CBE;">AbstractWebDriverEventListener</span>{
+
+  <span style="color: #6D9CBE;">@Override</span>
+  <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateTo</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">url</span>, <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+     System.out.println(<span style="color: #A5C261;">"Before Navigate To "</span>+url);
+
+  }
+
+  <span style="color: #6D9CBE;">@Override</span>
+  <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">beforeNavigateBack</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>) {
+     System.out.println(<span style="color: #A5C261;">"Before Navigate Back. Right now I'm at "</span>+driver.getCurrentUrl());
+
+  }
+
+}
+</pre>
+</div>
+<p>
+// CustomEventFiringDriver.java
+</p>
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.<span style="color: #6D9CBE;">webdriver</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">events</span>.<span style="color: #6D9CBE;">EventFiringWebDriver</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">CustomEventFiringDriver</span> {
+   <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+      <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+
+      <span style="color: #6D9CBE;">EventFiringWebDriver</span> <span style="color: #C8C8FF;">eventFiringDriver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">EventFiringWebDriver</span>(driver);
+      <span style="color: #6D9CBE;">CustomEventListener</span> <span style="color: #C8C8FF;">eventListener</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">CustomEventListener</span>();
+      eventFiringDriver.register(eventListener);
+
+      eventFiringDriver.get(<span style="color: #A5C261;">"http://www.google.com"</span>);
+      eventFiringDriver.get(<span style="color: #A5C261;">"http://www.facebook.com"</span>);
+      eventFiringDriver.navigate().back();
+
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13" class="outline-2">
+<h2 id="sec-13">Understanding the Page Object Pattern</h2>
+<div class="outline-text-2" id="text-13">
+</div><div id="outline-container-sec-13-1" class="outline-3">
+<h3 id="sec-13-1">WordPress blog Sample Test Cases - Fine Tests that are manual to maintain.</h3>
+<div class="outline-text-3" id="text-13-1">
+<p>
+Each of the following involves logging in to WordPress and then performing some actions.  
+If an ID element on the login page changes, all three java classes would need modification.
+They are excellent examples of successfully using the Selenium API in a hard to maintain fashion.
+</p>
+
+<p>
+Adding a post to WordPress site <a href="http://pageobjectpattern.wordpress.com/">http://pageobjectpattern.wordpress.com/</a>
+</p>
+<ol class="org-ol">
+<li>Log in to the WordPress Admin portal.
+</li>
+<li>Go to the All Posts page.
+</li>
+<li>Click on the Add New post button.
+</li>
+<li>Add a new post by providing the title and description.
+</li>
+<li>Publish the post.
+</li>
+</ol>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestAddNewPost</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Login to Admin portal</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_login"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">pwd</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_pass"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span> = driver.findElement(By.id(<span style="color: #A5C261;">"wp-submit"</span>));
+    email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+    pwd.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+    submit.click();  
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Go to AllPosts page</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Add New Post</span>
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">addNewPost</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"Add New"</span>));
+    addNewPost.click();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Add New Post's Content</span>
+    driver.switchTo().frame(<span style="color: #A5C261;">"content_ifr"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postBody</span> = driver.findElement(By.id(<span style="color: #A5C261;">"tinymce"</span>));
+    postBody.sendKeys(<span style="color: #A5C261;">"This is description"</span>);
+    driver.switchTo().defaultContent();
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">title</span> = driver.findElement(By.id(<span style="color: #A5C261;">"title"</span>));
+    title.click();
+    title.sendKeys(<span style="color: #A5C261;">"My First Post"</span>);
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Publish the Post</span>
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">publish</span> = driver.findElement(By.id(<span style="color: #A5C261;">"publish"</span>));
+    publish.click();
+  }
+}
+</pre>
+</div>
+
+<p>
+Deleting a post
+</p>
+<ol class="org-ol">
+<li>Log in to the WordPress Admin portal.
+</li>
+<li>Go to the All Posts page.
+</li>
+<li>Click on the post to be deleted.
+</li>
+<li>Delete the post.
+</li>
+</ol>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestDeletePost</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Login to Admin portal</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_login"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">pwd</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_pass"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span> = driver.findElement(By.id(<span style="color: #A5C261;">"wp-submit"</span>));
+    email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+    pwd.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+    submit.click();      
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Go to a All Posts page</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Click on the post to be deleted</span>
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">post</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"My First Post"</span>));
+    post.click();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Delete Post</span>
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">publish</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"Move to Trash"</span>));
+    publish.click();
+  }
+}
+</pre>
+</div>
+
+<p>
+Counting the number of posts
+</p>
+<ol class="org-ol">
+<li>Log in to the Admin portal.
+</li>
+<li>Go to the All Posts page.
+</li>
+<li>Count the number of posts available.
+</li>
+</ol>
+
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestPostsCount</span> {
+  <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Login to Admin portal</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_login"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">pwd</span> = driver.findElement(By.id(<span style="color: #A5C261;">"user_pass"</span>));
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span> = driver.findElement(By.id(<span style="color: #A5C261;">"wp-submit"</span>));
+    email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+    pwd.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+    submit.click();      
+    <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Count the number of posts.</span>
+    driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postsContainer</span> = driver.findElement(By.id(<span style="color: #A5C261;">"the-list"</span>));
+    <span style="color: #6D9CBE;">List</span> <span style="color: #C8C8FF;">postsList</span> = postsContainer.findElements(By.tagName(<span style="color: #A5C261;">"tr"</span>));
+    System.out.println(postsList.size());
+  }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-2" class="outline-3">
+<h3 id="sec-13-2">WordPress blog using PageObject pattern</h3>
+<div class="outline-text-3" id="text-13-2">
+</div><div id="outline-container-sec-13-2-1" class="outline-4">
+<h4 id="sec-13-2-1">AdminLoginPage</h4>
+<div class="outline-text-4" id="text-13-2-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AdminLoginPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span>;
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">password</span>;
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span>;
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AdminLoginPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+        email = driver.findElement(By.id(<span style="color: #A5C261;">"user_login"</span>));
+        password = driver.findElement(By.id(<span style="color: #A5C261;">"user_pass"</span>));
+        submit = driver.findElement(By.id(<span style="color: #A5C261;">"wp-submit"</span>));
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">login</span>(){
+        email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+        password.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+        submit.click();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-2-2" class="outline-4">
+<h4 id="sec-13-2-2">TestAddNewPostUsingPageObject</h4>
+<div class="outline-text-4" id="text-13-2-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestAddNewPostUsingPageObject</span> {
+   <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>) {
+       <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+       <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Login to Admin portal - factored into other object only be two lines here</span>
+       <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">admLoginPage</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">AdminLoginPage</span>(driver);
+       admLoginPage.login();
+       <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Go to New Posts page</span>
+       driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+       <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">addNewPost</span> = driver.findElement(By.linkText(<span style="color: #A5C261;">"Add New"</span>));
+       addNewPost.click();
+       <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Add New Post</span>
+       driver.switchTo().frame(<span style="color: #A5C261;">"content_ifr"</span>);
+       <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postBody</span> = driver.findElement(By.id(<span style="color: #A5C261;">"tinymce"</span>));
+       postBody.sendKeys(<span style="color: #A5C261;">"This is description"</span>);
+       driver.switchTo().defaultContent();
+       <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">title</span> = driver.findElement(By.id(<span style="color: #A5C261;">"title"</span>));
+       title.click();
+       title.sendKeys(<span style="color: #A5C261;">"My First Post"</span>);
+       <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">publish</span> = driver.findElement(By.id(<span style="color: #A5C261;">"publish"</span>));
+       publish.click();
+   }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-3" class="outline-3">
+<h3 id="sec-13-3">Using the <b>@FindBy</b> annotation to locate elements on a page</h3>
+<div class="outline-text-3" id="text-13-3">
+<p>
+There are two ways of using the @FindBy annotation:
+    Usage 1 is shown as follows:
+        @FindBy(id="user_login")
+        WebElement userId;
+    Usage 2 is shown as follows:
+        @FindBy(how=How.ID, using="user_login")
+        WebElement userId;
+</p>
+</div>
+
+<div id="outline-container-sec-13-3-1" class="outline-4">
+<h4 id="sec-13-3-1">Different ways to @FindBy supported by the How enumeration</h4>
+<div class="outline-text-4" id="text-13-3-1">
+</div><ul class="org-ul"><li><a id="sec-13-3-1-1" name="sec-13-3-1-1"></a>CLASS_NAME<br  /></li>
+<li><a id="sec-13-3-1-2" name="sec-13-3-1-2"></a>CSS<br  /></li>
+<li><a id="sec-13-3-1-3" name="sec-13-3-1-3"></a>ID<br  /></li>
+<li><a id="sec-13-3-1-4" name="sec-13-3-1-4"></a>ID_OR_NAME<br  /></li>
+<li><a id="sec-13-3-1-5" name="sec-13-3-1-5"></a>LINK_TEXT<br  /></li>
+<li><a id="sec-13-3-1-6" name="sec-13-3-1-6"></a>NAME<br  /></li>
+<li><a id="sec-13-3-1-7" name="sec-13-3-1-7"></a>PARTIAL_LINK_TEXT<br  /></li>
+<li><a id="sec-13-3-1-8" name="sec-13-3-1-8"></a>TAG_NAME<br  /></li>
+<li><a id="sec-13-3-1-9" name="sec-13-3-1-9"></a>XPATH<br  /></li></ul>
+</div>
+<div id="outline-container-sec-13-3-2" class="outline-4">
+<h4 id="sec-13-3-2">Wordpress AdminLoginPage using How and @FindBy</h4>
+<div class="outline-text-4" id="text-13-3-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AdminLoginPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, id=<span style="color: #A5C261;">"user_login"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, id=<span style="color: #A5C261;">"user_pass"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">password</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, id=<span style="color: #A5C261;">"wp-submit"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AdminLoginPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">login</span>(){
+        email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+        password.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+        submit.click();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-4" class="outline-3">
+<h3 id="sec-13-4">Using the <b>PageFactory</b> class</h3>
+<div class="outline-text-3" id="text-13-4">
+</div><div id="outline-container-sec-13-4-1" class="outline-4">
+<h4 id="sec-13-4-1">A PageFactory instantiates a Page object that uses the <b>@FindBy</b> annotations and gives it a driver</h4>
+</div>
+<div id="outline-container-sec-13-4-2" class="outline-4">
+<h4 id="sec-13-4-2">initElements(WebDriver driver, java.lang.Class PageObjectClass)</h4>
+</div>
+<div id="outline-container-sec-13-4-3" class="outline-4">
+<h4 id="sec-13-4-3">Example Use</h4>
+<div class="outline-text-4" id="text-13-4-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestAddNewPostUsingPageObjects</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+        <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">loginPage</span>= PageFactory.initElements(driver, AdminLoginPage.<span style="color: #CC7833;">class</span>);
+        loginPage.login();
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-5" class="outline-3">
+<h3 id="sec-13-5">Good practices for using PageObjects</h3>
+<div class="outline-text-3" id="text-13-5">
+</div><div id="outline-container-sec-13-5-1" class="outline-4">
+<h4 id="sec-13-5-1">Use PageObjects within PageObjects</h4>
+<div class="outline-text-4" id="text-13-5-1">
+</div><ul class="org-ul"><li><a id="sec-13-5-1-1" name="sec-13-5-1-1"></a>Example <b>AllPostsPage</b><br  /><div class="outline-text-5" id="text-13-5-1-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AllPostsPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"the-list"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postsContainer</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"post-search-input"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchPosts</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"cat"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">viewByCategories</span>;
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AllPostsPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+            driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">createANewPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">description</span>) {
+        addNewPost.click();
+        <span style="color: #BC9458;">// </span><span style="color: #BC9458;">use an AddNewPost object here</span>
+        <span style="color: #6D9CBE;">AddNewPost</span> <span style="color: #C8C8FF;">newPost</span> = PageFactory.initElements(driver, AddNewPost.<span style="color: #CC7833;">class</span>);
+        newPost.addNewPost(title, description);
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">editAPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>){
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">deleteAPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">postTitle</span>) {
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">filterPostsByCategory</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">category</span>){
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">searchInPosts</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">searchText</span>){
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">int</span> <span style="color: #FFC66D;">getAllPostsCount</span>(){
+    }
+  }
+<span style="color: #BC9458;">/* </span><span style="color: #BC9458;">In AddNewPost.java */</span>
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AddNewPost</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"content_ifr"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentFrame</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"tinymce"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentBody</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"title"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostTitle</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"publish"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostPublish</span>;
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AddNewPost</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        System.out.println(driver.getCurrentUrl());
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">addNewPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">descContent</span>){
+         driver.switchTo().frame(newPostContentFrame);
+         newPostContentBody.sendKeys(descContent);
+         driver.switchTo().defaultContent();
+         newPostTitle.click();
+         newPostTitle.sendKeys(title);
+         newPostPublish.click();
+    }
+}
+</pre>
+</div>
+</div>
+</li></ul>
+</div>
+<div id="outline-container-sec-13-5-2" class="outline-4">
+<h4 id="sec-13-5-2">Consider methods in PageObjects as services and not as User Actions</h4>
+<div class="outline-text-4" id="text-13-5-2">
+<p>
+At a high level, a webpage is a collection of services (such as 'add a post', 'edit a post', etc).  
+So a PageObject should provide these services to a test case.  Be sure to include "implied services"
+that are provided simply by reading the page (like "count posts" if there is a post listing).
+</p>
+
+<p>
+Using a service can (and often will) involve multiple user actions.  You should abstract this layer.
+Example: Adding a post requires "type text in title", "type text in content", and "click publish" actions.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-13-5-3" class="outline-4">
+<h4 id="sec-13-5-3">Initialize some elements as required; especially lists (source example)</h4>
+<div class="outline-text-4" id="text-13-5-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AllPostsPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"the-list"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postsContainer</span>;
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">editAPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">presentTitle</span>,<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">newTitle</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">description</span>){
+        <span style="color: #6D9CBE;">List</span>&lt;<span style="color: #6D9CBE;">WebElement</span>&gt; <span style="color: #C8C8FF;">allPosts</span>= postsContainer.findElements(By.className(<span style="color: #A5C261;">"row-title"</span>));
+        <span style="color: #CC7833;">for</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">ele</span> : allPosts){
+        <span style="color: #CC7833;">if</span>(ele.getText().equals(presentTitle)){
+                <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+                builder.moveToElement(ele);
+                builder.click(driver.findElement(By.cssSelector(<span style="color: #A5C261;">".edit&gt;a"</span>)));
+                <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Generate the composite action.</span>
+                <span style="color: #6D9CBE;">Action</span> <span style="color: #C8C8FF;">compositeAction</span> = builder.build();
+                <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Perform the composite action.</span>
+                compositeAction.perform();
+                <span style="color: #CC7833;">break</span>;
+            }
+        }
+        <span style="color: #6D9CBE;">EditPost</span> <span style="color: #C8C8FF;">editPost</span>= PageFactory.initElements(driver, EditPost.<span style="color: #CC7833;">class</span>);
+        editPost.editPost(newTitle, description);
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-5-4" class="outline-4">
+<h4 id="sec-13-5-4">Keep page specific details of the test script (main goal!)</h4>
+</div>
+</div>
+<div id="outline-container-sec-13-6" class="outline-3">
+<h3 id="sec-13-6">Checking load()/isLoad() with <b>LoadableComponent</b> class</h3>
+<div class="outline-text-3" id="text-13-6">
+</div><div id="outline-container-sec-13-6-1" class="outline-4">
+<h4 id="sec-13-6-1">load specifies a url that should be loaded</h4>
+</div>
+<div id="outline-container-sec-13-6-2" class="outline-4">
+<h4 id="sec-13-6-2">isLoaded checks that the page specified in load() came up</h4>
+</div>
+<div id="outline-container-sec-13-6-3" class="outline-4">
+<h4 id="sec-13-6-3">the get method attempts the load() and does the isLoaded() check</h4>
+</div>
+<div id="outline-container-sec-13-6-4" class="outline-4">
+<h4 id="sec-13-6-4">Full example of use</h4>
+<div class="outline-text-4" id="text-13-6-4">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">package</span> com.packt.webdriver.chapter9.<span style="color: #6D9CBE;">pageObjects</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">junit</span>.<span style="color: #6D9CBE;">Assert</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">CacheLookup</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">ui</span>.<span style="color: #6D9CBE;">LoadableComponent</span>;
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AdminLoginPageUsingLoadableComponent</span> <span style="color: #CC7833;">extends</span> <span style="color: #6D9CBE;">LoadableComponent</span>&lt;<span style="color: #6D9CBE;">AdminLoginPageUsingLoadableComponent</span>&gt;{
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"user_login"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"user_pass"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">password</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"wp-submit"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span>;
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AdminLoginPageUsingLoadableComponent</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        PageFactory.initElements(driver, <span style="color: #CC7833;">this</span>);
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #FFC66D;">login</span>(){
+        email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+        password.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+        submit.click();
+        <span style="color: #CC7833;">return</span> PageFactory.initElements(driver,
+                AllPostsPage.<span style="color: #CC7833;">class</span>);
+    }
+    <span style="color: #6D9CBE;">@Override</span>
+    <span style="color: #CC7833;">protected</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">load</span>() {
+        driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    }
+    <span style="color: #6D9CBE;">@Override</span>
+    <span style="color: #CC7833;">protected</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">isLoaded</span>() <span style="color: #CC7833;">throws</span> <span style="color: #6D9CBE;">Error</span> {
+        Assert.assertTrue(driver.getCurrentUrl().contains(<span style="color: #A5C261;">"wp-admin"</span>));
+    }
+}
+<span style="color: #BC9458;">// </span><span style="color: #BC9458;">using it in a test</span>
+<span style="color: #6D9CBE;">AdminLoginPageUsingLoadableComponent</span> <span style="color: #C8C8FF;">loginPage</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">AdminLoginPageUsingLoadableComponent</span>(driver).get();
+<span style="color: #BC9458;">// </span><span style="color: #BC9458;">it will throw the exception if load doesn't work</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-13-7" class="outline-3">
+<h3 id="sec-13-7">Full Wordpress PageObject example with TestCases</h3>
+<div class="outline-text-3" id="text-13-7">
+</div><div id="outline-container-sec-13-7-1" class="outline-4">
+<h4 id="sec-13-7-1">PageObject's</h4>
+<div class="outline-text-4" id="text-13-7-1">
+</div><ul class="org-ul"><li><a id="sec-13-7-1-1" name="sec-13-7-1-1"></a>AdminLoginPage.java<br  /><div class="outline-text-5" id="text-13-7-1-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">CacheLookup</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AdminLoginPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"user_login"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">email</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"user_pass"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">password</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"wp-submit"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">submit</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AdminLoginPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin"</span>);
+    }
+
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #FFC66D;">login</span>(){
+        email.sendKeys(<span style="color: #A5C261;">"pageobjectpattern@gmail.com"</span>);
+        password.sendKeys(<span style="color: #A5C261;">"webdriver123"</span>);
+        submit.click();
+        <span style="color: #CC7833;">return</span> PageFactory.initElements(driver, AllPostsPage.<span style="color: #CC7833;">class</span>);
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-1-2" name="sec-13-7-1-2"></a>AllPostsPage.java<br  /><div class="outline-text-5" id="text-13-7-1-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">java</span>.<span style="color: #6D9CBE;">util</span>.<span style="color: #6D9CBE;">List</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">By</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">interactions</span>.<span style="color: #6D9CBE;">Action</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">interactions</span>.<span style="color: #6D9CBE;">Actions</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AllPostsPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"the-list"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">postsContainer</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"post-search-input"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">searchPosts</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"cat"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">viewByCategories</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.LINK_TEXT, using=<span style="color: #A5C261;">"Add New"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">addNewPost</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AllPostsPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        driver.get(<span style="color: #A5C261;">"http://pageobjectpattern.wordpress.com/wp-admin/edit.php"</span>);
+    }
+
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">createANewPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">description</span>){
+        addNewPost.click();
+        <span style="color: #6D9CBE;">AddNewPostPage</span> <span style="color: #C8C8FF;">newPost</span> = PageFactory.initElements(driver, AddNewPostPage.<span style="color: #CC7833;">class</span>);
+        newPost.addNewPost(title, description);
+    }  
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">editAPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">presentTitle</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">newTitle</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">description</span>){
+        goToParticularPostPage(presentTitle);
+        <span style="color: #6D9CBE;">EditPostPage</span> <span style="color: #C8C8FF;">editPost</span> = PageFactory.initElements(driver, EditPostPage.<span style="color: #CC7833;">class</span>);
+        editPost.editPost(newTitle, description);
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">deleteAPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>) {
+        goToParticularPostPage(title);
+        <span style="color: #6D9CBE;">DeletePostPage</span> <span style="color: #C8C8FF;">deletePost</span> = PageFactory.initElements(driver, DeletePostPage.<span style="color: #CC7833;">class</span>);
+        deletePost.delete();
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">filterPostsByCategory</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">category</span>){
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">searchInPosts</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">searchText</span>){
+    }
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">int</span> <span style="color: #FFC66D;">getAllPostsCount</span>(){
+      <span style="color: #6D9CBE;">List</span>&lt;<span style="color: #6D9CBE;">WebElement</span>&gt; <span style="color: #C8C8FF;">postsList</span> = postsContainer.findElements(By.tagName(<span style="color: #A5C261;">"tr"</span>));
+      <span style="color: #CC7833;">return</span> postsList.size();
+    }
+    <span style="color: #CC7833;">private</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">goToParticularPostPage</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>){<span style="color: #6D9CBE;">List</span>&lt;<span style="color: #6D9CBE;">WebElement</span>&gt; <span style="color: #C8C8FF;">allPosts</span>= postsContainer.findElements(By.className(<span style="color: #A5C261;">"row-title"</span>));
+        <span style="color: #CC7833;">for</span>(<span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">ele</span> : allPosts){
+            <span style="color: #CC7833;">if</span>(ele.getText().equals(title)){
+                <span style="color: #6D9CBE;">Actions</span> <span style="color: #C8C8FF;">builder</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">Actions</span>(driver);
+                builder.moveToElement(ele);
+                builder.click(driver.findElement(
+                        By.cssSelector(<span style="color: #A5C261;">".edit&gt;a"</span>)));
+                <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Generate the composite action.</span>
+                <span style="color: #6D9CBE;">Action</span> <span style="color: #C8C8FF;">compositeAction</span> = builder.build();
+                <span style="color: #BC9458;">// </span><span style="color: #BC9458;">Perform the composite action.</span>
+                compositeAction.perform();
+                <span style="color: #CC7833;">break</span>;
+            }
+        }
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-1-3" name="sec-13-7-1-3"></a>AddNewPostPage.java<br  /><div class="outline-text-5" id="text-13-7-1-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">AddNewPostPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"content_ifr"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentFrame</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"tinymce"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentBody</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"title"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostTitle</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"publish"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostPublish</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">AddNewPostPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        System.out.println(driver.getCurrentUrl());
+    }
+
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">addNewPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">descContent</span>){
+         driver.switchTo().frame(newPostContentFrame);
+         newPostContentBody.sendKeys(descContent);
+         driver.switchTo().defaultContent();
+         newPostTitle.click();
+         newPostTitle.sendKeys(title);
+         newPostPublish.click();
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-1-4" name="sec-13-7-1-4"></a>EditPostPage.java<br  /><div class="outline-text-5" id="text-13-7-1-4">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">EditPostPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"content_ifr"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentFrame</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"tinymce"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostContentBody</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"title"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostTitle</span>;
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.ID, using=<span style="color: #A5C261;">"publish"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">newPostPublish</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">EditPostPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        System.out.println(driver.getCurrentUrl());
+    }
+
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">editPost</span>(<span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">title</span>, <span style="color: #6D9CBE;">String</span> <span style="color: #C8C8FF;">descContent</span>){
+         driver.switchTo().frame(newPostContentFrame);
+         newPostContentBody.clear();
+         newPostContentBody.sendKeys(descContent);
+         driver.switchTo().defaultContent();
+         newPostTitle.click();
+         newPostTitle.clear();
+         newPostTitle.sendKeys(title);
+         newPostPublish.click();
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-1-5" name="sec-13-7-1-5"></a>DeletePostPage.java<br  /><div class="outline-text-5" id="text-13-7-1-5">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebElement</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">FindBy</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">How</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">DeletePostPage</span> {
+    <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>;
+
+    <span style="color: #6D9CBE;">@FindBy</span>(how=<span style="color: #6D9CBE;">How</span>.LINK_TEXT, using=<span style="color: #A5C261;">"Move to Trash"</span>)
+    <span style="color: #6D9CBE;">WebElement</span> <span style="color: #C8C8FF;">moveToTrash</span>;
+
+    <span style="color: #CC7833;">public</span> <span style="color: #FFC66D;">DeletePostPage</span>(<span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span>){
+        <span style="color: #CC7833;">this</span>.driver = driver;
+        System.out.println(driver.getCurrentUrl());
+    }
+
+    <span style="color: #CC7833;">public</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">delete</span>(){
+        moveToTrash.click();
+    }
+}
+</pre>
+</div>
+</div>
+</li></ul>
+</div>
+<div id="outline-container-sec-13-7-2" class="outline-4">
+<h4 id="sec-13-7-2">Tests</h4>
+<div class="outline-text-4" id="text-13-7-2">
+</div><ul class="org-ul"><li><a id="sec-13-7-2-1" name="sec-13-7-2-1"></a>Adding a new post<br  /><div class="outline-text-5" id="text-13-7-2-1">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">firefox</span>.<span style="color: #6D9CBE;">FirefoxDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AdminLoginPage</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AllPostsPage</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestAddNewPostUsingPageObjects</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">FirefoxDriver</span>();
+        <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">loginPage</span> = PageFactory.initElements(driver, AdminLoginPage.<span style="color: #CC7833;">class</span>);
+        <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #C8C8FF;">allPostsPage</span> = loginPage.login();
+        allPostsPage.createANewPost(<span style="color: #A5C261;">"Creating New Post using PageObjects"</span>,
+                <span style="color: #A5C261;">"Its good to use PageObjects"</span>);
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-2-2" name="sec-13-7-2-2"></a>Editing a post<br  /><div class="outline-text-5" id="text-13-7-2-2">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">chrome</span>.<span style="color: #6D9CBE;">ChromeDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AdminLoginPage</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AllPostsPage</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestEditPostUsingPageObjects</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+        System.setProperty(<span style="color: #A5C261;">"webdriver.chrome.driver"</span>, <span style="color: #A5C261;">"C:\\chromedriver_win32_2.2\\chromedriver.exe"</span>);
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">ChromeDriver</span>();
+        <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">loginPage</span> = PageFactory.initElements(driver,AdminLoginPage.<span style="color: #CC7833;">class</span>);
+        <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #C8C8FF;">allPostsPage</span> = loginPage.login();
+        allPostsPage.editAPost(<span style="color: #A5C261;">"Creating New Post using PageObjects"</span>,
+                <span style="color: #A5C261;">"Editing Post using PageObjects"</span>,<span style="color: #A5C261;">"Test framework low maintenance"</span>);
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-2-3" name="sec-13-7-2-3"></a>Deleting a post<br  /><div class="outline-text-5" id="text-13-7-2-3">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">chrome</span>.<span style="color: #6D9CBE;">ChromeDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AdminLoginPage</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AllPostsPage</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestDeleteAPostUsingPageObjects</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+        System.setProperty(<span style="color: #A5C261;">"webdriver.chrome.driver"</span>, <span style="color: #A5C261;">"C:\\chromedriver_win32_2.2\\chromedriver.exe"</span>);
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">ChromeDriver</span>();
+        <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">loginPage</span> = PageFactory.initElements(driver,AdminLoginPage.<span style="color: #CC7833;">class</span>);
+        <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #C8C8FF;">allPostsPage</span> = loginPage.login();
+        allPostsPage.deleteAPost(<span style="color: #A5C261;">"Creating New Post using PageObjects"</span>);
+    }
+}
+</pre>
+</div>
+</div>
+</li>
+<li><a id="sec-13-7-2-4" name="sec-13-7-2-4"></a>Counting posts<br  /><div class="outline-text-5" id="text-13-7-2-4">
+<div class="org-src-container">
+
+<pre class="src src-java"><span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">WebDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">chrome</span>.<span style="color: #6D9CBE;">ChromeDriver</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">org</span>.<span style="color: #6D9CBE;">openqa</span>.<span style="color: #6D9CBE;">selenium</span>.<span style="color: #6D9CBE;">support</span>.<span style="color: #6D9CBE;">PageFactory</span>;
+
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AdminLoginPage</span>;
+<span style="color: #CC7833;">import</span> <span style="color: #6D9CBE;">com</span>.<span style="color: #6D9CBE;">packt</span>.<span style="color: #6D9CBE;">webdriver</span>.<span style="color: #6D9CBE;">wordpress</span>.<span style="color: #6D9CBE;">pageObjects</span>.<span style="color: #6D9CBE;">AllPostsPage</span>;
+
+<span style="color: #CC7833;">public</span> <span style="color: #CC7833;">class</span> <span style="color: #6D9CBE;">TestPostsCountUsingPageObjects</span> {
+    <span style="color: #CC7833;">public</span> <span style="color: #CC7833;">static</span> <span style="color: #6D9CBE;">void</span> <span style="color: #FFC66D;">main</span>(<span style="color: #6D9CBE;">String</span>... <span style="color: #C8C8FF;">args</span>){
+        System.setProperty(<span style="color: #A5C261;">"webdriver.chrome.driver"</span>, <span style="color: #A5C261;">"C:\\chromedriver_win32_2.2\\chromedriver.exe"</span>);
+        <span style="color: #6D9CBE;">WebDriver</span> <span style="color: #C8C8FF;">driver</span> = <span style="color: #CC7833;">new</span> <span style="color: #6D9CBE;">ChromeDriver</span>();
+        <span style="color: #6D9CBE;">AdminLoginPage</span> <span style="color: #C8C8FF;">loginPage</span> = PageFactory.initElements(driver,AdminLoginPage.<span style="color: #CC7833;">class</span>);
+        <span style="color: #6D9CBE;">AllPostsPage</span> <span style="color: #C8C8FF;">allPostsPage</span> = loginPage.login();
+        System.out.println(allPostsPage.getAllPostsCount());
+    }
+}
+</pre>
+</div>
+</div>
+</li></ul>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-14" class="outline-2">
+<h2 id="sec-14">Skipped Chapters: Dealing with I/O (FileHandler, isZipped, etc), RemoteWebDriver, Selenium Grid, iOS/Android</h2>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Lewis Cawthorne</p>
+<p class="date">Created: 2015-05-19 Tue 15:29</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

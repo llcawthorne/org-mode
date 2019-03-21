@@ -1,0 +1,269 @@
+* http://tutorialspoint.com/ootstrap/bootstrap_quick_guide.html
+* What does Bootstrap include?
+** Scaffolding
+Grid System, link styles, and background included in basic structure
+** CSS
+Global CSS settings.  HTML elements are styled and enhanced with extensible classes, 
+and it is built for working with the Grid System.
+** Components
+Bootstrap contains over a dozen reusable components for iconography,
+dropdowns, navigation, alerts, pop-overs, and more.
+** JavaScript Plugins
+Custom jQuery plugins that can be partially or all included.
+** Customization
+Make Bootstrap your own with custom components, LESS variables, and jQuery plugins.
+* Where? http://getbootstrap.com/
+* Basic HTML template
+#+begin_src html
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Bootstrap 101 Template</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Bootstrap -->
+      <link href="css/bootstrap.min.css" rel="stylesheet">
+
+      <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media 
+         queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page 
+         via file:// -->
+      <!--[if lt IE 9]>
+         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/
+            html5shiv.js"></script>
+         <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/
+            respond.min.js"></script>
+      <![endif]-->
+   </head>
+   <body>
+      <h1>Hello, world!</h1>
+
+      <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+      <script src="https://code.jquery.com/jquery.js"></script>
+      <!-- Include all compiled plugins (below), or include individual files 
+            as needed -->
+      <script src="js/bootstrap.min.js"></script>
+   </body>
+  #+end_src
+
+* The Bootstrap Grid System
+** Rows must be placed with a *.container* class for proper alignment and padding
+** Use rows to create horizontal groups of columns
+** Content should be placed within the columns, and only columns may be the immediate children of rows.
+** *.row* and *.col-xs-4* are predefined grid classes for quick layouts
+** Columns created gutters via padding.  The padding is offset in rows for the first and last column via negative margin on *.rows*
+** Grid columsn are created by specifying the number of 12 available columns you wish to span
+*** Ex: *.col-xs 4* is three equal columns (ie. each column spans 4/12 of page)
+* Media Queries
+** A fancy term for "conditional CSS rule"
+** They allow you to move/show/hide content based on viewport size
+** Simple Examples
+
+#+begin_src html
+/* Extra small devices (phones, less than 768px) */
+/* No media query, since this is the default target size for Bootstrap */
+
+/* Small devices (tablets, 768px and up) */
+@media (min-width: @screen-sm-min) { ... }
+
+/* Medium devices (desktops, 992 px and up) */
+@media (min-width: @screen-md-min) { ... }
+
+/* Large devices (large desktops, 1200px and up) */
+@media (min-wdith: @screen-lg-min) { ... }
+#+end_src
+
+** Media queries consist of a device specification, then (optionally) a size rule
+In line *1:* below, we are saying for all devices no matter what kind with
+mid-width: @screen-sm-min, if the width of the screen gets smaller than 
+@screen-sm-max, then do something.
+#+begin_src html
+@media (max-width: @screen-xs-max) { ... }
+1: @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) { ... } 
+@media (min-width: @screen-md-min) and (max-width: @screen-md-max) { ... }
+@media (min-width: @screen-lg-min) { ... }
+#+end_src
+* Grid Options
+** In all layouts, there are 12 grid columns
+** Class prefixes are *.col-xs-*, *.col-sm-*, *.col-md-*, *.col-lg-*
+** Max container width is: **auto**, 750px, 970px, and 1170px respectively
+** Max column width is: **auto**, 60px, 78px, and 95px respectively
+** Extra small (<768px) devices are horizontal at all times, but on other devices the grid is collapsed to start, and horizontal above breakpoints
+** Other defaults are the same for different sizes, but can be changed separately
+*** Gutter width is 30px; 15px on each side of the column
+*** Nestable, Offsets, and Column Ordering are all allowed
+** Basic Grid Structure
+#+begin_src html
+<div class="container">
+   <div class="row">
+      <div class="col-*-*"></div>
+      <div class="col-*-*"></div>      
+   </div>
+   <div class="row">...</div>
+</div>
+<div class="container">
+#+end_src
+** Example Grids
+*** Stacked-to-horizontal Example (50-50 split at medium viewport width)
+http://www.tutorialspoint.com/bootstrap/bootstrap_grid_system_example1.htm
+
+#+begin_src
+<div class="container">
+   <h1>Hello, world!</h1>
+
+   <div class="row">
+
+      <div class="col-md-6"  style="background-color: #dedef8; box-shadow: 
+         inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+            nisi ut aliquip ex ea commodo consequat. 
+         </p>
+
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+            quae ab illo inventore veritatis et quasi architecto beatae vitae 
+            dicta sunt explicabo. 
+         </p>
+      </div>
+
+      <div class="col-md-6" style="background-color: #dedef8;box-shadow: 
+         inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium.
+         </p>
+
+         <p> Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+            consectetur, adipisci velit, sed quia non numquam eius modi 
+            tempora incidunt ut labore et dolore magnam aliquam quaerat 
+            voluptatem. 
+         </p>
+   </div>
+</div>
+#+end_src
+*** Medium and Large Device (50-50 medium, but 33-66 split large)
+http://www.tutorialspoint.com/bootstrap/bootstrap_grid_system_example2.htm
+
+#+begin_src html
+<div class="container">
+   <h1>Hello, world!</h1>
+
+   <div class="row">
+
+      <div class="col-md-6 col-lg-4"  style="background-color: #dedef8; 
+         box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+            nisi ut aliquip ex ea commodo consequat. 
+         </p>
+
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+            quae ab illo inventore veritatis et quasi architecto beatae vitae 
+            dicta sunt explicabo. 
+         </p>
+      </div>
+
+      <div class="col-md-6 col-lg-8"" style="background-color: #dedef8;
+         box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium.
+         </p>
+
+         <p> Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+            consectetur, adipisci velit, sed quia non numquam eius modi 
+            tempora incidunt ut labore et dolore magnam aliquam quaerat 
+            voluptatem. 
+         </p>
+   </div>
+</div>
+#+end_src
+*** Mobile (75-25), Tablet (50-50), Desktop (33-66) 
+http://www.tutorialspoint.com/bootstrap/bootstrap_grid_system_example3.htm
+
+#+begin_src html
+<div class="container">
+   <h1>Hello, world!</h1>
+
+   <div class="row">
+
+      <div class="col-sm-3 col-md-6 col-lg-8"  
+         style="background-color: #dedef8; 
+         box-shadow: inset 1px -1px 1px #444, 
+         inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+            nisi ut aliquip ex ea commodo consequat. 
+         </p>
+
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium, totam rem aperiam, eaque ipsa 
+            quae ab illo inventore veritatis et quasi architecto beatae vitae 
+            dicta sunt explicabo. 
+         </p>
+      </div>
+
+      <div class="col-sm-9 col-md-6 col-lg-4" 
+         style="background-color: #dedef8;
+         box-shadow: inset 1px -1px 1px #444, 
+         inset -1px 1px 1px #444;">
+         <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem 
+            accusantium doloremque laudantium.
+         </p>
+
+         <p> Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, 
+            consectetur, adipisci velit, sed quia non numquam eius modi 
+            tempora incidunt ut labore et dolore magnam aliquam quaerat 
+            voluptatem. 
+         </p>
+   </div>
+</div>
+#+end_src
+** Responsive Column Resets
+You can use the *.clearfix* class and *repsonsive utility classes* to handle situations 
+where the columns don't clear quite right because one is taller than the other.
+
+#+begin_src html
+<div class="container">
+   <div class="row" >
+      <div class="col-xs-6 col-sm-3" 
+         style="background-color: #dedef8;
+         box-shadow: inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+      </div>
+      <div class="col-xs-6 col-sm-3" 
+         style="background-color: #dedef8;box-shadow: 
+         inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim veniam, quis nostrud exercitation ullamco laboris 
+            nisi ut aliquip ex ea commodo consequat.
+         </p>
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut. 
+         </p>
+      </div>
+
+      <div class="clearfix visible-xs"></div>
+
+      <div class="col-xs-6 col-sm-3" 
+         style="background-color: #dedef8;
+         box-shadow:inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco 
+            laboris nisi ut aliquip ex ea commodo consequat. 
+         </p>
+      </div>
+      <div class="col-xs-6 col-sm-3" 
+         style="background-color: #dedef8;box-shadow: 
+         inset 1px -1px 1px #444, inset -1px 1px 1px #444;">
+         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do 
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut 
+            enim ad minim 
+         </p>
+      </div>
+   </div>
+</div>
+#+end_src
+*** 

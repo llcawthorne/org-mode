@@ -1,0 +1,140 @@
+
+
+* Overview: Pluralsight - Creating an Automated Testing Framework with Selenium
+
+** Goal
+
+   Create a robust, maintainable automation framework using Selenium
+   that is simple enough to use to be accessible to QA personnel.
+
+** Big Idea
+
+   A developer can design an automation framework around an application
+   that a QA personnel can use and perform minor changes without
+   indepth knowledge of code and without breaking it on every change.
+
+** Our role as developers
+
+   As developers we write code everyday for people to use that are
+   less technically astute than our QA personnel.  In less work we should
+   be able to write a specialized framework that they can leverage to do
+   their job more quickly.
+
+** Types of Testing
+*** Unit Testing
+
+Commonly mocks out parts of the code to test specific classes and constructs.
+Requires in-depth knowledge of portions the code.
+
+*** Integration Testing
+
+Tests everything working together, but still requires knowledge of the code and
+writing code to make it work.  Very valuable, but not something you would expect
+a non-developer to help perform.
+
+*** Black Box Automated Testing; the focus of this course
+
+With black box testing, you are treating the code as a black box, so you don't need
+any knowledge of the code.  You test from the user's perspective.  It is harder to
+automate than at the lower levels, partially because the people doing it are often
+not programmers.  This is why we want to design a framework to 	assist.
+
+** Why a framework when we can just let the QA people do it by hand?  
+*** Benefits
+**** Regression Testing
+
+One special result of the rapid change in the agile model is that we need to make
+sure we don't break things that used to work.  Unit and Integration tests do this
+at the code level which hopefully carries upwards, but where it really matters is 
+at the USER level.  
+
+**** Absolute Requirements
+If we create automated tests that *clearly* define what a pass and fail is, we have
+can use them as a clear idea of when we have completed a goal; especially if you 
+work out the requirements with someone with business knowledge.
+
+**** Leverage
+At each level of testing, we have to write less code to exercise more of the system.
+For example, it takes the most code to write unit tests; often more than the amount of 
+code it is testing (but this pays off in finetuning catching where errors are, so don't 
+writing unit tests!).  It takes less code often in integration tests, and it tends
+to take the least in black box automated systems; assuming you design your solution 
+well up front.
+*** Problems to avoid
+**** Why not use one of those "recorded tests" like Vaadin Test Bench or SeleniumIDE?
+Recorded tests are incredibly brittle, often so much so that it discourages new 
+testers from keeping them up to date.  Recording tests is not the answer.  A properly
+designed framework of tests is robust against simple changes to the system, so provides
+a buffer so maintaining tests doesn't take as much time or more than testing by hand.
+**** QA people aren't programmers; how are they going to work with a testing framework?
+Tests at this level should **NOT** be written like regular code.  The goal of a good
+framework is also to provide an easy to use DSL than does not require specialized 
+knowledge of programming languages or constructs.
+**** Avoid Complicated tests!!!
+This goes partially with the last point, and a DSL helps a lot with this, but in 
+general it should be a guiding purpose when creating tests that they are easy to 
+understand at a glance.  If you are the only person that can create tests for your 
+automation framework, then you just created a full-time job to add on to whatever 
+you were doing before.  Avoid making things overly complicated!
+** Approach of this course
+*** SUT - System Under Test - video examples will test functionality of WordPress
+*** If you want to set up a local copy, go to http://microsoft.com/web/wordpress/
+
+** Automation Framework
+*** You are building an application to test your application
+*** The framework will mold around the structure of your application
+
+Think of this as an augmentation on the simple PageObject pattern in this regard.
+The DSL and other features provide the ability for your QA team to do their job easily.
+
+*** Like most good modern applications, your testing framework will be layered
+**** The Tests works with the framework; the framework controls Selenium; Selenium the browser
+
+     Abstraction!  Simplifies the problem area and adds robustness.
+
+     Tests<->Framework<->Selenium<->Browser
+
+**** Page (PageObject) Pattern will be the way our tests interact with the framework
+
+     The trick is creating the pages at the proper level of abstraction.  The *trick* is that
+     methods should correspond to actions that your user can take.
+
+***** One page object is not necessarily a single HTML page
+
+      Do not limit yourself to a single PageObject only representing a single page.  You might
+      have an object that represents the Footer (all footers), and the menu, and then another
+      for a search page.  Multiple objects can represent the parts of the page, or one object
+      could represent a page and some closely related ones.
+
+***** Methods are **actions** that the user would take, **NOT** elements of the page
+
+      You might have a method for "deleteAPost()", definitely not for "checkBox()" and
+      "clickButton"
+
+**** The Framework is the middle layers
+***** Often includes *workflows* that provide ways to model actions bigger than a single page
+
+They will directly use PageObjects, such as the common navigation header/footer in addition to
+individual pages.  Often they will encapsulate the general purpose navigation methods to move
+about your site.
+
+***** Thinking about layers
+
+Workflows<->Pages<->Navigation&UI Utilities<->Selenium
+
+***** Follow a good organization in the framework (preferably well organized from start))
+
+Workflows
+Pages
+Navigation/UI Utilities
+Selenium
+
+***** Thinking about ease of use
+
+If it isn't easy to use, then nobody will use it.
+
+**** PageObject's encapsulate necessary calls to Selenium
+**** Selenium drives the browser
+
+** Some "do not's" from someone that has done this before
+*** 

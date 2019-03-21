@@ -1,0 +1,63 @@
+# Notes on bndtools
+# src: http://bndtools.org/tutorial.html
+
+* bnd.bnd
+** The project configuration and the bundle contents are defined by *bnd.bnd*
+** Depedencies
+*** Build-time dependencuies of the project are added to the **Build Path** panel of the bnd.bnd editor
+**** bnd.bnd->Build->Build Path, click the +, then double-click the dependency, OK
+** Export packages
+*** Bundles are always empty until we explicitly add contents to them
+*** Exports are added to the **Export Packages** panel of the bnd.bnd editor
+**** bnd.bnd->Contents->**Export Packages** panel, click the +, select the export and click OK
+** Multi-bundle projects
+*** You can create a multi-bundle project by right-clicking a project and choosing New->Bundle Descriptor
+*** The contents of each bundle is defined in a separate *.bnd* file
+*** The *bnd.bnd* file is still used for project-wide settings, such as build dependencies
+
+* Running an OSGi Framework
+** Run Descriptor (run.bndrun)
+*** Configuring and Using a Run Descriptor
+**** right click project and select New->Run Descriptor, the default is generally named *run*
+***** Apache Felix 4 with GoGo Shell is a reasonable default if you don't have another preference
+**** Double-click the run descriptor and click "Run OSGi" (top right corner) to load console
+***** *lb* will list bundles in the console
+***** *inspect capability service #* (replace # with a number) to list services published by bundle
+
+g! lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (4.4.1)
+    1|Active     |    1|Apache Felix Gogo Runtime (0.16.2)
+    2|Active     |    1|Apache Felix Gogo Shell (0.10.0)
+    3|Active     |    1|Apache Felix Gogo Command (0.14.0)
+    4|Active     |    1|org.example.impls.provider (0.0.0.201509281551)
+    5|Active     |    1|osgi.cmpn (5.0.0.201305092017)
+g! inspect capability service 4
+org.example.impls.provider [4] provides:
+----------------------------------------
+service [EMPTY]
+
+**** run.bndrun->**Run Requirements** panel lets you add bundle requirements with +
+***** The tutorial includes the bundle in question (org.example.impls.provider) and *osgi.cmpn*
+***** Checking *Auto-resolve on save* is a good idea
+*** Adding Commands to Felix GoGo Shell
+**** Edit your *bnd.bnd* file to include *org.apache.felix.gogo.runtime* as a build dependency
+***** double-click bnd.bnd, click + under build.path, choose org.apache.felix.gogo.runtime, OK
+*** Multiple bndrun files result in multiple run configs with different bundle sets, OSGi frameworks, etc
+*** bndtools uses OBR resolution to resolve a list of bundles to load including static dependencies
+* Bundle Symbolic Name (BSN) 
+The identity of the bundle (its BSN or "Bundle Symbolic Name" is controlled by the project name in Eclipse.
+In the tutorial, the BSN is equal to the project name
+
+* @Component annotation 
+@Component enables a bundle to use OSGI Declarative Services to declare the API implementation class.
+Instances of the class will be automatically created and registered witht he OSGi service registry.
+It is a built-time only annotation that does not pollute the class with runtime dependencies.
+
+* Testing
+** Unit tests can be ran as standard jUnit tests without an OSGI framework
+** OSGi jUnit tests are appropriate for integration
+
+* Tips
+** Be sure to save bnd.bnd and other config file edits after modification!

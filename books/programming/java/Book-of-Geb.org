@@ -1,0 +1,895 @@
+#+TITLE: Book Notes: Book of Geb
+#+AUTHOR: Lewis Cawthorne
+#+EMAIL: llc@acm.org
+#+OPTIONS: toc:3 num:nil
+
+* Introduction: Main selling points
+** Wraps WebDriver with convenience features, but still allows you to drop to that level if necessary
+** Easily select objects with $() and jQuery Sizzle syntax
+** Reduces noise and boiler plate by using Groovy's dynamism
+** Supports PageObject pattern and encourages good PageObject practices
+*** Why PageObject?
+If the structure of the page changes, we only have to change one object and
+not all of our tests.  Tests interactive with PageObjects that represent part
+or all of pages.
+** Example with PageObjects
+*** PageObject code for Google Search and to recognize Wikipedia home
+#+begin_src java
+import geb.Browser
+import geb.Page
+import geb.Module
+ 
+// modules are reusable fragments that can be used across pages that can be parameterised
+// here we are using a module to model the search function on the home and results pages
+class GoogleSearchModule extends Module {
+ 
+    // a parameterised value set when the module is included
+    def buttonValue
+ 
+    // the content DSL
+    static content = {
+ 
+        // name the search input control “field”, defining it with the jQuery like navigator
+        field { $("input", name: "q") }
+ 
+        // the search button declares that it takes us to the results page, and uses the 
+        // parameterised buttonValue to define itself
+        button(to: GoogleResultsPage) { 
+            $("input", value: buttonValue)
+        }
+    }
+}
+ 
+class GoogleHomePage extends Page {
+ 
+    // pages can define their location, either absolutely or relative to a base
+    static url = "http://google.com/ncr"
+ 
+    // “at checkers” allow verifying that the browser is at the expected page
+    static at = { title == "Google" }
+ 
+    static content = {
+        // include the previously defined module
+        search { module GoogleSearchModule, buttonValue: "Google Search" }
+    }
+}
+ 
+class GoogleResultsPage extends Page {
+    static at = { title.endsWith "Google Search" }
+    static content = {
+        // reuse our previously defined module
+        search { module GoogleSearchModule, buttonValue: "Search" }
+ 
+        // content definitions can compose and build from other definitions
+        results { $("li.g") }
+        result { i -> results[i] }
+        resultLink { i -> result(i).find("a.l") }
+        firstResultLink { resultLink(0) }
+    }
+}
+ 
+class WikipediaPage extends Page {
+    static at = { title == "Wikipedia" }
+}
+#+end_src
+*** Test using the PageObjects to ensure a Google of Wikipedia takes us to the right page as first result
+#+begin_src java
+Browser.drive {
+    to GoogleHomePage
+    assert at(GoogleHomePage)
+    search.field.value("wikipedia")
+    waitFor { at GoogleResultsPage }
+    assert firstResultLink.text() == "Wikipedia"
+    firstResultLink.click()
+    waitFor { at WikipediaPage }
+}
+#+end_src
+*** With Spock for BDD style testing
+#+begin_src java
+import geb.spock.GebSpec
+ 
+class GoogleWikipediaSpec extends GebSpec {
+ 
+    def "first result for wikipedia search should be wikipedia"() {
+        given:
+        to GoogleHomePage
+ 
+        expect:
+        at GoogleHomePage
+ 
+        when:
+        search.field.value("wikipedia")
+ 
+        then:
+        waitFor { at GoogleResultsPage }
+ 
+        and:
+        firstResultLink.text() == "Wikipedia"
+ 
+        when:
+        firstResultLink.click()
+ 
+        then:
+        waitFor { at WikipediaPage }
+    }
+}
+#+end_src
+** How to include geb in a project
+*** Maven
+#+begin_src xml
+<dependency>
+  <groupId>org.gebish</groupId>
+  <artifactId>geb-core</artifactId>
+  <version>0.10.0</version>
+</dependency>
+<dependency>
+  <groupId>org.seleniumhq.selenium</groupId>
+  <artifactId>selenium-firefox-driver</artifactId>
+  <version>2.43.1</version>
+</dependency>
+<dependency>
+  <groupId>org.seleniumhq.selenium</groupId>
+  <artifactId>selenium-support</artifactId>
+  <version>2.43.1</version>
+</dependency>
+#+end_src
+*** via @Grab
+#+begin_src java
+@Grapes([
+    @Grab("org.gebish:geb-core:0.10.0"),
+    @Grab("org.seleniumhq.selenium:selenium-firefox-driver:2.43.1"),
+    @Grab("org.seleniumhq.selenium:selenium-support:2.43.1")
+])
+import geb.Browser
+#+end_src
+* Working with the Browser
+** Creating a browser object
+*** Most integrations should do this for you, leaving you to manage the config.
+*** Default constructor loads settings via config mechanism.  Preferred way to create by hand.
+#+begin_src java
+import geb.Browser
+ 
+def browser = new Browser()
+#+end_src
+*** Overriding the browser used can be done via constructor
+#+begin_src java
+import geb.Browser
+import org.openqa.selenium.firefox.FirefoxDriver
+ 
+def browser = new Browser(driver: new FirefoxDriver())
+#+end_src
+*** Or a custom configuration can be used for more drastic changes
+#+begin_src java
+import geb.Browser
+import geb.Configuration
+import geb.ConfigurationLoader
+ 
+def loader = new ConfigurationLoader("a-custom-environment")
+def config = loader.conf
+def browser = new Browser(config)
+#+end_src
+** Driving the browser 
+*** Equivalent code using drive convenience function and not
+#+begin_src java
+Browser.drive {
+    go "signup"
+    $("h1").text() == "Signup Page"
+}
+#+end_src
+#+begin_src java
+def browser = new Browser()
+browser.go "signup"
+browser.$("h1").text() == "Signup Page"
+#+end_src
+*** drive returns a Browser object, so can chain addition commands
+#+begin_src java
+Browser.drive("http://myapp.com") {
+    …
+}.quit()
+#+end_src
+*** Difference between 'go' and 'at' for navigating (normally use 'at')
+#+begin_src groovy
+import geb.Page
+import geb.spock.GebSpec
+ 
+class GoogleSpec extends GebSpec {
+ 
+    def "go method does NOT set the page"() {
+        given:
+        Page oldPage = page
+ 
+        when:
+        go "http://google.com"
+ 
+        then:
+        oldPage == page
+        driver.currentUrl == "http://google.com"
+    }
+ 
+    def "to method does set the page and change the current url"() {
+        given:
+        Page oldPage = page
+ 
+        when:
+        to GoogleHomePage
+ 
+        then:
+        oldPage != page
+        driver.currentUrl == "http://google.com"
+    }
+}
+#+end_src
+*** baseUrl is a browser property, this code assumes Browser.baseUrl=="http://myapp.com"
+#+begin_src groovy
+Browser.drive {
+    // Go to the Base URL
+    go()
+ 
+    // Go to a URL relative to Base URL
+    go "signup"
+ 
+    // Go to a URL with request params, i.e http://myapp.com/signup?param1=value1&param2=value2     
+    go "signup", param1: "value1", param2: "value2"
+}
+#+end_src
+
+You may navigate to addresses such as /index.html from a baseUrl of "http://myapp.com" or to
+index.html from baseUrl of "http://myapp.com/"
+** Browser and PageObjects
+*** A Browser keeps an internal reference to a Page object it uses to resolve calls it cannot handle
+#+begin_src groovy
+// in the first assert, the internal page handles the $() function calls to resolve objects
+Browser.drive {
+    go "signup"   // navigate to baseUrl+signup
+ 
+    // The following two lines are equivalent
+    assert $("h1").text() == "Signup Page"
+    assert page.$("h1").text() == "Signup Page"
+}
+#+end_src
+*** All PageObjects ends Page to support this
+#+begin_src groovy
+class SignupPage extends Page {
+    static url = "signup"
+    static content = {
+        heading { $("h1").text() }
+    }
+}
+ 
+Browser.drive {
+    to SignupPage
+    assert heading == "Signup Page"
+}
+#+end_src
+*** Seeing what page you are 'at'
+#+begin_src groovy
+class SignupPage extends Page {
+    static at = {
+        $("h1").text() == "Signup Page"
+    }
+}
+ 
+Browser.drive {
+    to SignupPage
+}
+#+end_src
+**** It is best practice to not explicitly return in an at statement
+**** Lines are written so they can be autoconverted to 'assert' statements for immediate use
+**** There is also a 'via' method to work with redirects
+#+begin_src groovy
+Browser.drive {
+    via SecurePage
+    at AccessDeniedPage
+}
+#+end_src
+**** **Fail fast** with 'to' or 'via' followed by 'at' whenever the page changes!
+It’s always a good idea to either use just the to() method or the via() method followed by an at() check whenever the page changes in order to fail fast. Otherwise, subsequent steps may fail in harder to diagnose ways due to the content not matching what is expected and content lookups having strange results.
+**** The 'at' method of the new page will update the Browser's page reference when navigating
+#+begin_src groovy
+class LoginPage extends Page {
+    static url = "/login"
+    static content = {
+        loginButton(to: AdminPage) { $("input", type: "submit", name: "login") }
+    }
+}
+ 
+class AdminPage extends Page {
+    static at = {
+        assert $("h1").text() == "Admin Page"
+    }
+}
+ 
+Browser.drive {
+    to LoginPage
+    loginButton.click()
+    at AdminPage
+}
+#+end_src
+** Other topics: Page change listening, multiple tabs & windows, quitting browser
+*** Page change listening
+#+begin_src groovy
+import geb.PageChangeListener
+ 
+class EchoingPageChangeListener implements PageChangeListener {
+    void pageWillChange(Browser browser, Page oldPage, Page newPage) {
+        println "browser '$browser' changing page from '$oldPage' to '$newPage'"
+    }
+}
+ 
+def browser = new Browser()
+def listener = new EchoingPageChangeListener()
+ 
+browser.registerPageChangeListener(listener)
+#+end_src
+"browser.removePageChangeListener(listener)" will remove it later.
+*** Multiple tabs and windows
+See http://www.gebish.org/manual/current/browser.html section 2.6
+
+Summary: withWindow() and withNewWindow() executes code and tests in context of other windows;
+getCurrentWindow() and getAvailableWindows() can find window names, but are not preferred
+
+#+begin_src groovy
+// example to assert something about the window with title "Geb - Very Groovy Browser Automation"
+$('a').click()
+withWindow({ title == 'Geb - Very Groovy Browser Automation' }) {
+    assert $('#slogan').text() == 'very groovy browser automation… web testing, screen scraping and more'
+}
+#+end_src
+*** Quit the browser with quit() or close()
+* Interacting with content
+** $(<<css selector>>, <<index or range>>, <<attribute / text matchers>>)  // find is a $ alias
+*** Some valid examples
+$("h1", 2, class: "heading") // the third h1 element with the class matching exactly "heading"
+$("div p", 0) "
+$("div p", title: "something")
+$(0)
+$(title: "something")
+*** CSS Selectors
+**** Ex: $("div.some-class p:first[title='something']")
+**** Anything the underlying WebDriver can match (see seleniumhq if needing clarification)
+*** Indexes and Ranges
+**** Indexes are numbered starting at 0
+**** Indexes can be an inclusive range like 0..1 matching 0 or 1.  
+<p>a</p><p>b</p><p>c</p>
+$("p", 0).text()=="a"
+$("p", 2).text()=="c"
+$("p", 0..1).text()==["a","b"]
+$("p", 1..2).text()==["b","c"]
+*** Attribute and Text Matching
+**** Matches against element attributes, including 'text' attribute via Groovy's named parameter syntax
+Consider:
+  <p attr1="a" attr2="b">p1</p>
+  <p attr1="a" attr2="c">p2</p>
+Then:
+  $("p", attr1: "a").size() == 2   // 2 p elements with attr1=="a"
+  $("p", attr2: "c").size() == 1   // 1 p element with attr2=="c"
+  $("p", text: "p1").size() == 1   // 1 p element with text=="p1"
+**** Multiple matchers are AND'ed together
+With example from last bullet:
+  $("p", attr1:"a", attr2: "b")==1   // 1 p element with attr1=="a" && attr2=="c"
+  $("p", text:"p1", attr1: "a")==1   // 1 p element with text=="p1" && attr1=="a"
+**** Pattern matching
+****** Regex via ~/regex/   (Ex: $("p", text: ~/p./) matches paragraphs with text p1 and p2, but not p10 or j7.
+****** startsWith, or the case insensitive version iStartsWith, like $("p", text: startsWith("p")
+****** notStartsWith, iNotStartsWith - any value that doesn't start with the given value
+****** contains,  iContains, notContains, iNotContains
+****** endsWith, iEndsWith, notEndsWIth, iNotEndsWith
+****** containsWord, iContainsWord - matches must be surrounded by whitespace or beginning/end of value
+****** notContainsWord, iNotContainsWord
+****** the methods can take a string or pattern
+******* $("p", text: contains(~/\d/)) would match anything containing a digit
+******* $("p", text: contains("the")) and $("p", text: contains(~/the/) are equiv
+*** $ returns a Geb.navigator.Navigator
+** More than you ever wanted to know about Navigators
+*** Navigators are iterable, and work with various Groovy functions that work on Iterables
+<p>1</p><p>2</p>
+
+$("p").max { it.text() }.text() == "2"
+$("p")*.text().max() =="2"
+*** When iterating over a navigator, iterated content is exactly matched content and not children
+*** Finding & Filtering
+**** Use *$* or *find* to find descendants using same arguments as *$* function
+**** Use *filter*, *has*, or *not* to reduce matched content via a selector string, a predicates map, or both
+**** Examples
+Given html:
+#+begin_src html
+<div class="a">
+  <p class="b">geb</p>
+</div>
+<div class="b">
+  <input type="text"/>
+</div>
+#+end_src
+Then:
+#+begin_src groovy
+$("div").find(".b")   // select p.b (item of class b within a div)
+$("div").$(".b")      // select p.b (same)
+$("div").filter(".b") // select div.b (of the divs, the one with class b)
+$(".b").not("p")      // select div.b (of the items of class b, the one not a p elt)
+$(".b").has("p")      // select first div (the div having a p within)
+$("div").has("input", type: "text")  // the second div (div that has a text input within)
+#+end_src
+**** Finding & Filtering methods return a new navigator
+*** Traversing
+**** Navigators have methods to select content around them.
+**** The methods are: previous(), prevAll(), next(), nextAll(), parent(), siblings(), children(), parents()
+**** Examples these in use
+#+begin_src html
+<div class="a">
+  <div class="b">
+    <p class="c"></p>
+    <p class="d"></p>
+    <p class="e"></p>
+  </div>
+  <div class="f"></div>
+</div>
+#+end_src
+#+begin_src groovy
+$("p.d").previous()   // p.c
+$("p.e").prevAll()    // p.c & p.d
+$("p.d").next()       // p.e
+$("p.c").nextAll()    // p.d & p.e
+$("p.d").parent()     // div.b
+$("p.c").sibling()    // p.d & p.e
+$("div.a").children() // div.b & div.f
+// these also take arguments; the following all select p.d
+$("p").next(".d")
+$("p").next(class: "d")
+$("p").next("p", class: "d")
+// the following all select div.b
+$("p").parent(".b")
+$("p").parent(class: "b")
+$("p").parent("div", class: "b")
+#+end_src
+**** The *closest* method selects the first ancestors of the current elements that match a selector and requires an arg
+#+begin_src html
+<div class="a">
+  <div class="b">
+    <p></p>
+  </div>
+</div>
+#+end_src
+#+begin_src groovy
+// these all select div.a
+$("p").closest(".a")
+$("p").closest(class: "a")
+$("p").closest("div", class: "a")
+#+end_src
+**** Methods without "...All" automatically select first match
+**** nextUntil, prevUntil, and parentsuntil return all nodes along the relevant axis until a condition
+#+begin_src html
+<div class="a"></div>
+<div class="b"></div>
+<div class="c"></div>
+<div class="d"></div>
+#+end_src
+#+begin_src groovy
+// the following select div.b and div.c
+$(".a").nextUntil(".d")
+$(".a").nextUntil(class: "d")
+$(".a").nextUntil("div", class: "d")
+#+end_src
+*** Composition
+**** You can compose navigators of other navigator objects if the content cannot be selected in one query
+**** $($("div.a"), $("div.d"))  // returns one navigator of all class a or class d divs.
+*** Clicking
+**** Navigator objects implement the click() method to click **the first item** the navigator matches
+**** click(Class) and click(List<Class>) combines a click with a class change of the browser page object
+***** $("input.loginButton").click(HomePage)   // click login and change to homePage class
+***** $("input.loginButton").click( [LoginPage, HomePage] )  // click may fail or succeed, changing to one of ___Page
+*** Determining Visibility
+**** navigator objects have a displayed property to test if they are visible to user
+**** a navigator that doesn't match anything always has displayed value of false
+*** Size and Location
+**** Accessed via properties: height, width, x, y - all measured in pixels; x,y from top left point of page or frame
+**** Properties on first matched element by navigator unless spread operator (*) is used
+***** Example with spread
+#+begin_src groovy
+// without spread
+$("div").height == 20   // height of first div on the page is 20 pixels
+// if we had two div's on page, the following could be true
+$("div")*.height==[20,30]
+$("div")*.width==[40,50]
+$("div")*.x==[60,70]
+$("div")*.y==[80,90]
+#+end_src
+*** Accessing tag name, attributes, text and classes
+**** Methods: tag(), text(), @attribute, classes() all work on **first** content matched by navigator
+***** classes() returns a list of unique class names sorted alphabetically; the other three a single string value
+**** Use the Groovy spread operator to work with multiple matches
+**** Code/HTML example for both
+#+begin_src html
+<p title="a" class="a para">a</p>
+<p title="b" class="b para">b</p>
+<p title="c" class="c para">c</p>
+#+end_src
+#+begin_src groovy
+$("p").text() == "a"
+$("p").tag()  == "p"
+$("p").@title == "a"
+$("p").classes() == ["a", "para"]
+// with spread operator
+$("p")*.text() == ["a", "b", "c"]
+$("p")*.tag()  == ["p", "p", "p"]  // notice not unique
+$("p")*.@title == ["a", "b", "c"]
+$("p")*.classes() == [["a","para"],["b","para"],["c","para"]]  // list of lists
+#+end_src
+*** Css properties
+**** css() method gives a way to access css properties of a navigator
+For: <div style="float: left">text</div>
+
+$("div").css("float")=="left"
+*** Sending keystrokes
+**** The leftShift operator *<<* is used as a shortcut for the *sendKeys()* method of WebDriver
+**** i.e.  $("div") << "abc"
+**** How the content responds to keystrokes depends on what it is.
+**** Use the WebDriver *Keys* enumeration to send non-textual characters
+#+begin_src groovy
+import org.openqa.selenium.Keys
+
+$("input", name: "firstName") << "Bo"
+$("input", name: "firstName") << Keys.ESCAPE
+$("input", name: "firstName") << Keys.chord(Keys.CONTROL, "c")
+#+end_src
+**** Full *Keys* at  https://selenium.googlecode.com/svn/trunk/docs/api/java/org/openqa/selenium/Keys.html
+*** Accessing input values
+**** *value()* will return the value of the first matched element in the Navigator
+**** *value(value)* will set the current value of **all** elements in the Navigator
+*** Form control
+**** Shortcuts for interacting with forms described at http://www.gebish.org/manual/current/navigator.html#form_control_shortcuts
+*** Complex interactions
+**** WebElement firstElement(), WebElement lastElement(), and Collection<WebElement> allElements()
+***** These return the WebElement (or Elements for allElements() from the Navigator to use with Selenium API directly
+**** Interact Closures (multi-step actions without using Selenium API)
+#+begin_src groovy
+import org.openqa.selenium.Keys
+
+// shift double click the class='clicky' list item
+interact {
+    keyDown(Keys.SHIFT)
+    doubleClick($('li.clicky'))
+    keyUp(Keys.SHIFT)
+}
+// control click several items in a multiselect box
+interact {
+    keyDown(Keys.CONTROL)
+    click($('ul.multiselect li', text: 'Order 1'))
+    click($('ul.multiselect li', text: 'Order 2'))
+    click($('ul.multiselect li', text: 'Order 3'))
+    keyUp(Keys.CONTROL)
+}
+// drag and drop with closure
+interact {
+    clickAndHold($('#element'))
+    moveByOffset(400, -150)
+    release()
+}
+// drag and drop with a convenience method (no closure required for drag and drop!)
+interact {
+    dragAndDropBy($('#element'), 400, -150)
+}
+#+end_src
+* Dealing with Pages and the PageObject pattern
+** The Page Object pattern allows us to apply modularity, reuse and encapsulation to our tests
+** Keep your tests DRY - don't repeat yourself
+** All page objects *must* inherit from **Page**
+** The Content DSL
+*** Geb features a DSL to define page content in a concise but flexible templated fashion
+*** Structure to the content DSL:  <<name>> { <<definition>> } where definition is Groovy code
+**** Simple example of matching a div
+#+begin_src html
+<div id="a">a</div>
+#+end_src
+#+begin_src groovy
+class ExamplePage extends Page {
+  static content = {
+    theDiv { $('div', id: 'a') {
+  }
+}
+#+end_src
+This could be used like
+#+begin_src groovy
+Browser.drive {
+  to ExamplePage
+  assert theDiv.text() == "a"
+}
+#+end_src
+The browser delegates what it doesn't know to the current page, which then finds the defined
+content and returns the property asked for from the text() method.
+**** The <<definition>> code is evaluated against the page instance, and can return anything
+**** Normally the <<definition>> code returns a navigator for the appropriate page element
+*** Template Options: <<name>>(<<options map>>) { <<definition>> }
+theDiv(cache: false, required: false) { $("div", id: "a") }
+**** *required*  Default: true.  Throws **RequiredPageContentNotPresent** if content isn't matched
+#+begin_src groovy
+class ExamplePage extends Page {
+    static content = {
+        theDiv { $('div', id: "b") }
+    }
+}
+ 
+Browser.drive {
+    to ExamplePage
+    def thrown = false
+    try {
+        theDiv
+    } catch (RequiredPageContentNotPresent e) {
+        thrown = true
+    }
+    assert thrown
+}
+#+end_src
+***** Only applies if definition returns a Navigator, ignored otherwise
+**** *cache*  Default: false.  A performance optimization for stable content.
+**** *to*  Default: null.  Allows definition of page browser will be sent to if element is clicked.
+#+begin_src groovy
+class ExamplePage extends Page {
+    static content = {
+        helpLink(to: HelpPage) { $("a", text: "Help") }
+    }
+}
+ 
+class HelpPage extends Page {}
+ 
+Browser.drive {
+    to ExamplePage
+    helpLink.click()
+    assert page.class == HelpPage
+}
+#+end_src
+***** Having a *to* causes the Browser's Page object to be updated and it's *at* claused checked
+**** *wait* Default: false.
+***** Specifies if Geb should wait some time for content to appear before throwing 'RequiredPageContentNotPresent'
+***** Four possible values
+****** true - wait for the content using default wait configuration
+****** a string - wait for content using wait preset named **string** from the configuration
+****** a number - wait for the content for **number** seconds, using the default retry interval from the configuration
+****** a 2 element list of numbers - wait **first number** seconds, retrying every **second number** seconds
+#+begin_src groovy
+class DynamicPage extends Page {
+    static content = {
+        dynamicallyAdded(wait: true) { $("p.dynamic") }
+    }
+}
+ 
+Browser.drive {
+    to DynamicPage
+    assert dynamicallyAdded.text() == "I'm here now"
+}
+#+end_src
+Which is equivalent to this example discussed later (Chapter 9)
+#+begin_src groovy
+class DynamicPage extends Page {
+    static content = {
+        dynamicallyAdded(required: false) { $("p.dynamic") }
+    }
+}
+ 
+Browser.drive {
+    to DynamicPage
+    assert waitFor { dynamicallyAdded }.text() == "I'm here now"
+}
+#+end_src
+A general way to wait without exceptions is
+#+begin_src groovy
+static content = {
+    dynamicallyAdded(wait: true, required: false) { $("p.dynamic") }
+}
+#+end_src
+***** A 'WaitTimeoutException' is thrown if wait condition times out
+**** *toWait* Default: false, same values as *wait* above, but applies to the *to* page change instead
+#+begin_src groovy
+class ExamplePage extends Page {
+    static content = {
+        helpButton(to: HelpPage, toWait: true) { $("button#help") } //page change is asynchronous, e.g. an ajax call is involved
+    }
+}
+ 
+class HelpPage extends Page {
+    static at = { $("#help-contents") }
+}
+ 
+Browser.drive {
+    to ExamplePage
+    helpButton.click()
+    assert page.class == HelpPage
+}
+#+end_src
+**** *page*  Default: null.  Allows defining a page the browser will use if called using withFrame() call.
+#+begin_src html
+<html>
+    <body>
+        <frame id="frame-id" src="frame.html"></frame>
+    <body>
+</html>
+#+end_src
+…and the code for frame.html…
+#+begin_src html
+<html>
+    <body>
+        <span>frame text</span>
+    </body>
+</html>
+#+end_src
+…the following will pass…
+#+begin_src groovy
+class PageWithFrame extends Page {
+    static content = {
+        myFrame(page: FrameDescribingPage) { $('#frame-id') }
+    }
+}
+ 
+class FrameDescribingPage extends Page {
+    static content = {
+        frameContentsText { $('span').text() }
+    }
+}
+ 
+to PageWithFrame
+withFrame(myFrame) {
+    assert frameContentsText == 'frame text'
+}
+#+end_src
+**** *aliases* You can alias previously defined content like someButtonAnotherName(aliases: "someButton")
+** "At" verification
+*** *at* defines a way to verify we are at the page the object represents
+#+begin_src groovy
+class ExamplePage extends Page {
+    static at = { $("h1").text() == "Example" }
+}
+#+end_src
+*** On Failure the *at* closure can return false or throw AssertionError via assert
+*** The *at* verification process implicitly asserts: always return true or throws AssertionError
+*** The *atCheckWaiting* configuration option allows for at's to be wrapped with waitFor by defaul
+** Pages have a static *url* property used by the browser *to()* method
+* Modules
+** Modules are re-usable content definitions
+** They are used to model UI widgets or more complex UI elements
+** Modules are like pages, but they extend Module instead of Page
+#+begin_src groovy
+class ExampleModule extends Module {
+    static content = {
+        button { $("input", type: "submit") }
+    }
+}
+#+end_src
+Or parameterized
+#+begin_src groovy
+class ExampleModule extends Module {
+    def buttonName
+    static content = {
+        button { $("input", type: "submit", name: buttonName) }
+    }
+}
+#+end_src
+** Modules can be included within a Page content definition via the *module* method
+#+begin_src groovy
+class ExamplePage extends Page {
+    static content = {
+        theModule { module ExampleModule }
+    }
+}
+#+end_src
+Or
+#+begin_src groovy
+class ExamplePage extends Page {
+    static content = {
+        theModule { name -> module ExampleModule, buttonName: name }
+    }
+}
+#+end_src
+** Then used like other items on the page
+#+begin_src groovy
+Browser.drive {
+    to ExamplePage
+    theModule.button.click()
+}
+#+end_src
+And for parameterized
+#+begin_src groovy
+Browser.drive {
+    to ExamplePage
+    theModule("something").button.click()
+}
+#+end_src
+** Modules can also include other modules
+#+begin_src groovy
+class ExampleModule extends Module {
+    static content = {
+        innerModule { module InnerModule }
+    }
+}
+ 
+class InnerModule extends Module {
+    static content = {
+        button { $("input", type: "submit") }
+    }
+}
+ 
+class ExamplePage extends Page {
+    static content = {
+        theModule { module ExampleModule }
+    }
+}
+ 
+Browser.drive {
+    theModule.innerModule.button.click()
+}
+#+end_src
+** Modules can be reused on multiple pages or multiple times in a single page
+#+begin_src groovy
+class CartInfoModule extends Module {
+    static content = {
+        section { $("div.cart-info") }
+        itemCount { section.find("span.item-count").toInteger() }
+        totalCost { section.find("span.total-cost").toDouble() }
+    }
+}
+ 
+class HomePage extends Page {
+    static content = {
+        cartInfo { module CartInfoModule }
+    }
+}
+ 
+class OtherPage extends Page {
+    static content = {
+        cartInfo { module CartInfoModule }
+    }
+}
+#+end_src
+* Configuration
+** With maven it is best to put your GebConfig.groovy in your test-resources folder
+** The geb.env system property can be used for multiple system dependent configs
+#+begin_src groovy
+import org.openqa.selenium.firefox.FirefoxDriver
+ 
+import org.openqa.selenium.remote.DesiredCapabilities
+import org.openqa.selenium.remote.RemoteWebDriver
+ 
+// default is to use firefox
+driver = { new FirefoxDriver() }
+ 
+environments {
+    // when system property 'geb.env' is set to 'win-ie' use a remote IE driver
+    'win-ie' {
+        driver = {
+            new RemoteWebDriver(new URL("http://windows.ci-server.local"), DesiredCapabilities.internetExplorer())
+        }
+    }
+}
+#+end_src
+** Configuring waiting timeouts and retry behavior
+#+begin_src groovy
+waiting {
+    timeout = 10
+    retryInterval = 0.5
+}
+#+end_src
+Both values are optional and in seconds. If unspecified, the values of 5 for timeout and 0.1 for retryInterval.
+*** To make *at* use waitFor calls, set **atCheckWaiting = true**
+* Handling Dynamic Content
+** You generally need to set dynamic content as not required in the content def
+#+begin_src groovy
+import geb.*
+ 
+class DynamicPage extends Page {
+    static content = {
+        theButton { $("input", value: "Make Request") }
+        theResultDiv(required: false) { $("div#result") }
+    }
+ 
+    def makeRequest() {
+        theButton.click()
+        waitFor { theResultDiv.present }
+    }
+}
+ 
+Browser.drive {
+    to DynamicPage
+    makeRequest()
+    assert theResultDiv.text() == "The Result"
+}
+#+end_src
+
+

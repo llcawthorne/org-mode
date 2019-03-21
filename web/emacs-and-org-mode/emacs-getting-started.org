@@ -1,0 +1,63 @@
+
+* C-/: undo
+* Buffers and Files
+** In Emacs, editing takes place in buffers
+** To switch to a buffer, use C-x b and enter the buffer name in the minibuffer
+** To create a new buffer, use C-x b and enter a new buffer name
+** To open a file, use C-x C-f and navigate to the file.
+** To save a buffer to a file, use C-x C-s
+** To create a new file, use C-x C-f and enter the new file's path
+* Movement Keys
+** C-a: move to beginning of line
+** M-m: move to first non-whitespace character on the line
+** C-e: move to end of line
+** C-f: move forward one character
+** C-b: move backward one character
+** M-f: move forward one word
+** M-b: move backward one word
+** C-s: Regex search text in current buffer.  C-s again to move to next match
+** C-r: Same as C-s, but in reverse
+** M-<: Move to beginning of buffer
+** M->: Move to end of buffer
+** M-g g: go to line
+* Killing and the Kill Ring
+** C-w: kill region
+** M-w: copy region to kill ring
+** C-y: yank
+** M-y: cycle through kill ring after yanking
+** M-d: kill word
+** C-k: kill line
+* Editing and Help
+** Tab: indent line
+** C-j: new line and indent, equivalent to enter then tab
+** M-/: hippie expand; cycles through possible expansions of text before point
+** M-\: delete all spaces and tabs around point
+** C-g: cancel whatever you're currently doing
+** C-/: undo
+** C-spc: sets mark so you can move while highlighting a region
+** C-h k key-binding: describe function bound to key-binding
+** C-h f: describe function
+* Working with Frames and Windows
+** C-x o: switch cursor to other window
+** C-x 1: delete all other windows, leaving you with current window in the frame
+** C-x 2: split frame above and below
+** C-x 3: split frame side by side
+** C-x 0: Delete current window
+* Emacs with Clojure
+** M-x cider-jack-in: start repl
+** C-x C-e: evaluate an expression
+** C-c M-n: sets namespace of repl to namespace in top of current file
+** C-c C-k: compile current file within the REPL
+** C-up/C-down: cycle through history in REPL
+** C-enter: close current parens and eval expression
+** C-c C-d C-d: display documentation for the symbol under point
+** M-.: navigate to the source code for the symbol under point
+** M-,: return to original buffer and position
+** C-c C-d C-a: search for arbitrary text accross function names and documentation
+* Paredit
+** M-(: wrap whatever is under point with parens
+** C-right: Slurp item to right into current parens
+** C-left: barf out last item in current parens
+** C-M-f: jump to closing parens (from opening parens)
+** C-M-b: jump to opening parens (from closing parens)
+** M-x paredit-mode: toggle off paredit mode

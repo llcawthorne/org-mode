@@ -1,0 +1,191 @@
+#+TITLE: Video Notes: Creating an Automated Testing Framework with Selenium (Pluralsight)
+#+AUTHOR: Lewis Cawthorne
+#+EMAIL: llc@acm.org
+#+OPTIONS: toc:3 num:nil
+
+
+* Goal
+
+  Create a robust, maintainable automation framework using Selenium
+  that is simple enough to use to be accessible to QA personnel.
+
+* Big Idea
+
+  A developer can design an automation framework around an application
+  that a QA personnel can use and perform minor changes without
+  indepth knowledge of code and without breaking it on every change.
+
+* Designing the Architecture
+** Our role as developers
+
+   As developers we write code everyday for people to use that are
+   less technically astute than our QA personnel.  In less work we should
+   be able to write a specialized framework that they can leverage to do
+   their job more quickly.
+
+** Types of Testing
+*** Unit Testing
+
+Commonly mocks out parts of the code to test specific classes and constructs.
+Requires in-depth knowledge of portions the code.
+
+*** Integration Testing
+
+Tests everything working together, but still requires knowledge of the code and
+writing code to make it work.  Very valuable, but not something you would expect
+a non-developer to help perform.
+
+*** Black Box Automated Testing; the focus of this course
+
+With black box testing, you are treating the code as a black box, so you don't need
+any knowledge of the code.  You test from the user's perspective.  It is harder to
+automate than at the lower levels, partially because the people doing it are often
+not programmers.  This is why we want to design a framework to 	assist.
+
+** Why a framework when we can just let the QA people do it by hand?  
+*** Benefits
+**** Regression Testing
+
+One special result of the rapid change in the agile model is that we need to make
+sure we don't break things that used to work.  Unit and Integration tests do this
+at the code level which hopefully carries upwards, but where it really matters is 
+at the USER level.  
+
+**** Absolute Requirements
+If we create automated tests that *clearly* define what a pass and fail is, we have
+can use them as a clear idea of when we have completed a goal; especially if you 
+work out the requirements with someone with business knowledge.
+
+**** Leverage
+At each level of testing, we have to write less code to exercise more of the system.
+For example, it takes the most code to write unit tests; often more than the amount of 
+code it is testing (but this pays off in finetuning catching where errors are, so don't 
+writing unit tests!).  It takes less code often in integration tests, and it tends
+to take the least in black box automated systems; assuming you design your solution 
+well up front.
+*** Problems to avoid
+**** Why not use one of those "recorded tests" like Vaadin Test Bench or SeleniumIDE?
+Recorded tests are incredibly brittle, often so much so that it discourages new 
+testers from keeping them up to date.  Recording tests is not the answer.  A properly
+designed framework of tests is robust against simple changes to the system, so provides
+a buffer so maintaining tests doesn't take as much time or more than testing by hand.
+**** QA people aren't programmers; how are they going to work with a testing framework?
+Tests at this level should **NOT** be written like regular code.  The goal of a good
+framework is also to provide an easy to use DSL than does not require specialized 
+knowledge of programming languages or constructs.
+**** Avoid Complicated tests!!!
+This goes partially with the last point, and a DSL helps a lot with this, but in 
+general it should be a guiding purpose when creating tests that they are easy to 
+understand at a glance.  If you are the only person that can create tests for your 
+automation framework, then you just created a full-time job to add on to whatever 
+you were doing before.  Avoid making things overly complicated!
+** Approach of this course
+*** SUT - System Under Test - video examples will test functionality of WordPress
+*** If you want to set up a local copy, go to http://microsoft.com/web/wordpress/
+
+** Automation Framework
+*** You are building an application to test your application
+*** The framework will mold around the structure of your application
+
+Think of this as an augmentation on the simple PageObject pattern in this regard.
+The DSL and other features provide the ability for your QA team to do their job easily.
+
+*** Like most good modern applications, your testing framework will be layered
+**** The Tests works with the framework; the framework controls Selenium; Selenium the browser
+
+     Abstraction!  Simplifies the problem area and adds robustness.
+
+     Tests<->Framework<->Selenium<->Browser
+
+**** Page (PageObject) Pattern will be the way our tests interact with the framework
+
+     The trick is creating the pages at the proper level of abstraction.  The *trick* is that
+     methods should correspond to actions that your user can take.
+
+***** One page object is not necessarily a single HTML page
+
+      Do not limit yourself to a single PageObject only representing a single page.  You might
+      have an object that represents the Footer (all footers), and the menu, and then another
+      for a search page.  Multiple objects can represent the parts of the page, or one object
+      could represent a page and some closely related ones.
+
+***** Methods are **actions** that the user would take, **NOT** elements of the page
+
+      You might have a method for "deleteAPost()", definitely not for "checkBox()" and
+      "clickButton"
+
+**** The Framework is the middle layers
+***** Often includes *workflows* that provide ways to model actions bigger than a single page
+
+They will directly use PageObjects, such as the common navigation header/footer in addition to
+individual pages.  Often they will encapsulate the general purpose navigation methods to move
+about your site.
+
+***** Thinking about layers
+
+Workflows<->Pages<->Navigation&UI Utilities<->Selenium
+
+***** Follow a good organization in the framework (preferably well organized from start))
+
+Workflows
+Pages
+Navigation/UI Utilities
+Selenium
+
+***** Thinking about ease of use
+
+If it isn't easy to use, then nobody will use it.
+
+**** PageObject's encapsulate necessary calls to Selenium
+**** Selenium drives the browser
+
+** Some useful guidelines/rules to follow
+*** Never
+**** NEVER require tests to declare variables
+**** NEVER require test to use the "new" keyword or create new objects
+***** Makes tests easier to use (esp. for non-programmers)
+**** NEVER require the tests to manage state on their own
+***** Stops tests from becoming complicated and difficult to follow
+***** The framework should keep track of any necessary state
+**** NEVER expose the browser or DOM to the tests or let them manipulate it directly
+***** Interact through Page Objects.  That way when the page structure changes, you update the Page Object, not the tests!
+*** Always
+**** ALWAYS reduce the number of parameters for API calls when possible
+***** Reduces complexity
+***** Good programming principle in general
+**** ALWAYS use default values instead of requiring parameters when possible
+***** Convention over configuration
+***** Helps support the first ALWAYS
+*** Prefer
+**** PREFER to make the API easier to use over making internals of API less complex
+***** Another general good practice
+***** You'll write the API once, you'll write LOTS AND LOTS of tests (hopefully!)
+***** Easier to write tests are more likely to be written & kept up to date
+**** PREFER using enumerations and constants to requiring the test to pass primitive
+***** Reduce chance for error / indecision over "what does this want here?"
+** Actually building tests should drive framework creation around a working system
+You should consider these good design principles in advance, but don't wait to get tests started!  You'll be able to better consider special concerns of your system once you get in there and start writing tests.  We'll start with "Smoke tests", because they tend to point the way to possible issues.
+** Consider how you will run the tests
+*** Black box tests are run both locally on dev stations and on a central build box
+*** If the tests aren't easy to run, they won't be run!
+*** xUnit is the most common choice (It's not just for unit tests!)
+* Creating Basic Smoke Tests
+** Smoke tests
+*** PRO: Smoke tests are short, simple tests that determine major problems with the system
+*** PRO: They are the best BANG for your buck
+*** PRO: They exercise the most code with the least code, creating immediate value
+*** PRO: They will build a basic skeleton of our testing framework
+*** CON: They clearly aren't as thorough as more indepth testing
+** Good basic smoke tests demonstrated in tutorial Chapter 2
+*** Can login
+**** A great place to start, because you're going to need to anyway
+***** The steps for Wordpress
+***** Fill in username
+***** Fill in password
+***** Click Login button
+***** Make sure we are at admin page (aka login worked)
+*** Can create a new post
+*** Can edit an existing page
+** To be continued!!!
+* Building Out The Framework
+* Best Practices and Tips
