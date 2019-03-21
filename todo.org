@@ -1,0 +1,23 @@
+# -*- Mode: org -*-
+#+STARTUP: showall indent hidestars logreschedule
+#+TODO: TODO(t) INPR(i) WAIT(w) | DONE(d!) 
+#+TAGS: { @home(h) @school(s) } research(r) teaching(t) class(c)
+* Keystroke Reminders
+'C-c C-t' to quickly set status (or Shift+arrow to cycle)
+'C-c C-q" to quickly set tags
+'M-arrow' to move tasks up or down (or indent left/right)
+'C-c C-s' schedules an item
+'C-u C-c C-l' to link to a file
+'M-x org-agenda' to view agenda (then 'f' and 'b' for forward/back)
+In agenda, S-left or S-right move the schedule earlier or later
+* Class Tasks (relate to courses I am taking, not teaching)
+#+CATEGORY: Class
+** Introduction to Mathematical Thinking
+*** [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
+*** [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
+* Personal Tasks
+#+CATEGORY: Personal
+** TODO Find out more about [[http://orgmode.org/manual/Handling-links.html][handling links in org-mode]]
+* Someday / Maybe
+#+CATEGORY: Someday
+

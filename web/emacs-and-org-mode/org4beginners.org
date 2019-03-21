@@ -1,0 +1,127 @@
+# -*- mode: org -*-
+#+STARTUP: showall
+#+TODO: TODO IN-PROGRESS WAITING DONE
+
+* Summary of org4beginners tutorial
+  http://orgmode.org/worg/org-tutorials/org4beginners.html
+
+** Minimum emacs knowledge
+*** M is Alt, C is Ctrl, S is Shift
+*** C-x f means hold Control and press x, release both, press f
+*** Aquamacs config file: ~/Library/Preferences/Aquamacs Emacs/Preferences.el
+*** C-x s :: save file
+*** C-x f :: open document
+*** MY PROJECT -*- mode: org -*-
+**** Standard to include at top so .org file extension not necessary
+**** Those are minuses (-) not underscores
+*** M-x org-mode
+** Lists and Notes
+*** TAB / S-TAB :: (un)fold
+*** M-up/down :: move a headline up or down
+*** M-left/down :: promote or demote a headline
+*** M-RET :: insert a new headline
+*** C-x s :: save a file
+*** C-h t :: Emacs tutorial
+*** #+STARTUP: showall :: put at top to showall on file open
+*** Text formatting
+
+  You can make words *bold*, /italic/, _underlined_, =code= and ~verbatim~, 
+  and, if you must, +strike-through+.
+*** Ordered and unordered list
+    1. Ordered lists start with a number and a dot
+    2. Unordered lists start with -, +, or \*
+    3. Lists are cool.  M-RET continues them also
+    4. And they can be unnumbered or sublists
+       + This is an unnumbered sublist
+       + M-RET does smart continuation
+    5. M-Left/Right changes level too, like backing off here
+    6. More information in
+       + Screencast:
+         http://bzg.fr/org-playing-with-lists-screencast.html
+       + Org-mode Manual:
+	http://orgmode.org/manual/Plain-lists.html#Plain-lists
+    7. C-h t :: Emacs tutorial
+** Working with TODO items
+*** Add TODO to the beginning of any line (after ***) to make it a TODO item
+**** TODO this is a fine example of a TODO
+*** S-left/right :: cycle workflow
+**** #+TODO: TODO IN-PROGRESS WAITING DONE
+     Change workflow from default "", TODO, DONE by putting this in doc
+***** Do this for all org files on a more permanent basis in Preferences.el
+      (setq org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
+*** C-c / t :: show todos in current document
+**** TODO C-c C-v in tutorial dDoesn't work for me...
+**** However, C-c / t shows todo's in current document
+**** C-c / t :: show todos in current document
+     Note that is C-c, then '/', then a 't' (for TODO!)
+**** 
+** Agendas
+*** C-c a :: agenda  // doesn't work for me; can use menu or 'M-x org-agenda'
+*** C-c [ :: add document to the list of agenda files
+*** C-c ] :: remove document from the list of agenda files
+*** C-c . :: add date
+**** S-left/right/up/down moves in calendar 
+*** C-u C-c . :: add time and date
+**** TODO Basics listed under add date, but much more to reference
+     Clocking tutorial
+     http://doc.norang.ca/org-mode.html#Clocking][Bernt
+**** TODO http://sachachua.com/wp/2007/12/30/clocking-time-with-emacs-org/
+**** TODO http://orgmode.org/manual/Dates-and-Times.html#Dates-and-Times
+*** C-g :: stop what you are trying to do; escape
+*** init.el Custom Agenda Commands are complex!  Read up
+    http://orgmode.org/worg/org-tutorials/org-custom-agenda-commands.html
+** GTD
+*** C-c C-c :: add tag
+    Tags are used to organize different kind of todo-entries, 
+    for example all tasks on the phone, reading, shopping, etc.
+**** Also can be done at top of document
+     #+TAGS: { @OFFICE(o) @HOME(h) } COMPUTER(c) PHONE(p) READING(r)
+***** Refresh after changing "top of document" with C-c C-c on any line starting with #
+**** Also can be done emacs-wide in config file (Preferences.el)
+     (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+**** After you have tags, C-c C-c on a line lets you add them
+**** More info
+     http://members.optusnet.com.au/~charles57/GTD/gtd_workflow.html
+     http://orgmode.org/org.html#Setting-tags
+     http://sachachua.com/wp/2008/01/04/tagging-in-org-plus-bonus-code-for-timeclocks-and-tags/
+** Export
+*** C-c C-e :: export menu
+    This is really pretty cool!  Example, C-c C-e b will export to
+    HTML then open the outline up in your browser!
+*** As usual, there are more resources on this
+    http://orgmode.org/worg/org-tutorials/org-publish-html-tutorial.html
+    http://orgmode.org/manual/Exporting.html#Exporting
+** TODO Remember orgcard at: http://orgmode.org/orgcard.txt 
+* Items below are from messing with tutorial features
+* Welcome to org-mode
+
+  Welcome, and thanks for trying out Org-mode. Making outlines in
+  org is very simple. It is just text! Just start typing.
+* This is a headline, it starts with one or more stars
+  A heading has one star, a sub-heading two, etc.
+* Working with lists
+** Moving around in our outline
+** Moving around headlines
+
+* Lord of the Rings
+  My favorite scenes are (in this order)
+  1. The attack of the Rohirrim
+  2. Eowyn's fight with the witch king
+     + this was already my favorite scene in the book
+     + I really like Miranda Otto.
+  3. Peter Jackson being shot by Legolas
+      - on DVD only
+     He makes a really funny face when it happens.
+  But in the end, no individual scenes matter but the film as a whole.
+  Important actors in this film are:
+  - Elijah Wood :: He plays Frodo
+  - Sean Austin :: He plays Sam, Frodo's friend.  I still remember
+    him very well from his role as Mikey Walsh in The Goonies.
+* Learn to use TO DO features
+** WAITING buy airplane
+* Enter full date and time with C-u C-c .
+** <2014-02-03 Mon 22:56>
+
+Last edited <2014-02-03 Mon> (entered with C-C .)
+** TODO Call Fred <2014-02-05 Wed>

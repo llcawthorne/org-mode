@@ -1,0 +1,202 @@
+
+* Basic movement
+  C-v :: Move forward one screen
+  M-v :: Move backward one screen
+  C-l :: Clear screen and redisplay all the text moving cursor to center (l as in llama)
+  C-p :: Previous line
+  C-b :: Backward
+  C-f :: Forward
+  C-n :: Next line
+  M-f :: Move forward a word (leaving you at word end)
+  M-b :: Move backwards a word (leaving you at word beginning)
+  C-a :: Move to beginning of line
+  C-e :: Move to end of line
+  M-a :: Move back to beginning of sentence
+  M-e :: Move forward to end of sentence
+  M-< :: (Meta-less than) moves to beginning of whole text
+  M-> :: Move to end of the whole text
+** A diagram of C-p/b/f/n
+			 Previous line, C-p
+				 :
+				 :
+  Backward, C-b .... Current cursor position .... Forward, C-f
+				 :
+				 :
+			   Next line, C-n
+** A note on C-[key] vs M-[key]
+   Notice that C-f/C-b and M-f/M-b parallel each other for movement.
+   Often Meta-[key] is used for operations related to units defined by 
+   language (words, sentences, paragraphs), while Control characters
+   operate on basic units that are independent of what you are 
+   editing (characters, lines, etc).
+   Likewise, C-a and C-e move to beginning or end of line (respectively), 
+   where M-a and M-e move to beginning or end of a sentence.
+* Cancelling and Repeating commands
+  C-g :: cancel command
+  C-u [#] repeats the next command # times
+  
+  Ex: C-u 8 C-f moves forward 8 characters
+
+  Note: most command use C-u [#] to repeat, but some have other interpretations
+  C-u 8 C-v scrolls 8 lines (instead of 8 pages)
+  C-u 8 M-v scrolls up 8 lines
+  C-u 8 C-g C-f moves forward one character (because of the cancel)
+
+  Also note C-u [#] works on inserting text also
+  C-u 8 * produces eight '*' chars:  ********
+* Inserting and Deleting
+  <DEL> :: Backspace (Kill the character before the cursor)
+  C-d :: Delete the next character after the cursor
+  M-<DEL> :: Kill the word before the cursor (Meta-Backspace)
+  M-d :: Kill the next word after the cursor
+  C-k :: Kill from the cursor position to the end of line
+  M-k :: Kill to the end of the current sentence 
+  C-y :: Yank back killed text (like paste)
+  M-y :: Replaced yanked text with previous kill
+  M-y is used after yanking and cycles through older 'kills'
+** Using the Mark
+   C-SPC :: set the mark
+
+   You can set the mark at a start point then move to an ending point.
+   Pressing C-w when doing so will kill all marked text.
+** Killing vs Deleting
+   When you kill text, it can be reinserted by "yanking".
+   Generally, commands that kill a lot of text "kill" it, so you can 
+   paste it back, where commands that eliminate a little text (C-d)
+   do deletion.  Note that C-d kills text when giving a C-u [#] prefix.
+
+   You can think of 'kill' as 'cut' and 'yank' as 'paste'.
+
+   Note: if you do several C-k kills in a row, all the killed text is
+   saved together ready to yank back.
+* UNDO
+  C-/ :: undo
+  C-_ :: alternative undo command (works the same)
+  C-x u :: another undo command (that works the same)
+  
+  In Aquamacs, Command-Z also acts as UNDO
+
+* Org-Mode Lists & Notes
+** TAB / S-TAB :: (un)fold
+** M-up/down :: move a headline up or down
+** M-left/down :: promote or demote a headline
+** M-RET :: insert a new headline
+** C-x s :: save a file
+** C-h t :: Emacs tutorial
+** #+STARTUP: showall :: put at top to showall on file open
+** Text formatting
+
+  You can make words *bold*, /italic/, _underlined_, =code= and ~verbatim~, 
+  and, if you must, +strike-through+.
+** Ordered and unordered list
+    1. Ordered lists start with a number and a dot
+    2. Unordered lists start with -, +, or \*
+    3. Lists are cool.  M-RET continues them also
+    4. And they can be unnumbered or sublists
+       + This is an unnumbered sublist
+       + M-RET does smart continuation
+    5. M-Left/Right changes level too, like backing off here
+    6. More information in
+       + Screencast:
+         http://bzg.fr/org-playing-with-lists-screencast.html
+       + Org-mode Manual:
+	http://orgmode.org/manual/Plain-lists.html#Plain-lists
+    7. C-h t :: Emacs tutorial
+** Test formula
+
+\[
+e^{i\pi} = -1
+\]
+
+\[
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+\]
+
+Just hit C-c C-x C-l to preview latex fragments in buffer!
+
+Note:  C-c C-x C-l here (or C-u C-c C-x C-l to preview everything in
+the subtree, or C-u C-u C-c C-x C-l to preview everything in the buffer)
+
+* Searching
+  C-s    :: initiate forward search, or search for next occurrence
+  C-r    :: initiate reverse search, or find previous occurrence
+  <RET>  :: terminate search 
+  C-g    :: cancel (as usual, but useful to remind here)
+* Files and Buffers
+  C-x C-f :: Find a file (i.e. open)
+  C-x C-s :: Save the file
+  C-x C-b :: List buffers
+  C-x b   :: Switch to buffer
+  C-x s   :: Save some buffers (saves multiple buffers with prompting)
+  C-x C-c :: Close emacs with prompt to save modified buffers
+** Auto-saves
+   Note: Emacs also auto-saves files as you are working on them with 
+   names containing a # at the beginning at end.
+   IE: hello.c has an autosave of #hello.c#
+
+   If the computer crashes and you need to recover from the autosave,
+   you can use M-x recover-file <Return>
+* Windows and Frames
+  C-x 1 :: One window (i.e., kill all other windows).
+  C-x 2 :: split the screen into two windows horizontally
+  C-M-v :: scroll the bottom window
+  C-x o :: switch to 'other' window (o for other)
+  M-x make-frame  :: Create a new frame on the screen
+  M-x delete-frame :: Remove the selected frame
+
+  Note: The commands starting with C-x usually deal with
+  windows, files, buffers, and related things.
+
+  C-M-v is especially helpful when editing in one window while
+  using a second for reference to scroll without switching 
+  back and forth.  Also works in GUI to scroll another frame.
+
+  C-M sequences are either Control and Meta (togther in any order)
+  plus another key, or <ESC> then Control and another key.  [equivalent]
+** Frames vs Windows
+   A frame is what we call a collection of windows, together with its
+   menus, scroll bars, echo area, etc.  On graphical displays, what emacs
+   calls a "frame" is what most applications call a "window".  Multiple
+   graphical frames can be shown in a GUI at the same time, but only one
+   frame can be shown at a time in a text terminal.
+* Modes
+  M-x fundamental-mode :: fundamental is the default mode
+  M-x text-mode        :: for editing human language text
+  M-x auto-fill-mode   :: breaks line between words when inserting text
+                          that would cause the line to be too wide
+  C-h m :: view documentation of current major mode 
+  M-q   :: re-fill a paragraph when in auto-fill-mode
+  C-x f :: set fill column
+
+  Major modes usually make subtle changes like that one: most commands
+  do "the same job" in each major mode, but they work a little bit
+  differently.
+
+  You can be in one Major mode modified by zero or more minor modes
+
+  
+* All Purpose "escape" Command
+  <ESC> <ESC> <ESC>
+
+  This works in some places that even C-g has problems.
+* More Help
+  C-h ?           :: Emacs will tell you what type of help it can offer
+  C-g             :: cancel without accepting any help
+  C-h character   :: pull up a certain type of help
+  C-h c [command] :: brief description of command
+  C-h c C-p       :: describes C-p
+  C-h k [command] :: displays documentation window of command (detailed)
+  C-h f           :: describe a function
+  C-h m           :: view current major mode's documentation
+  C-h v           :: display the documentation of variables
+  C-h a           :: apropos
+   Type in a keyword and emacs will list all commands whose names contain
+   the keyword.  They can all be invoked via M-x command.
+  C-h a file      :: Apropos will all M-x commands with "file" in the name
+  C-M-v           :: scroll help window (or any 'other' window)
+  C-x 1           :: delete help window when through (go to 1 window)
+  C-h i           :: read included manuals (aka Info)
+  
+  C-h i, then m emacs <RET> lets you read the Emacs manual.
+
+  C-h r           :: another way to access the Emacs manual

@@ -1,0 +1,341 @@
+* Programming Scala 3rd Edition
+** by Bill Venners, Lex Sppon, Martin Odersky
+** Publisher: Artima Press
+** Release Date: April 2016
+* Scala - A Scalable Language
+** Why is Scala both functional and OO?
+The combination of functional and object-oriented programming styles
+is the key factor in Scala's scalability.
+
+Scala's functional programming constructs make it simple to build
+interesting things quickly from simple parts.  Its object-oriented
+constructs make it easy to structure large system and adapt them
+to new demands.  The combination of both makes it possible to express
+new kinds of programming patterns and component abstractions.  
+
+The combination also leads to an legible and concise programming style.
+** Some examples of Scala
+*** Simple Scala example making BigInt look built-in
+#+BEGIN_SRC scala
+def factorial(x: BigInt): BigInt =
+  if (x == 0) 1 else x * factorial (x-1)
+#+END_SRC
+*** Using a Java class BigInteger in Scala
+#+BEGIN_SRC scala
+import java.math.BigInteger
+
+def factorial(x: BigInteger): BigInteger = 
+  if (x == BigInteger.ZERO)
+    BigInteger.ONE
+  else
+    x.multiply(factorial(x.subtract(BigInteger.ONE)))
+#+END_SRC
+*** Simple Akka actor implementing a checksum calculator
+#+BEGIN_SRC scala
+class ChecksumActor extends Actor {
+  var sum = 0
+  def receive = {
+    case Data(byte) => sum += byte
+    case GetChecksum(requester) =>
+      val checksum = ~(sum & 0xFF) + 1
+      requester ! checksum
+  }
+}
+#+END_SRC
+* Scala - The Big Picture (ch2-3)
+** Language basics
+*** Two types of variables
+**** val - similar to final in Java; cannot be reassigned
+**** var - non-final; can be reassigned throughout lifetime
+*** Types come after names
+#+BEGIN_SRC scala
+val msg: String = "Hello, world!"
+#+END_SRC
+*** Function definitions start with def
+#+BEGIN_SRC scala
+def max(x: Int, y: Int): Int = {
+  if (x > y) x
+  else y
+}
+#+END_SRC
+**** Parameter types must be included; never inferred
+**** Function result type can be inferred; but often useful documentation
+**** Result type required for recursive functions
+**** Single statement functions can leave off curly braces
+#+BEGIN_SRC scala
+def max(x: Int, y: Int) = if (x > y) x else y
+#+END_SRC
+*** Unit return type is similar to Java's void
+**** Methods with Unit return type are executed for side effects
+#+BEGIN_SRC scala
+def greet(): Unit = println("Hello, world!")
+// Unit could have been inferred
+def greet2() = println("Hello again, world!")
+#+END_SRC
+*** Arrays are zero based, elements are accessed by parens like args(0) 
+*** Comments // to end of line and /* */ for multiline
+*** Loop with while (bad style in example; avoid iterating by index)
+#+BEGIN_SRC scala
+var i = 0
+while (i < args.length) {
+  printn(args(i))
+  i += 1  // i++ and ++i don't work in scala!
+}
+#+END_SRC
+*** Decide with if
+#+BEGIN_SRC scala
+var i = 0
+while (i < args.length) {
+  if (i != 0)
+    print(" ")
+  print(args(i))
+  i += 1
+}
+println()
+#+END_SRC
+**** if is an expression, like the ternary operator
+**** no curly braces for a single statement (also applies to while)
+*** The boolean expression for a while or if must be in parentheses
+*** Two spaces is recommended indentation for Scala code
+*** Iterate with foreach and for
+#+BEGIN_SRC scala
+args.foreach(arg => println(arg))
+// equivalently
+args.foreach((arg: String) => println(arg))
+// equivalently
+args.foreach(println)
+#+END_SRC
+*** Function literals
+**** Function parameters in parens, right arrow, function body
+#+BEGIN_SRC scala
+(x: Int, y: Int) => x + y
+#+END_SRC
+**** One statement with a single argument does not need argument explicitly named
+#+BEGIN_SRC scala
+args.foreach(println)
+#+END_SRC
+*** for expressions
+#+BEGIN_SRC scala
+for (arg <- args)
+  println(arg)
+#+END_SRC
+**** arg is a val in the example, it cannot be reassigned within the for expression
+*** If a method takes only one parameter, you can call it without dot or parens
+#+BEGIN_SRC scala
+for (i <- 0 to 2)
+  print(greetStrings(i))
+// equivalently
+for (i <- (0).to(2))
+  print(greetStrings(i))
+// or 
+val x = 1 + 2
+// equivalently
+val x = (1).+(2)
+#+END_SRC
+*** Methods are invoked no left operand, unless they end in : which makes them right associative
+*** parameterize arrays with types
+#+BEGIN_SRC scala
+val greetStrings = new Array[String](3)
+greetStrings(0) = "Hello"
+greetStrings(1) = ", "
+greetStrings(2) = "world!\n"
+
+for (i <- 0 to 2)
+  print(greetStrings(i))
+#+END_SRC
+**** parameterized types go in square brackets []
+**** array assignment and access is quietly using update and apply
+#+BEGIN_SRC scala
+val greetStrings = new Array[String](3)
+greetStrings(0) = "Hello"
+greetStrings(1) = ", "
+greetStrings(2) = "world!\n"
+
+for (i <- 0 to 2)
+  print(greetStrings(i))
+// equivalently
+val greetStrings = new Array[String](3)
+greetStrings.update(0, "Hello")
+greetStrings.update(1, ", ")
+greetStrings.update(2, "world!\n")
+
+for (i <- 0 to 2)
+  print(greetStrings.apply(i))
+#+END_SRC
+***** apply is called for any object passed argument(s) in parens
+***** update is called for any assignment to a variable with argument(s) in parens
+**** there's a better way to initialize an Array
+#+BEGIN_SRC scala
+val greetStrings = Array("zero", "one", "two")
+#+END_SRC
+***** we're calling a factory method named apply on the Array companion object
+*** Lists.  Array is mutable, prefer scala.List which is immutable
+#+BEGIN_SRC scala
+val oneTwoThree = List(1, 2, 3)
+#+END_SRC
+**** ::: is List concatenation
+#+BEGIN_SRC scala
+val oneTwo = List(1, 2)
+val threeFour = List(3, 4)
+val oneTwoThreeFour = oneTwo ::: threeFour
+println(oneTwo + " and " + threeFour + " were not mutated.")
+println("Thus, " + oneTwoThreeFour + " is a new list.")
+#+END_SRC
+**** :: is cons, or prepend element
+#+BEGIN_SRC scala
+val twoThree = List(2, 3)
+val oneTwoThree = 1 :: twoThree
+println(oneTwoThree)  // List(1, 2, 3)
+#+END_SRC
+**** You can cons onto Nil, since Nil is the empty list (aka List())
+**** +: is list append, but is rarely used because of performance
+**** Lists have zero based indexing, accessed with parens
+#+BEGIN_SRC scala
+val thrill = "Will" :: "fill" :: "until" :: Nil
+thrill(2) == "until"   // true
+#+END_SRC
+**** Other useful list methods: count, drop, dropRight, exists, filter, frall, foreach
+#+BEGIN_SRC scala
+val thrill = "Will" :: "fill" :: "until" :: Nil
+thrill.count(s => s.length == 4)   // returns 2
+thrill.drop(2)       // returns List("until")
+thrill.dropRight(2)  //returns List("Will")
+thrill.exists(s => s == "until")   // true
+thrill.filter(s => s.length==4)    // List("Will", "fill")
+thrill.forall(s => s.endsWith("l") // true, because all end with "l"
+thrill.foreach(s => print(s))      // prints "Willfilluntil"
+thrill.foreach(print)              // prints "Willfilluntil" (more concise)
+#+END_SRC
+**** More list methods: head, init, isEmpty, last, length, map, mkString, filterNot, reverse, sort, tail
+#+BEGIN_SRC scala
+val thrill = "Will" :: "fill" :: "until" :: Nil
+thrill.head           // returns "Will"
+thrill.init           // Returns List("Will", "fill")
+thrill.isEmpty        // false
+thrill.last           // "until"
+thrill.length         // 3
+thrill.map(s => s + "y")  // List("Willy", "filly", "untily")
+thrill.mkString(", ") // "Will, fill, until"
+thrill.filterNot(s => s.length == 4) // List("until")
+thrill.reverse        // List("until", "fill", "Will")
+thrill.sort((s, t) => s.charAt(0).toLower < t.charAt(0).toLower)
+    // returns List("fill", "until", "Will")
+thrill.tail           // List("fill", "until")
+#+END_SRC
+*** Tuples
+**** Access elements with ._#, where # is the 1 based index of the element
+#+BEGIN_SRC scala
+val pair = (99, "Luftballons")
+println(pair._1)  // 99
+println(pair._2)  // "Lutfballons")
+#+END_SRC
+**** Tuples are immutable
+**** Unlike Lists, Tuples can contain different types of elements
+**** -> method of Int returns a two element tuples (int, item)
+#+BEGIN_SRC scala
+1 -> "This is a test"   // (1, "This is a test")
+#+END_SRC
+*** Sets and Maps
+**** There are both mutable and immutable Sets and Maps
+**** Set class heirarchy
+****** scala.collection.immutable.Set  // actually a trait
+****** scala.collection.mutable.Set    // also a trait
+**** Set examples
+****** Immutable set example
+#+BEGIN_SRC scala
+var jetSet = Set("Boeing", "Airbus")
+jetSet += "Lear"   // the set is immutable, but jetSet is a var
+println(jetSet.contains("Cessna"))  // false
+#+END_SRC
+****** Mutable set example
+#+BEGIN_SRC scala
+import scala.collection.mutable
+
+val movieSet = mutable.Set("Hitch", "Poltergeist")
+movieSet += "Shrek"
+println(movieSet)
+#+END_SRC
+****** You could specify a HashSet (the default)
+#+BEGIN_SRC scala
+import scala.collection.immutable.HashSet
+
+val hashSet = HashSet("Tomatoes", "Chilies")
+println(hashSet + "Coriander")
+#+END_SRC
+**** Map class hierarchy
+****** scala.collection.immutable.Map // trait
+****** scala.collection.mutable.Map   // trait
+**** Map examples
+***** Immutable map example
+#+BEGIN_SRC scala
+vala romanNumeral = Map(
+  1 -> "I", 2 -> "II", 3 -> "III", 4 -> "IV", 5 -> "V"
+)
+println(romanNumeral(4)
+#+END_SRC
+***** Mutable map example
+#+BEGIN_SRC scala
+import scala.collection.mutable
+
+val treasureMap = mutable.Map[Int, String]()
+// using 1.->("String") to generate tuples (1, "String")
+treasureMap += (1 -> "Go to island.")
+treasureMap += (2 -> "Find big X on ground.")
+treasureMap += (3 -> "Dig.")
+println(treasureMap(2))  // "Find big X on ground."
+#+END_SRC
+** Scala for scripting
+*** A sequence of statements in a .scala file are executed sequentially
+*** 'scala hello.scala' runs the hello.scala script
+*** Command line arguments are available through args array
+#+BEGIN_SRC scala
+// Say hello to first argument
+println("Hello, " + args(0) + "!")
+#+END_SRC
+** Programming in a Functional Style
+*** Functional code is often more clear & concise and less error prone
+*** If code contains any var's, it is probably imperative
+*** A function with result type Unit is often used for side effects
+**** Every useful program is likely to have side effects
+**** Preferring methods without side effects encourages good design
+***** Minimize side-effecting code
+*** A balanced attitude for a hybrid language
+Prefer val's, immutable objects, and methods without side effects.  Reach for
+them first.  Use var's, mutable objects, and methods with side effects when 
+you have a specific need and justification for them.
+** File IO Example
+*** countchars1.scala (prints the length and line text of each line of arg)
+#+BEGIN_SRC scala
+#!/usr/bin/env scala
+import scala.io.Source
+
+if (args.length > 0) {
+  for (line <- Source.fromFile(args(0)).getLines())
+    println(line.length + " " + line)
+}
+else
+  Console.err.println("Please enter a filename")
+#+END_SRC
+*** countchars with improved output formatting
+#+BEGIN_SRC scala
+import scala.io.Source
+
+def widthOfLength(s: String) = s.length.toString.length
+
+if (args.length > 0) {
+  val lines = Source.fromFile(args(0)).getLines().toList
+
+  val longestLine = lines.reduceLeft(
+    (a, b) => if (a.length > b.length) a elmse b
+  )
+  val maxWidth = widthOfLength(longestLine)
+
+  for (line <- lines) {
+    val numSpaces = maxWidth - widthOfLength(line)
+    val padding = " " * numSpaces
+    println(padding + line.length + " | " + line)
+  }
+}
+else
+  Console.err.println("Please enter filename")
+#+END_SRC
