@@ -1,27 +1,26 @@
-* Functional Programming Principles in Scala
-** Big concepts
-*** Imperative programming
-**** modifying mutable variables
-**** using assignments
-**** control structures such as if-then-else, loops, break, continue, return
-**** based on von Neumann architecture of computing
-**** translates poorly to mathematical theories
-*** Functional programming
-**** avoid mutations
-**** program without mutable variables, assignments, loops, and other imperative control structures
-**** gain new ways to abstract and compose functions
-**** focus on functions
-**** functions are "first class citizens"
-***** functions can be defined anywhere
-***** functions can be passed as parameters are returned
-***** functions should be able to be composed
-**** Good for exploiting parallelism for multicore and cloud computing
-**** Represented well by substitution model; simple rewrites until reaching value
-***** side effects cannot be represented by substitution model
-***** call by name and call by value reduce to same final value, if they both terminate
-****** If call by value terminates, then call by name terminates
-****** Call by name termination does NOT imply call by value termination
-***** call-by-value vs call-by-name
+* Big concepts
+** Imperative programming
+*** modifying mutable variables
+*** using assignments
+*** control structures such as if-then-else, loops, break, continue, return
+*** based on von Neumann architecture of computing
+*** translates poorly to mathematical theories
+** Functional programming
+*** avoid mutations
+*** program without mutable variables, assignments, loops, and other imperative control structures
+*** gain new ways to abstract and compose functions
+*** focus on functions
+*** functions are "first class citizens"
+**** functions can be defined anywhere
+**** functions can be passed as parameters are returned
+**** functions should be able to be composed
+*** Good for exploiting parallelism for multicore and cloud computing
+*** Represented well by substitution model; simple rewrites until reaching value
+*** side effects cannot be represented by substitution model
+**** call by name and call by value reduce to same final value, if they both terminate
+***** If call by value terminates, then call by name terminates
+***** Call by name termination does NOT imply call by value termination
+**** call-by-value vs call-by-name
 def test(x: Int, y: Int) = x * x
 CBV: test(2, 3) -> 2 * 2 -> 4
 CBN: test(2, 3) -> 2 * 2 -> 4
@@ -31,30 +30,30 @@ CBV: test(7, 2*4) -> test(7, 8) -> 7 * 7 -> 49
 CBN: test(7, 2*4) -> 7 * 7 -> 49
 CBV: test(3+4, 2*4) -> test(7, 2*4) -> test(7, 8) -> 7*7 -> 49
 CBN: test(3+4, 2*4) -> (3+4)*(3+4) -> 7*(3+4) -> 7*7 -> 49
-***** In practice, call by value is more efficient, so scala uses it primarily
-***** You can use call by name with the => in parameters
+**** In practice, call by value is more efficient, so scala uses it primarily
+**** You can use call by name with the => in parameters
 #+BEGIN_SRC scala
 def constOne(x: Int, y: => Int) = 1
 x is CBV, y is CBN
 constOne(1+2, loop) -> constOne(3, loop) -> 1
 constOne(loop, 1+2) -> constOne(loop, 1+2) ->...
 #+END_SRC
-*** Abstraction involves introducing a name for an expression to invoke later
-** sbt console to get a repl with sbt
-** Basic scala
-*** definitions
-**** def is used to define a function
-***** function parameters are specified with types, function return type is last
+** Abstraction involves introducing a name for an expression to invoke later
+* sbt console to get a repl with sbt
+* Basic scala
+** definitions
+*** def is used to define a function
+**** function parameters are specified with types, function return type is last
 #+BEGIN_SRC scala
 def power(x: Double, y: Int): Double = ...
 // x is Double, y is Int, and power returns a Double
 #+END_SRC
-***** def is "by-name" and its right hand side is evaluated on each use
-**** val is used to define a final (unchangeable) value
-***** It is "by value" and evaluated once at point of definition
-**** visibility
-***** definitions inside a block are only visible within the block
-***** definitions inside a block shadow definitions with same name outside block
+**** def is "by-name" and its right hand side is evaluated on each use
+*** val is used to define a final (unchangeable) value
+**** It is "by value" and evaluated once at point of definition
+*** visibility
+**** definitions inside a block are only visible within the block
+**** definitions inside a block shadow definitions with same name outside block
 #+BEGIN_SRC scala
 val x = 0
 def f(y: Int) = y + 1
@@ -64,17 +63,17 @@ val result = {
 }
 x                // 0
 #+END_SRC
-*** Semi-colons are optional
-**** A semi-colon allows multiple expressions on same line
+** Semi-colons are optional
+*** A semi-colon allows multiple expressions on same line
 #+BEGIN_SRC scala
 x += 1; y += 1
 #+END_SRC
-**** End lines with operators to make continuation explicit
+*** End lines with operators to make continuation explicit
 #+BEGIN_SRC scala
 operand +
 operand      // equivalent to operand + operand
 #+END_SRC
-*** Boolean expressions can be called predicates
+** Boolean expressions can be called predicates
 #+BEGIN_SRC scala
 true   // constant
 false  // constant
@@ -84,7 +83,7 @@ b || b // disjunction
 // comparison: 
 e <= e, e >= e, e < e, e > e, e == e, e != e
 #+END_SRC
-**** Reduction rules for boolean expressions
+*** Reduction rules for boolean expressions
 #+BEGIN_SRC scala
 !true      --> false
 !false     --> true
@@ -93,13 +92,13 @@ false && e --> false
 true || e  --> true
 false || e --> e
 #+END_SRC scala
-***** && and || do not always need their right operand (short circuit evaluation)
-*** Conditional Expressions
-**** if-else is a conditional expression
+**** && and || do not always need their right operand (short circuit evaluation)
+** Conditional Expressions
+*** if-else is a conditional expression
 #+BEGIN_SRC scala
 def abs(x: Int) = if (x >= 0) x else -x
 #+END_SRC
-***** Square root approximation
+**** Square root approximation
 #+BEGIN_SRC scala
 def abs(x: Double) = if (x < 0) -x else x
 def sqrt(x: Double) = {
@@ -116,7 +115,7 @@ def sqrt(x: Double) = {
   sqrtIter(1.0, x)
 }
 #+END_SRC
-***** Square root approximation simplified using visibility rules
+**** Square root approximation simplified using visibility rules
 #+BEGIN_SRC scala
 def abs(x: Double) = if (x < 0) -x else x
 def sqrt(x: Double) = {
@@ -134,22 +133,22 @@ def sqrt(x: Double) = {
   sqrtIter(1.0)
 }
 #+END_SRC
-*** Tail recursion
+** Tail recursion
 If you have a recursive function that calls itself as its last action,
 the function's stack frame can be reused.  This is called tail recursion.
 Tail recursion is as efficient as looping.
-**** Tail call recursive GCD
+*** Tail call recursive GCD
 #+BEGIN_SRC scala
 @tailrec
 def gcd(a: Int, b: Int): Int =
   if (b == 0) a else gcd(b, a % b)
 #+END_SRC
-**** Not TCO (Tail call optimized) factorial
+*** Not TCO (Tail call optimized) factorial
 #+BEGIN_SRC scala
 def factorial(n: Int) : Int =
   if (n == 0) 1 else n * factorial (n - 1)
 #+END_SRC
-**** Tail recursive factorial
+*** Tail recursive factorial
 #+BEGIN_SRC scala
 def factorial(n: Int) : Int = {
   @tailrec
@@ -158,8 +157,8 @@ def factorial(n: Int) : Int = {
   fact(1, n)
 }
 #+END_SRC
-**** The @tailrec annotation makes the compiler enforce tail recursive implementation
-*** Higher-Order Functions
+*** The @tailrec annotation makes the compiler enforce tail recursive implementation
+** Higher-Order Functions
 Functions that take functions as parameters and/or return functions.
 #+BEGIN_SRC scala
 // sum of ints from a to b, each int modified by some function
@@ -176,17 +175,17 @@ def cube(x: Int): Int   = x * x * x
 def fact(x: Int): Int   = if (x == 0) 1 else fact(x - 1)
 // we reused the pattern of sum in three different ways!
 #+END_SRC
-**** Function Types A => B
+*** Function Types A => B
 Function A => B takes an A and returns a B
-**** Function Literals, aka Anonymous Functions
+*** Function Literals, aka Anonymous Functions
 #+BEGIN_SRC scala
 (x: Int, y: Int) => x * x * x + y   // parameters => body 
 #+END_SRC
-***** the types of params and parens can be left out if inferrable
+**** the types of params and parens can be left out if inferrable
 #+BEGIN_SRC scala
 x => x * x * x
 #+END_SRC
-**** Using anonymous functions for sumInts and sumCubes
+*** Using anonymous functions for sumInts and sumCubes
 #+BEGIN_SRC scala
 def sum(f: Int => Int, a: Int, b: Int): Int =
   if (a > b) 0
@@ -195,7 +194,7 @@ def sum(f: Int => Int, a: Int, b: Int): Int =
 def sumInts(a: Int, b: Int) = sum(x => x, a, b) // id inline
 def sumCubes(a: Int, b: Int) = sum(x => x * x * x, a, b)  // cube inline
 #+END_SRC
-**** Or anonymous functions with a tail recursive sum
+*** Or anonymous functions with a tail recursive sum
 #+BEGIN_SRC scala
 def sum(f: Int => Int)(a: Int, b: Int): Int = {
   @tailrec
@@ -207,7 +206,7 @@ def sum(f: Int => Int)(a: Int, b: Int): Int = {
 def sumInts(a: Int, b: Int) = sum(x => x, a, b)
 def sumCubes(a: Int, b: Int) = sum(x => x * x * x, a, b)
 #+END_SRC
-**** Let's do the same example with currying, the function returns a function that takes two params
+*** Let's do the same example with currying, the function returns a function that takes two params
 #+BEGIN_SRC scala
 def sum(f: Int => Int): (Int, Int) = Int = {
   def sumF(a: Int, b: Int): Int =
@@ -227,20 +226,20 @@ def sum(f: Int => Int)(a: Int b: Int): Int =
   if (a > b) 0 else f(a) + sum(f)(a + 1, b)
 sum(x => x * x * x)(1, 10)  // sum of cubes from 1 to 10
 #+END_SRC
-**** What is the type of `def sum(f: Int => Int)(a: Int, b: Int): Int
+*** What is the type of `def sum(f: Int => Int)(a: Int, b: Int): Int
 (Int => Int) => (Int, Int) => Int
-**** Functional types associate to the right
+*** Functional types associate to the right
 Int => Int => Int
 is equivalent to
 Int => (Int => Int)
-**** What is the type of `def sum(f: Int => Int)(a: Int, b: Int): Int
+*** What is the type of `def sum(f: Int => Int)(a: Int, b: Int): Int
 (Int => Int) => (Int, Int) => Int
-**** Functional types associate to the right
+*** Functional types associate to the right
 Int => Int => Int
 is equivalent to
 Int => (Int => Int)
-** Functions and Data
-*** Class example.  Rational class
+* Functions and Data
+** Class example.  Rational class
 #+BEGIN_SRC scala
 class Rational(x: Int, y: Int) {
   require(y != 0, "denominator must be nonzero")
@@ -271,28 +270,28 @@ class Rational(x: Int, y: Int) {
   override def toString = numer + "/" + denoml(x: Int, y: Int) {
 }
 #+END_SRC
-*** We create an object by using a class constructor
+** We create an object by using a class constructor
 #+BEGIN_SRC scala
 val exampleRational = new Rational(1, 2)
 val x = new Rational(1, 3)
 val y = new Rational(5, 7)
 val z = new Rational(3, 2)
 #+END_SRC
-*** Methods are functions packaged within a data abstraction (within an object)
-*** Data abstraction is the ability to change the representation of the data without affecting the client
-*** Require checks preconditions of class construction
-*** Functions as objects
-**** There are currently function traits up to 22 parameters
-**** f(a, b) expands to f.apply(a, b)
-** Data and Abstraction
-*** Abstract classes can have undefined methods
+** Methods are functions packaged within a data abstraction (within an object)
+** Data abstraction is the ability to change the representation of the data without affecting the client
+** Require checks preconditions of class construction
+** Functions as objects
+*** There are currently function traits up to 22 parameters
+*** f(a, b) expands to f.apply(a, b)
+* Data and Abstraction
+** Abstract classes can have undefined methods
 #+BEGIN_SRC scala
 abstract class IntSet {
   def incl(x: Int): IntSet
   def contains(x: Int): Boolean
 }
 #+END_SRC
-**** You do not have to specify override when defining methods of an abstract class
+*** You do not have to specify override when defining methods of an abstract class
 #+BEGIN_SRC scala
 object Empty extends IntSet {
   def contains(x: Int): Boolean = false
@@ -312,12 +311,12 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
   override def toString = "{" + left + elem + right + "}"
 }
 #+END_SRC
-**** You do need override when redefining non-abstract methods, such as toString
-*** Persistent data structures are a cornerstone of scaling functional programming
-*** In Scala, every class extends another class
-**** If no explicit superclass is given, java.lang.Object is assumed
-**** All direct and indirect superclasses of C are called the base classes of C
-*** Use 'object' instead of 'class' to create singleton value objects
+*** You do need override when redefining non-abstract methods, such as toString
+** Persistent data structures are a cornerstone of scaling functional programming
+** In Scala, every class extends another class
+*** If no explicit superclass is given, java.lang.Object is assumed
+*** All direct and indirect superclasses of C are called the base classes of C
+** Use 'object' instead of 'class' to create singleton value objects
 #+BEGIN_SRC scala
 object Empty extends IntSet {
   def contains(x: Int): Boolean = false
@@ -325,7 +324,7 @@ object Empty extends IntSet {
   override def toString = "."
 }
 #+END_SRC
-**** A standalone object of any name with a main method is treated as an application
+*** A standalone object of any name with a main method is treated as an application
 #+BEGIN_SRC scala
 package week3
 
@@ -333,50 +332,50 @@ object Hello {
   def main(args: Array[String]) = println("Hello, world!")
 }
 #+END_SRC
-*** Classes and objects are organized into packages
-**** objects are imported from packages by 'import' statement
-***** import week3.Rational imports Rational from week3 package
-***** import week3.{Rational, Hello} imports Rational and Hello from week3
-***** import week3._ imports everything in week3 package
-***** You can also import definitions from objects
-**** Some entities are automatically imported for you
-***** All members of package scala
-***** All members of package java.lang
-***** All members of the singleton object scala.Predef
-**** Explore built-in classes and packages at: http://www.scala-lang.org/api/current
-**** Traits let you mixin definitions and methods adding them to other classes
-***** Traits are more powerful than interfaces, as they contain fields and defined methods
-***** A class can inherit from only one class, but any number of traits
-***** Classes can have value parameters, but traits never have parameters
-**** scala.Any is superclass of all, directly of scala.AnyVal and scala.AnyRef
-***** scala.Any defines '==', '!=', equals, hashCode, toString
-***** scala.AnyVal is parent Double, Float, Boolean, Int, Char, Unit, etc
-****** AnyVal is base class of all primitives
-****** if (true) 1 else false  // is type AnyVal; it's the closest shared class of 1: Int and false: Boolean
-***** scala.AnyRef is parent to any defined reference, scala.List, java.lang.String, and more
-****** scala.AnyRef is an alias of java.lang.Object
-***** scala.Null is a subclass of scala.AnyRef
-****** scala.Null is the type of 'null'
-****** Null is the subtype of any class inheriting from Object (AnyRef)
-****** null is incompatible with scala.AnyVal (you can't assign null to Scala primitives)
-***** scala.Nothing is a subclass of all other classes
-****** There is no value of type Nothing
-****** It is useful to signal abnormal termination or an element type of empty collections
-A Set of no elements is a Set[Nothing]
-*** Scala's exception handling is similar to Java's
-**** throw Exception
+** Classes and objects are organized into packages
+*** objects are imported from packages by 'import' statement
+**** import week3.Rational imports Rational from week3 package
+**** import week3.{Rational, Hello} imports Rational and Hello from week3
+**** import week3._ imports everything in week3 package
+**** You can also import definitions from objects
+*** Some entities are automatically imported for you
+**** All members of package scala
+**** All members of package java.lang
+**** All members of the singleton object scala.Predef
+*** Explore built-in classes and packages at: http://www.scala-lang.org/api/current
+*** Traits let you mixin definitions and methods adding them to other classes
+**** Traits are more powerful than interfaces, as they contain fields and defined methods
+**** A class can inherit from only one class, but any number of traits
+**** Classes can have value parameters, but traits never have parameters
+*** scala.Any is superclass of all, directly of scala.AnyVal and scala.AnyRef
+**** scala.Any defines '==', '!=', equals, hashCode, toString
+**** scala.AnyVal is parent Double, Float, Boolean, Int, Char, Unit, etc
+***** AnyVal is base class of all primitives
+***** if (true) 1 else false  // is type AnyVal; it's the closest shared class of 1: Int and false: Boolean
+**** scala.AnyRef is parent to any defined reference, scala.List, java.lang.String, and more
+***** scala.AnyRef is an alias of java.lang.Object
+**** scala.Null is a subclass of scala.AnyRef
+***** scala.Null is the type of 'null'
+***** Null is the subtype of any class inheriting from Object (AnyRef)
+***** null is incompatible with scala.AnyVal (you can't assign null to Scala primitives)
+**** scala.Nothing is a subclass of all other classes
+***** There is no value of type Nothing
+***** It is useful to signal abnormal termination or an element type of empty collections
+Set of no elements is a Set[Nothing]
+** Scala's exception handling is similar to Java's
+*** throw Exception
 #+BEGIN_SRC scala
 def error(msg: String) = throw new Error(msg)
 #+END_SRC
-*** Polymorphism
-**** Meaning "in many forms"
-***** a function can be applied to arguments of many types
-***** or, the type can have instances of many types
-**** Forms for both meanings in Scala
-***** subtyping: instances of a subclass can be passed to a base class
-***** generics: instances of a function or class are created by type parameterization
-****** scala does type erasure
-**** Parameterized List example
+** Polymorphism
+*** Meaning "in many forms"
+**** a function can be applied to arguments of many types
+**** or, the type can have instances of many types
+*** Forms for both meanings in Scala
+**** subtyping: instances of a subclass can be passed to a base class
+**** generics: instances of a function or class are created by type parameterization
+***** scala does type erasure
+*** Parameterized List example
 #+BEGIN_SRC scala
 trait List[T] {
   def isEmpty: Boolean
@@ -403,36 +402,36 @@ def nth[T](n: Int, xs: List[T]): T =
   else if (n == 0) xs.head
   else nth(n - 1, xs.tail)
 #+END_SRC
-**** Subtypes and Type Bounds
-***** S <: T means: S is a subtype of T
-***** S >: T means: S is a supertype of T, or T is a subtype of S
-***** S >: T <: U means S is bounded below by T and above by U
-***** Liskov Substition Principle
+*** Subtypes and Type Bounds
+**** S <: T means: S is a subtype of T
+**** S >: T means: S is a supertype of T, or T is a subtype of S
+**** S >: T <: U means S is bounded below by T and above by U
+**** Liskov Substition Principle
 If A <: B, then everything one can to with a value of type B one should
 also be able to do with a value of type A.
 
 More formally...
 Let q(x) be a property provable about objects x of type B.
 Then q(y) should be provable for objects y of type A where A <: B.
-***** Variance
-****** C[A] <: C[B]  // C is covariant
-******* class C[+A] { ... }  // C is covariant
-******* covariant types make subtyping relationship vary like parameter relationship
-******* covariance relationship makes sense for Lists of parameterized types
-******* A type that accepts mutatinos of its elements should not be covariant
-******* Immutable types can be covariant if some conditions are met
-******* Functions are covariant in their return types
-******* covariant type parameters can only appear in results
-****** C[A] >: C[B]  // C is contravariant
-******* class C[-A] { ... }  // C is contravariant
-******* Functions are contravariant in their argument type(s)
-******* contravariant type parameters can only appear in arguments
-****** neither C[A] nor C[B] is a subtype of the other  // C is nonvariant
-******* class C[A] { ... }   // C is nonvariant
-******* invariant type parameters can appear anywhere
-****** Generally, A2 <: A1 and B1 <: B2 implies A1 => B1 <: A2 => B2
-******* AKA, Functions are contravariant in their argument type(s) and covariant in their result type
-****** Improved code for List
+**** Variance
+***** C[A] <: C[B]  // C is covariant
+****** class C[+A] { ... }  // C is covariant
+****** covariant types make subtyping relationship vary like parameter relationship
+****** covariance relationship makes sense for Lists of parameterized types
+****** A type that accepts mutatinos of its elements should not be covariant
+****** Immutable types can be covariant if some conditions are met
+****** Functions are covariant in their return types
+****** covariant type parameters can only appear in results
+***** C[A] >: C[B]  // C is contravariant
+****** class C[-A] { ... }  // C is contravariant
+****** Functions are contravariant in their argument type(s)
+****** contravariant type parameters can only appear in arguments
+***** neither C[A] nor C[B] is a subtype of the other  // C is nonvariant
+****** class C[A] { ... }   // C is nonvariant
+****** invariant type parameters can appear anywhere
+***** Generally, A2 <: A1 and B1 <: B2 implies A1 => B1 <: A2 => B2
+****** AKA, Functions are contravariant in their argument type(s) and covariant in their result type
+***** Improved code for List
 #+BEGIN_SRC scala
 trait List[+T] {
   def isEmpty: Boolean
@@ -449,8 +448,8 @@ object Nil extends List[Nothing] {
   def tail: Nothing = throw new NoSuchElementException("Nil.tail")
 }
 #+END_SRC
-*** Decomposition and Pattern Matching
-**** case classes are similar to normal classes but defined with keyword case
+** Decomposition and Pattern Matching
+*** case classes are similar to normal classes but defined with keyword case
 #+BEGIN_SRC scala
 trait Expr {
   def eval: Int = this match {
@@ -461,7 +460,7 @@ trait Expr {
 case class Number(n: Int) extends Expr
 case class Sum(e1: Expr, e2: Expr) extends Expr
 #+END_SRC
-***** Scala compiler automatically adds companion objects with factory methods
+**** Scala compiler automatically adds companion objects with factory methods
 #+BEGIN_SRC scala
 // free in last case class example without specifying
 object Number {
@@ -471,40 +470,40 @@ object Sum {
   def apply(e1: Expr, e2: Expr) = new Sum(e1, e2)
 }
 #+END_SRC scala
-***** Pattern matching is a generalization of switch to class hierarchies
+**** Pattern matching is a generalization of switch to class hierarchies
 #+BEGIN_SRC scala
 def eval(e: Expr): Int = e match {
   case Number(n) => n
   case Sum(e1, e2) => eval(e1) + eval(e2)
 }
 #+END_SRC scala
-***** Pattern matching rules
-****** match is followed by a sequence of cases, pat => expr
-****** each case association an expression with a pattern
-****** a MatchError is thrown if no match is found
-***** Patterns are constructed from:
-****** constructors, e.g. Number, Sum
-****** variables, e.g. n, e1, e2
-******* variables always begin with a lowercase letter
-******* a variable name can only appear once in a pattern
-****** wildcard patterns, _
-****** constants, e.g. 1, true
-******* names of constants begin with a capital letter, except null, true, false
-***** Ex: e match { case p_1 => e_1 ... case p_n => e_n }
-** Collections
-*** Lists
+**** Pattern matching rules
+***** match is followed by a sequence of cases, pat => expr
+***** each case association an expression with a pattern
+***** a MatchError is thrown if no match is found
+**** Patterns are constructed from:
+***** constructors, e.g. Number, Sum
+***** variables, e.g. n, e1, e2
+****** variables always begin with a lowercase letter
+****** a variable name can only appear once in a pattern
+***** wildcard patterns, _
+***** constants, e.g. 1, true
+****** names of constants begin with a capital letter, except null, true, false
+**** Ex: e match { case p_1 => e_1 ... case p_n => e_n }
+* Collections
+** Lists
 #+BEGIN_SRC scala
 val fruit = List("apples", "oranges", "pears")
 val nums  = List(1, 2, 3, 4)
 val diag3 = List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1))
 val empty = List()
 #+END_SRC
-**** Lists are immutable and recursive, unlike arrays
-**** Lists are homogeneous: the elements of a list must have the same type
-**** :: is cons operation
-**** Nil is the empty list
-**** head, tail, isEmpty; the three fundamental operations on lists (methods on Lists)
-**** lists can be decomposed via pattern matching
+*** Lists are immutable and recursive, unlike arrays
+*** Lists are homogeneous: the elements of a list must have the same type
+*** :: is cons operation
+*** Nil is the empty list
+*** head, tail, isEmpty; the three fundamental operations on lists (methods on Lists)
+*** lists can be decomposed via pattern matching
 1 :: 2 :: xs        Lists that start with 1 and then 2, then anything (including Nil)
 x :: Nil            Lists of length 1
 List(x)             Same as x :: Nil
@@ -512,7 +511,7 @@ List()              Empty list; same as Nil
 List(2 :: xs)       List containing another list that starts with 2
 List(1, 2)          List containing 1 then 2
 You typically match on empty for one case and x :: xs for another (what is its head, its tail?)
-**** Lists have sort methods, but let's do insertion sort by hand
+*** Lists have sort methods, but let's do insertion sort by hand
 #+BEGIN_SRC scala
 def isort(xs: List[Int]): List[Int] = xs match {
   case List() => List()
