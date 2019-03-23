@@ -1,23 +1,68 @@
 # -*- Mode: org -*-
 #+STARTUP: showall indent hidestars logreschedule
-#+TODO: TODO(t) INPR(i) WAIT(w) | DONE(d!) 
-#+TAGS: { @home(h) @school(s) } research(r) teaching(t) class(c)
+#+TODO: TODO(t) INPR(i) WAIT(w) | DONE(d!)
+#+TAGS: { @home(h) @work(w) } reading(r) programming(p) class(c)
 * Keystroke Reminders
-'C-c C-t' to quickly set status (or Shift+arrow to cycle)
-'C-c C-q" to quickly set tags
-'M-arrow' to move tasks up or down (or indent left/right)
-'C-c C-s' schedules an item
-'C-u C-c C-l' to link to a file
-'M-x org-agenda' to view agenda (then 'f' and 'b' for forward/back)
-In agenda, S-left or S-right move the schedule earlier or later
-* Class Tasks (relate to courses I am taking, not teaching)
+- 'C-c C-t' to quickly set status (or Shift+arrow to cycle)
+- 'C-c C-q" to quickly set tags
+- 'M-arrow' to move tasks up or down (or indent left/right)
+- 'C-c C-s' schedules an item
+- 'C-u C-c C-l' to link to a file
+- 'M-x org-agenda' to view agenda (then 'f' and 'b' for forward/back)
+- In agenda, S-left or S-right move the schedule earlier or later
+* Class Tasks :class:
 #+CATEGORY: Class
 ** Introduction to Mathematical Thinking
-*** [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
-*** [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
+- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
+- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
+** Programming Languages A :programming:
+- [ ] Finish watching second week's lectures
+- [ ] Homework 1
+* Reading List :reading:
+#+CATEGORY: Reading
+** Clojure :programming:
+- [ ] /Living Clojure/
+- [ ] /Clojure for the Brave and True/
+- [ ] /Getting Clojure/
+- [ ] /Programming Clojure/
+- [ ] /Joy of Clojure/
+- [ ] /Clojure Applied/
+- [ ] /Mastering Clojure Macros/
+** Haskell :programming:
+- [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books Link]]
+- [ ] /Haskell Book/
+- [ ] /Learn You a Haskell for Great Good!/
+- [ ] /Anatomy of Programming Languages/
+** Mathematics
+- [ ] /Introduction to Mathematical Thinking/
+- [ ] /Book of Proof/
+- [ ] /How to Read and Do Proofs/
+- [ ] /How to Prove It/
+- [ ] /Discrete Mathematics Using a Computer/
+- [ ] /Haskell Road to Logic Maths and Programming/
+** Lisp :programming:
+- [ ] /Land of Lisp/
+- [ ] /Realm of Racket/
+- [ ] /The Little Schemer/
+- [ ] /The Seasoned Schemer/
+- [ ] /The Reasoned Schemer/
+- [ ] /Structure and Interpretation of Computer Programs/
+** Software Development :programming:
+- [ ] /How to Design Programs/
+- [ ] /Test Driven Development by Example/
+- [ ] /Growing Object-Oriented Software, Guided by Tests/
+- [ ] /Design It/
+- [ ] /Refactoring - 2nd Edition/
+- [ ] /Agile Software Development Principles Patterns and Practice/
+- [ ] /Code Complete/
+** Work :programming:
+- [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
+- [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
+- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
 * Personal Tasks
 #+CATEGORY: Personal
-** TODO Find out more about [[http://orgmode.org/manual/Handling-links.html][handling links in org-mode]]
+** DONE Find out more about [[http://orgmode.org/manual/Handling-links.html][handling links in org-mode]]
+CLOSED: [2019-03-22 Fri 21:47]
+- State "DONE"       from "TODO"       [2019-03-22 Fri 21:47]
 * Someday / Maybe
 #+CATEGORY: Someday
-

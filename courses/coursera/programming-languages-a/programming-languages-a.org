@@ -8,10 +8,13 @@
 *** Evaluate expression and extend dynamic environment
 * Intro to ML
 ** Comments in ML with (* *)
+
 #+BEGIN_SRC sml
 (* This is a comment *)
 #+END_SRC
+
 ** Create a variable with val
+
 #+BEGIN_SRC sml
 val x = 34;
 (* static environment: x : int *)
@@ -23,6 +26,7 @@ val y = 17;
 
 (* for more declarations, see 3_our_first_program.sml *)
 #+END_SRC
+
 ** Top down. You cannot use later bindings; only earlier
 ** if is an expression: if e1 then e2 else e3;
 *** e1 must be bool; e2 and e3 must be of the same type
@@ -30,43 +34,177 @@ val y = 17;
 *** no "truthiness".  e1 must be bool.
 ** End lines with semicolon in REPL, but not needed in file
 ** - is only used for subtraction; ~ for negation
+** Functions are the most important building block in the course
+*** Like Java methods, have arguments and result
+*** But no classes, =this=, =return=, etc
+*** Example
+
+#+begin_src sml
+(* Note: correct only if y>=0 *)
+
+fun pow (x : int, y : int) =
+  if y=0
+  then 1
+  else x * pow(x,y-1)
+
+fun cube(x : int) =
+  pow(x, 3)
+
+(* functions of one argument can be called without parens *)
+val sixtyfour = cube 4
+#+end_src
+
+** Tuples have a fixed "number of pieces" that may have different types
+*** Pairs (2-tuples)
+**** Access pieces with #1 e and #2 e
+
+#+begin_src
+val my_pair = (2, true)
+val two = #1 my_pair
+val t = #2 my_pair
+
+fun swap (pr : int*bool) =
+  (#2 pr, #1 pr)
+
+val swapped_pair = swap my_pair
+
+fun div_mod (x : int, y : int) =
+  (x div y, x mod y)
+#+end_src
+
+*** Tuples
+**** (e1,e2,...,en)
+**** ta * tb * ... * tn
+**** #1 e, #2 e, #3 e, ...
+** List have any "number of pieces" that all have the same type
+*** The empty list is a value: []
+*** In general, a list of values is a value: [v1,v2,...,vn]
+*** Cons: e1::e2 where e2 is a list and 1 is a compatible value
+
+If e1 evaluates to v and e2 evaluates to a list [v1,...,vn]
+  then e1::e2 evaluates to [v,...,vn]
+  e1::e2 (* pronounced "cons" *)
+
+*** Standard Library functions for Lists
+**** =null e= evaluates to true iff e evaluates to []
+***** null : 'a list -> bool
+**** If e evaluates to [v1,v2,...,vn] then =hd e= evaluates to v1
+***** Raises exception if e evaluates to []
+***** hd : 'a list -> 'a
+**** If e evaluates to [v1,v2,...,vn] then =tl e= evaluates to [v2,...,vn]
+***** Raises exception if e evaluates to []
+***** Notice result is a list
+***** tl : 'a list -> 'a list
 ** ML Rules for Expressions
 *** Variables
+
 Syntax: sequence of letters, digits, _, not starting with a digit.
+
 Type-checking: Look up type in current static environment or fail.
+
 Evaluation: Look up value in current dynamic environment.
+  Expressions in variable bindings are evaluated eagerly
+
 *** Addition
+
 Syntax: e1 + e2 where e1 and e2 are expressions.
+
 Type-checking: if e1 and e2 have type int, then e1 + e2 have type int, or fail.
+
 Evaluation: If e1 evaluates to v1 and e2 evaluates to v2,
   then e1 + e2 evaluates to the sum of v1 and v2.
+
 *** Values
+
 All values are expressions, but not all expressions are values.
+
 Every value "evaluates to itself" in "zero steps".
+
 Examples:
   34, 17, 52 have type int.
-  true, false have type bool. 
+  true, false have type bool.
   () has type unit.
+
 *** Conditional Expressions
+
 Syntax: if e1 then e2 else e3, where if/then/else are keywords
   and e1, e2, e3 are sub-expressions.
+
 Type-checking: e1 must be bool.  e2 and e3 can have any type t, but must have
   the same type t.  The type of the entire expression is t.
+
 Evaluation: first evaluate e1 to a value v1.
   if v1 is true, then evaluate e2 and that is the whole expression's result.
-  if v1 is false, then evaluate e3 and that is the whole expression's result. 
+  if v1 is false, then evaluate e3 and that is the whole expression's result.
+
 *** Less-than
+
 Syntax: e1 < e2
+
 Type-checking: e1 and e2 must both be type t.  The whole expression is a bool.
+
 Evaluation: first evaluate e1 and e2 to values v1 and v2, then compare v1 and v2
+
+*** Functions
+
+Syntax: fun x0 (x1 : t1, ... , xn : tn) = e
+
+Type-checking: Adds binding x0 : (t1 * ... * tn) -> t if:
+  Can type-check body e to have type t in the static environment
+  containing:
+    - "Enclosing" static environment (earlier bindings)
+    - x1 : t1, ..., xn : tn (arguments with their types)
+    - x0 : (t1 * ... * tn) -> t (for recursion)
+
+Evaluation: A function is a value!
+  - Adds x0 to dynamic environment so later expressions can call it
+  - Function-call semantics will also allow recursion
+Note: In SML there is no way to have functions that take variable # of args
+
+*** Function Calls
+
+Syntax: e0(e1, ..., en)
+  Parentheses optional if there is exactly one argument
+
+Type-checking:
+  If:
+    - e0 has some type (t1 * ... * tn) -> t
+    - e1 has type t1, ..., en has type tn
+  Then:
+    - e0(e1,...,en) has type t
+
+Evaluation:
+  Under current dynamic environment, evaluate e0 to a function
+    fun x0 (x1 : t1, ..., xn : tn) = e
+    - Since call type-checked, result will be a function
+  Under current dynamic environment, evaluate arguments to values v1, ..., vn
+  Result is evaluation of e in an environment extended to map
+    x1 to v1, ..., xn to vn
+    - "An environment" is actually the environment where the function
+      was defined, and includes x0 for recursion
+
+*** Pairs (2-tuples)
+
+Syntax: (e1,e2)
+
+Type-checking: If e1 has type ta and e2 has type tb, then the pair has
+  type ta * tb
+
+Evaluation: Evaluate e1 to v1 and e2 to v2; result is (v1,v2)
+  A pair of values is a value
+
 * Using the REPL
 ** You can type 'use filename.sml' to load a file
 ** Exit and restart session before using use again
 ** Errors
 *** Syntax
-What you wrote means nothing or not the construct you intended.
-*** Type-checking
-What you wrote does not type-check.
-*** Evaluation
-It runs but produces wrong answer, or an exception, or an infinite loop.
 
+What you wrote means nothing or not the construct you intended.
+
+*** Type-checking
+
+What you wrote does not type-check.
+
+*** Evaluation
+
+It runs but produces wrong answer, or an exception, or an infinite loop.

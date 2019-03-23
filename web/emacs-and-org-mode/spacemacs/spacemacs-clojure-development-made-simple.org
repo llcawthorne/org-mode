@@ -1,0 +1,4 @@
+Notes on Spacemacs: Clojure Development Made Simple
+https://practicalli.github.io/spacemacs/
+
+*
