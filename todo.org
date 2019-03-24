@@ -22,10 +22,12 @@
 #+CATEGORY: Reading
 ** Clojure :programming:
 - [ ] /Living Clojure/
+- [ ] /Spacemacs: Clojure development made simple/ [[https://practicalli.github.io/spacemacs/][Book Link]]
 - [ ] /Clojure for the Brave and True/
 - [ ] /Getting Clojure/
 - [ ] /Programming Clojure/
 - [ ] /Joy of Clojure/
+- [ ] /ClojureScript Unravelled/ [[https://funcool.github.io/clojurescript-unraveled/][Book Link]]
 - [ ] /Clojure Applied/
 - [ ] /Mastering Clojure Macros/
 ** Haskell :programming:
@@ -57,8 +59,13 @@
 - [ ] /Code Complete/
 ** Work :programming:
 - [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
+- [ ] /Modern Java in Action/
 - [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
 - [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
+** Upcoming Releases :programming:
+- [ ] /Get Programming with Clojure/
+- [ ] /Get Programming with Scala/
+- [ ] /Grokking Functional Programming/
 * Personal Tasks
 #+CATEGORY: Personal
 ** DONE Find out more about [[http://orgmode.org/manual/Handling-links.html][handling links in org-mode]]

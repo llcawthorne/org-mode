@@ -1,0 +1,1329 @@
+* Section 1 - A Guided Tour of Clojure
+** 1 - The Structure of Clojure
+*** Simple Values
+**** String, Integers, Ratios, Decimals, Keywords, Characters, Booleans, =nil=
+**** Numbers work mostly as expected: 42, 12.43
+**** Integer division yields a ratio; so does 1/3
+**** Keywords start with a colon, like =:jam=
+**** Single characters start with a backslash, like =\j=
+**** =true= and =false= are all lowercase
+**** =nil= is the null value
+*** Collections
+**** All collections are /immutable/ and /persistent/
+***** Operations that look like they modify collections return a new copy
+***** New copies made fast due to structural sharing
+**** Lists are collections of things
+***** ='(1 2 "jam" :marmalade-jar)=
+***** They don't all have to be the same type
+***** List is a linked list, so slow random access
+***** Manipulate lists with =first= an =rest=
+
+#+begin_src clojure
+(first '(:rabbit :pocket-watch :marmalade :door))
+;; -> :rabbit
+
+(rest '(:rabbit :pocket-watch :marmalade :door))
+;; -> (:pocket-watch :marmalade :door)
+#+end_src
+
+***** Build a list with =cons=
+****** =(cons 5 '()) ;; -> (5)
+****** The end of list is specified with a =nil=
+****** =(cons 5 nil) ;; -> (5)
+***** Start a list with quote: ='(1 2 3 4 5)=
+***** Or build a list with =list=: =(list 1 2 3 4 5)=
+***** All Clojure code is made of lists of data
+**** Vectors are also collections of things
+***** Use square brackets: =[1 2 3 4 5]=
+***** Fast random access: =(nth [:jar1 1 2 3 :jar2] 2)= ;; -> 2
+***** =first= and =rest= work on vectors
+***** =last= returns the last element
+***** =count= returns the size of the collection
+****** =nth=, =last=, and =count= work on lists too, but are slow
+***** =conj= adds one or more element(s) to a collection in the most natural way
+****** Adds to the end of vectors
+****** Adds to the beginning of lists
+****** Can add more than one element at a time
+
+#+begin_src clojure
+(conj [:toast :butter] :jam :honey)
+;; -> [:toast :butter :jam :honey]
+#+end_src
+
+**** Maps store key-value pairs of data
+***** Use curly brackets: ={:jam1 "strawberry :jam2 "blackberry"}=
+***** keywords are often keys
+***** several ways to retrieve values
+****** =(get {:jam1 "strawberry" :jam2 "blackberry"} :jam2)= ;; -> "blackberry"
+****** =(:jam2 {:jam1 "strawberry" :jam2 "blackberry"})= ;; -> "blackberry"
+******* keywords can be used like functions; other keys can't
+***** =keys= and =vals= fetch just the keys or values as a list
+***** =assoc= associates a new key-value pair to a map
+
+#+begin_src clojure
+(assoc {:jam1 "red" :jam2 "black"} :jam3 "orange")
+;; -> {:jam1 "red" :jam2 "black" :jam3 "orange"}
+
+(assoc {:jam1 "red" :jam2 "black"} :jam1 "orange")
+;; -> {:jam2 "black" :jam1 "orange"}
+#+end_src
+
+***** =dissoc= returns a map with a key-value pair removed
+***** =merge= merges the key-value pairs from one or more maps to another
+****** values in the last map win in case of conflict
+
+#+begin_src clojure
+(merge {:jam1 "red" :jam2 "black"}
+       {:jam1 "orange" :jam3 "red"}
+       {:jam4 "blue"}
+;; -> {:jam4 "blue" :jam3 "red" :jam2 "black" :jam1 "orange"}
+#+end_src
+
+***** No guaranteed order, use =sorted-map= if you need ordering
+***** Created with =hash-map= keyword, because =map= is something else
+**** Sets are a collection of elements with no duplicates
+***** Use #{}, like =#{:red :blue :white :pink}=
+***** You must not list duplicates in a literally created set
+***** Creation from another collection with =set= will eliminate duplicates
+***** Support =union=, =difference=, and =intersection
+****** The set operations must be prefixed by =clojure.set=
+
+#+begin_src clojure
+(clojure.set/union #{:r :b :w} #{:w :p :y})
+;; -> #{:y :r :w :b :p}
+(clojure.set/difference #{:r :b :w} #{:w :p :y})
+;; -> #{:r :b}
+(clojure.set/intersection #{:r :b :w} #{:w :p :y})
+;; -> #{:w}
+#+end_src
+
+***** Also use =get= or keywords as function
+***** A set can also act as a function
+
+#+begin_src clojure
+(#{:rabbit :door :watch} :rabbit)
+;; -> :rabbit
+#+end_src
+
+***** =contains?= tells you if an element is there (true or false)
+***** =conj= also adds elements to a set
+***** =disj= removes elements from a set
+*** Symbols
+**** A symbol refers to a value
+**** =def= binds a symbol to a value through a var, global to namespace
+**** =let= creates bindings only available within the context of the =let=
+***** What happens in a =let=, stays in the =let=
+
+#+begin_src clojure
+(def developer "Alice}
+;; -> #'user/developer
+
+(let [developer "Alice in Wonderland"]
+  developer)
+;; -> "Alice in Wonderland"
+
+developer
+;; -> "Alice"
+#+end_src
+
+*** Functions
+**** The function or operator goes first, followed by the parameters
+**** =defn= creates var bindings for functions
+**** anonymous functions can be defined with =fn=
+**** anonymous functions can also be defined with shorthand: =#(...)=
+
+#+begin_src clojure
+(#(str "Off we go" "!"))
+;; -> "Off we go!
+
+;; access parameters with % for a single parameter
+(#(str "Off we go" "!" " - " %) "again")
+;; -> "Off we go! - again"
+
+;; or %1 %2 and so on for multiple parameters
+(#(str "Off we go" "!" " - " %1 %2) "again" "?")
+;; -> "Off we go! - again?"
+#+end_src
+
+*** Namespaces
+**** Namespaces are organized and controlled access to vars
+**** Create or switch to namespaces with =ns=
+**** Check what namespace you are in with =*ns*=
+**** Refer to a variable in another names with fully qualified name
+***** =alice.favfoods/fav-food= ;; namespace before /
+**** Require another namespace: =(require clojure.set)=
+***** Refer to functions with the namespace: =clojure.set/union=
+***** =clojure.set= is auto-required in user
+***** Require and alias: =(require [clojure.set :as s])=
+***** Use require as a keyword when switching/defining a namespace
+
+#+begin_src
+(ns wonderland
+  (:require [clojure.set :as s]))
+
+(defn common-fav-foods [foods1 foods2]
+  (let [food-set1 (set foods1)
+        food-set2 (set foods2)
+        common-foods (s/intersection food-set1 food-set2)]
+    (str "Common Foods: " common-foods)))
+
+(common-fav-foods [:jam :brownies :toast]
+                  [:lettuce :carrots :jam])
+;; -> "Common Foods: #{:jam}"
+#+end_src
+
+***** You can also =:refer :all= when requiring a namespace
+****** =use= is the same as =require= with =:refer :all=
+** 2 - Flow and Functional Transformations
+*** Boolean Logic
+**** Useful predicates: =true?=, =false?=, =nil?=
+**** =not= returns the negation of its argument
+**** =nil= and =false= are both logically false in tests
+**** All other values are =true=
+**** Use (=) (equal sign) to check for equality
+***** Works like Java =equals= method
+***** Collections of different types with same elements are equal
+
+#+begin_src
+(= '(:drinkme :bottle) [:drinkme :bottle])
+;; -> true
+#+end_src
+
+**** There is also a not= expression that is short for (not (= x y))
+**** Collection predicates:
+***** =empty?= checks if a collection is empty
+****** =seq= underlies a lot of the collections abstraction
+****** Use =seq= to check for =(not (empty? x))=
+****** =seq= returns =nil= for =[]=
+***** use =seq= to check if a collection is non-empty
+***** =every?= checks if a predicate is true for every item in a collection
+****** =(every? odd? [1 3 5])= ;; -> true
+****** =(every? odd? [1 2 3 4 5])= ;; -> false
+***** =not-any?= checks if a predicate is false for every item in a collection
+***** =some= returns the first logical true value of a predicate, nil otherwise
+
+#+begin_src clojure
+(some #(> % 3) [1 2 3 4 5])
+
+;; remember, a set can act as a function
+(some #{3} [1 2 3 4 5])  ;; -> 3
+(some #{4 5} [1 2 3 4 5]) ;; -> 4
+#+end_src
+
+*** Control Structures
+**** =if= takes a test and two expressions
+
+#+begin_src clojure
+(if (= :drinkme :drinkme)
+  "Try it"
+  "Don't try it")
+;; -> "Try it"
+#+end_src
+
+**** =if-let= binds an expression to a symbol, then tests if it is logical true
+
+#+begin_src
+(if-let [need-to-grow-small (> 5 1)]
+  "drink bottle"
+  "don't drink bottle")
+;; -> "drink bottle"
+#+end_src
+
+**** =when= will evaluate its body when a condition is true, otherwise nil
+
+#+begin_src clojure
+(defn drink [need-to-grow-small]
+  (when need-to-grow-small "drink bottle"))
+
+(drink true)
+;; -> "drink bottle"
+#+end_src
+
+**** =when-let= binds an expression to a symbol, then evaulates its body if true
+
+#+begin_src clojure
+(when-let [need-to-grow-small true]
+  "drink bottle")
+;; -> "drink bottle"
+
+(when-let [need-to-grow-small false]
+  "drink bottle")
+;; -> nil
+#+end_src
+
+**** =cond= takes pairs of expressions to test and evaluate
+
+#+begin_src clojure
+(let [bottle "drinkme"]
+  (cond
+    (= bottle "poison") "don't touch"
+    (= bottle "drinkme") "grow smaller"
+    (= bottle "empty") "all gone"))
+;; -> "grow smaller"
+#+end_src
+
+***** =cond= expressions are evaluated from top to bottom, first true wins
+***** if no test passes, =nil= is returned
+***** a final :else condition can act as a default clause
+
+#+begin_src clojure
+(let [bottle "mystery"]
+  (cond
+    (= bottle "poison") "don't touch"
+    (= bottle "drinkme") "grow smaller"
+    (= bottle "empty") "all gone"
+     :else "unknown"))
+;; -> "unknown"
+#+end_src
+
+**** =case= is a more concise =cond= for when you are testing one value with =
+
+#+begin_src clojure
+(let [bottle "drinkme"]
+  (case bottle
+    "poison" "don't touch"
+    "drinkme" "grow smaller"
+    "empty" "all gone"))
+;; -> "grow smaller"
+#+end_src
+
+***** =case= will throw an exception if there is no match, unlike =cond=
+***** you can also specify a default case, without :else
+
+#+begin_src clojure
+(let [bottle "mystery"]
+  (case bottle
+    "poison" "don't touch"
+    "drinkme" "grow smaller"
+    "empty" "all gone"
+    "unknown"))
+;; -> "unknown"
+#+end_src
+
+*** Functions Creating Functions
+**** =partial= allows you to supply part of the arguments to a function
+
+#+begin_src clojure
+(defn adder [x y]
+  (+ x y))
+;; -> #'user/adder
+
+(adder 3 4)
+;; -> 7
+
+(def adder-5 (partial adder 5))
+;; -> #'user/adder-5
+
+(adder-5 10)
+;; -> 15
+#+end_src
+
+**** =comp= allows you to compose multiple functions from right to left
+
+#+begin_src clojure
+(defn toggle-grow [direction]
+  (if (= direction :small) :big :small))
+;; -> #'user/toggle-grow
+
+(defn oh-my [direction]
+  (str "Oh My! You are growing " direction))
+;; -> #'user/oh-my
+
+(oh-my (toggle-grow :small))
+;; -> "Oh My! You are growing :big"
+
+(defn surprise [direction]
+  ((comp oh-my toggle-grow) direction))
+
+(surprise :small)
+;; -> "Oh My! You are growing :big"
+#+end_src
+
+*** Destructuring
+**** Destructuring lets you bind names to elements of vectors and maps
+
+#+begin_src clojure
+(let [[color size] ["blue" "small"]]
+  (str "The " color " door is " size))
+;; -> "The blue door is small"
+
+(let [[color [size] :as original] ["blue" ["small"]]]
+  {:color color :size size :original original})
+;; -> {:color "blue" :size "small" :original ["blue" ["small"]]}
+
+;; also works for maps
+(let [{flower1 :flower1 flower2 :flower2}
+      {:flower1 "red" :flower2 "blue"}]
+  (str "The flowers are " flower1 " and " flower2))
+;; -> "The flowers are red and blue"
+
+;; you can specify default values with :or
+(let [{flower1 :flower1 flower2 :flowr2 :or {flower2 "missing"}}
+      {:flower1 "red"}]
+  (str "The flowers are " flower1 " and " flower2))
+;; -> "The flowers are red and missing"
+
+;; you can also use :keys if the varnames match the key names
+(let [{:keys [flower1 flower2]}
+      {:flower1 "red" :flower2 "blue"}]
+  (str "The flowers are " flower1 " and " flower2))
+;; -> "The flowers are red and blue"
+#+end_src
+
+**** Destructuring can be used in =let= or in function parameters in a =defn=
+
+#+begin_src clojure
+(defn flower-colors [{:keys [flower1 flower2]}]
+  (str "The flowers are " flower1 " and " flower2))
+
+(flower-colors {:flower1 "red" :flower2 "blue"})
+;; -> "The flowers are red and blue"
+#+end_src
+
+*** Laziness
+
+You can generate infinite sequences from (range), (repeat "whatever"),
+(repeatedly f), or (cycle ["big" "small"]).  It's wise not to try to evaluate
+them.  You can take from them with take.  (take 5 (range)).
+
+range, repeat, and repeatedly can also take an argument of how many times to
+repeat rather than go infinite.  (range 5) = '(0 1 2 3 4) and
+(repeatedly 5 #(rand-int 10)) generates 5 random numbers from 0 to 9.
+
+*** Recursion
+
+Recursion is commonly used instead of imperative loop constructs.  Any time
+a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
+
+#+begin_src clojure
+(def adjs ["normal"
+           "too small"
+           "too big"
+           "swimming"])
+
+(def alice-is [input]
+  (loop [in input
+         out []]
+    (if (empty? in)
+      out
+      (recur (rest in)
+             (conj out
+                   (str "Alice is " (first in)))))))
+
+(alice-is adjs)
+;; -> ["Alice is normal"
+;;     "Alice is too small"
+;;     "Alice is too big"
+;;     "Alice is swimming"]
+
+;; recur can also be used without loop, if you don't need new bindings
+(defn countdown [n]
+  (if (= n 0)
+    n
+    (recur (- n 1))))
+
+(countdown 100000)
+;; -> 0
+#+end_src
+
+*** Functional Transformations
+**** =map= will apply a function to each element of a collection
+***** map is lazy, so you can map across an infinite list
+***** map is lazy, so only map pure functions
+***** =doall= can force evaluation for side effects
+***** map can take more than one collection and be given a multi-arg function
+****** it matches elements of the collections and feeds them into the function
+****** it will stop when the shortest collection is exhausted
+**** =reduce= will summarize a collection; it is very flexible
+***** reduce takes a function of two-arguments and a collection
+****** argument 1: the ongoing result, or accumulator
+****** argument 2: the element that it is processing
+***** examples
+
+#+begin_src clojure
+(reduce + [1 2 3 4 5])
+;; -> 15
+
+(reduce (fn [r x] (if (nil? x) r (conj r x)))
+        []
+        [:mouse nil :duck nil nil :lory])
+;; -> [:mouse :duck :lory]
+#+end_src
+
+**** =filter= will keep elements of a collection that match a predicate
+
+#+begin_src
+(filter (complement nil?) [:mouse nil :duck nil nil])
+;; -> (:mouse :duck)
+
+(filter keyword? [:mouse nil :duck nil nil])
+;; -> (:mouse :duck)
+
+;; remove keeps what doesn't match the predicate (it removes what does match)
+(remove nil? [:mouse nil :duck nil nil])
+;; -> (:mouse :duck)
+#+end_src
+
+**** =for= comprehensions are flexible lazy transformations
+
+#+begin_src clojure
+(for [animal [:mouse :duck :lory]]
+  (name animal))
+;; -> ("mouse" "duck" "lory")
+
+;; it iterates over collections in a nested fashion
+(for [animal [:mouse :duck :lory]
+      color  [:red :blue]]
+  (str (name color) (name animal)))
+;; -> ("redmouse" "bluemouse"
+;;     "redduck" "blueduck"
+;;     "redlory" "bluelory")
+
+;; you can also use :let and :when keywords
+(for [animal [:mouse :duck :lory]
+      color  [:red :blue]
+      :let [animal-str (str "animal-" (name animal))
+            color-str (str "color-" (name color))
+            display-str (str animal-str "-" color-str)]
+      :when (= color :blue)]
+  display-str)
+;; -> ("animal-mouse-color-blue"
+;;     "animal-duck-color-blue"
+;;     "animal-lory-color-blue")
+#+end_src
+
+**** other useful transformations
+***** =flatten= takes a nested collection and returns a flattened sequences
+***** =vec= turns a sequence into a vector
+***** =into= conj's all the items of one collection onto another
+
+#+begin_src
+(into [] '(1 2 3))
+;; -> [1 2 3]
+
+(into (sorted-map) {:b 2 :c 3 :a 1})
+;; -> {:a 1 :b 2 :c 3}
+
+;; or vectors of pairs into maps
+(into {} [[:a 1] [:b 2] [:c 3]])
+;; -> {:a 1 :b 2 :c 3}
+
+;; or vice-versa
+(into [] {:a 1 :b 2 :c 3})
+;; -> [[:c 3] [:b 2] [:a 1]]
+#+end_src
+
+***** =partition= takes a size and a collection, and cuts it up
+
+#+begin_src clojure
+(partition 3 [1 2 3 4 5 6 7 8 9 10])
+;; -> ((1 2 3) (4 5 6) (7 8 9))
+
+(partition-all 3 [1 2 3 4 5 6 7 8 9 10])
+;; -> ((1 2 3) (4 5 6) (7 8 9) (10))
+
+;; partition-by takes a function and applies it to determine partitions
+(partition-by #(= 6 %) [1 2 3 4 5 6 7 8 9 10])
+;; -> ((1 2 3 4 5) (6) (7 8 9 10))
+#+end_src
+
+** 3 - State and Concurrency
+*** Atoms are for independent synchronous changes
+**** Define with =def= and =atom=: =(def who-atom (atom :caterpillar))=
+**** Dereference with @: =@who-atom=  ;; -> :caterpillar
+**** Reset to a value with =reset!=: =(reset! who-atom :chrysalis)=
+**** =reset!= replaces the value and returns the new value
+**** Use a function on current value to update with =swap!=
+**** =swap!= also returns the new value
+**** Use =swap!= with a pure function; side-effects are unpredictable
+**** Example incrementing counter on three threads
+
+#+begin_src clojure
+(def counter (atom 0))
+
+@counter
+;; -> 0
+
+(let [n 5]
+  (future (dotimes [_ n] (swap! counter inc)))
+  (future (dotimes [_ n] (swap! counter inc)))
+  (future (dotimes [_ n] (swap! counter inc))))
+
+@counter
+;; -> 15
+#+end_src
+
+*** Refs are for coordinated synchronous changes
+**** Software Transactional Memory (STM)
+***** Atomic - within the transaction, all are updated or none
+***** Consistent - support optional pre-commit validator function
+***** Isolated - a transaction has its own view of the world
+***** Not durable; in memory
+**** Created with =ref=
+**** Also need to be dereferenced with @
+**** Changes must happen in a =dosync=
+**** =alter= takes a ref and a function to apply to its current value
+**** =commute= does the same as alter, but for commutative operations
+**** =ref-set= takes a ref and a values and sets the ref
+**** Example
+
+#+begin_src clojure
+(def x (ref 1))
+(def y (ref 1))
+
+(defn new-values []
+  (dosync
+    (alter x inc)
+    (ref-set y (+ 2 @x))))
+
+(let [n 2]
+  (future (dotimes [_ n] (new-values)))
+  (future (dotimes [_ n] (new-values))))
+
+@x
+;; -> 5
+@y
+;; -> 7
+#+end_src
+
+*** Agents are for independent asynchronous changes
+**** You can hand a task to an agent if you don't need the results right away
+**** Created with =agent=
+**** Also need to be dereferenced with @
+**** =send= takes an agent and an update function to apply to its value
+**** =send-off= is used instead for update functions that might block on IO
+**** Agents fail on exception
+***** An agents errors can be inspected with =agent-errors=
+***** Agents fail on exceptions
+***** Restart a failed agent with =restart-agent=
+***** =set-error-model= lets you set agents to :continue instead of :fail
+***** Agents set to continue need an error handler with =set-error-handler!=
+***** Agents with :continue and an error handler don't need to be restarted
+**** Agents are a great way to coordinate work you want in a separate process
+**** Example
+
+#+begin_src clojure
+(def who-agent (agent :caterpillar))
+
+(defn change [state]
+  (case state
+    :caterpillar :chrysalis
+    :chrysalis :butterfly
+    :butterfly))
+
+(defn change-error [state]
+  (throw (Exception. "Boom!")))
+
+(set-error-mode! who-agent :continue)
+
+(defn err-handler-fn [a ex]
+  (println "error " ex " value is " @a))
+
+(set-error-handler! who-agent err-handler-fn)
+
+(send who-agent change-error)
+;; -> #<Agent@611ef20f: :caterpillar>
+;; prints out
+;;        error #<Exception java.lang.Exception: Boom!>
+;;        value is :caterpillar
+
+@who-agent
+;; -> :caterpillar
+
+(send who-agent change)
+;; -> #<Agent@3a5bd2d6: :caterpillar>
+
+@who-agent
+;; -> :chrysalis
+#+end_src
+
+** 4 - Java Interop and Polymorphism
+*** Java Interop
+**** Use =class= to see what class something is an instance of
+**** Use the dot operator to call a method =(. "caterpillar" toUpperCase)=
+**** Dot alternate shorthand: =(.toUpperCase "caterpillar")=
+**** Both work with arguments: =(.indexOf "caterpillar" "pilar")=
+**** Create new objects with =new=: =(new String "Hi!!")=
+**** =new= alternate shorthand: =(String. "Hi!!")=
+**** Use :import in a namespace to import a java class
+
+#+begin_src clojure
+(ns caterpillar.network
+  (:import (java.net INetAddress)))
+
+(.getHostName (InetAddress/getByName "localhost"))
+;; -> "localhost"
+
+;; we could've done this without importing via fully qualified names
+(java.net.INetAddress/getByName "localhost")
+;; -> #<Inet4Address localhost/127.0.0.1>
+#+end_src
+**** You can also import with =import=: =(import 'java.util.UUID)=
+
+#+begin_src clojure
+(import 'java.util.UUID)
+(UUID/randomUUID)
+;; -> #uuid "f9877259-2cc1-4e5a-8c6f-8b51499cb9f8"
+#+end_src
+
+**** Use / to invoke static methods: =(InetAddress/getByName "localhost")=
+**** =doto= lets you perform a series of mutations on a Java object
+
+#+begin_src clojure
+(def sb (doto (StringBuffer. "Who ")
+           (.append "are ")
+           (.append "you?")))
+
+(.toString sb)
+;; -> "Who are you?"
+#+end_src clojure
+
+*** Practical Polymorphism
+**** Multi-methods have a dispatch function
+
+#+begin_src clojure
+(defmulti eat-mushroom (fn [height]
+                         (if (< height 3)
+                           :grow
+                           :shrink)))
+
+(defmethod eat-mushroom :grow [_]
+  "Eat the right side to grow.")
+
+(defmethod eat-mushroom :shrink [_]
+  "Eat the left side to shrink.")
+
+(eat-mushroom 1)
+;; -> "Eat the right side to grow."
+
+(eat-mushroom 9)
+;; -> "Eat the left side to shrink."
+#+end_src
+
+***** Use :default keyword in a =defmethod= to handle default case
+**** Protocols can handle polymorphism for a group of functions
+
+#+begin_src clojure
+(defprotocol BigMushroom
+  (eat-mushroom [this]))
+
+(extend-protocol BigMushroom
+  java.lang.String
+  (eat-mushroom [this]
+    (str (.toUpperCase this) " mmmm tasty!"))
+
+  clojure.lang.Keyword
+  (eat-mushroom [this]
+    (case this
+      :grow "Eat the right side!"
+      :shrink "Eat the left side!"))
+
+  java.lang.Long
+  (eat-mushroom [this]
+    (if (< this 3)
+      "Eat the right side to grow"
+      "Eat the left side to shrink")))
+
+(eat-mushroom "Big Mushroom")
+;; -> "BIG MUSHROOM mmmm tasty!"
+
+(eat-mushroom :grow)
+;; -> "Eat the right side!"
+
+(eat-mushroom 1)
+;; -> "Eat the right side to grow
+#+end_src
+
+**** Clojure records can extend protocols and have fields to hold data
+
+#+begin_src clojure
+;; first a demonstration of defrecord
+(defrecord Mushroom [color height])
+;; -> caterpillar.network.Mushroom
+
+(def regular-mushroom (Mushroom. "white and blue polka dots" "2 inches"))
+;; -> #'caterpillar.network/regular-mushroom
+
+(class regular-mushroom)
+;; -> caterpillar.network.Mushroom
+
+;; access fields with dot-dash notation or as a hash
+(.-color regular-mushroom)
+;; -> "white and blue polka dots
+(:height regular-mushroom)
+;; -> "2 inches"
+
+(defprotocol Edible
+  (bite-right-side [this])
+  (bit-left-side [this]))
+
+(defrecord WonderlandMushroom [color height]
+  Edible
+  (bite-right-side [this]
+    (str "The " color " bite makes you grow bigger"))
+  (bite-left-side [this]
+    (str "The " color " bite makes you grow smaller")))
+
+(defrecord RegularMushroom [color height]
+  Edible
+  (bite-right-side [this]
+     (str "The " color " bite tastes bad"))
+  (bite-left-side [this]
+     (str "The " color " bite tastes bad too")))
+
+;; Now define two mushrooms
+(def alice-mushroom (WonderlandMushroom. "blue dots" "3 inches"))
+(def reg-mushroom (RegularMushroom "brown" "1 inches"))
+
+(bite-right-side alice-mushroom)
+;; -> "The blue dots bite makes you grow bigger"
+(bite-left-side alice-mushroom)
+;; -> "The blue dots bite makes you grow smaller"
+
+(bite-right-side reg-mushroom)
+;; -> "The brown bite tastes bad"
+(bite-left-side reg-mushroom)
+;; -> "The brown bite tastes bad too"
+#+end_src
+
+**** You can use =deftype= for a type to implement a protocol without data
+
+#+begin_src clojure
+;; Edible Protocol defined in previous codeblock
+(deftype WonderlandMushroom []
+  Edible
+  (bite-right-side [this]
+    (str "The bite makes you grow bigger"))
+  (bite-left-side [this]
+    (str "The bite makes you grow smaller")))
+
+(def alice-mushroom (WonderlandMushroom).))
+(bite-right-side alice-mushroom)
+;; -> "The bite makes you grow bigger
+#+end_src
+
+**** The Edible protocol implemented instead with =if= and =hash-map=
+
+#+begin_src clojure
+;; No protocol definition for this
+;; Don't overuse records, types and protocols because you have an OOP background
+(def alice-mushroom
+  {:type "wonderland" :color "blue polka dots" :size "12 inches"})
+
+(defn bite-right-side [mushroom]
+  (if (= (:type mushroom) "wonderland")
+    "The bite makes you grow bigger"
+    "The bite tastes bad"))
+
+(defn bite-left-side [mushroom]
+  (if (= (:type mushroom) "wonderland")
+    "The bite makes you grow smaller"
+    "The bite tastes bad too"))
+
+(bite-right-side alice-mushroom)
+;; -> "The bite makes you grow bigger
+(bite-left-side {:type "mushroom" :color "brown" :size "1 inch"})
+;; -> "The bite tastes bad too"
+#+end_src
+
+**** ADVICE: It's easy to start with maps and move to records and protocols later
+** 5 - How to Use Clojure Projects and Libraries
+*** Create a new project: =lein new serpent-talk=
+*** Java files use _ where namespaces use -
+*** Testing
+
+#+begin_src clojure
+(deftest a-testing
+  (testing "FIXME, I fail."
+    (is (= 0 1))))
+#+end_src
+
+**** You normally import clojure.test with :refer :all
+**** =deftest= defines a test function
+**** =testing= is used to provide context to what is being tested
+**** =is= provides the assertion that is being tested
+**** =lein test= runs a project's tests
+*** project.clj contains dependencies using maven names
+**** Maven Central and Clojars are default repositories searched
+**** A :repositories key lets you specify other repositories
+**** =lein deps :tree= shows you your dependency tree
+*** command-line apps
+**** You need a -main function that takes [& args]
+**** You need (:gen-class) in your main namespace (before or after :require)
+**** You should add :main package.core to the defproject in project.clj
+**** =lein run= will run your -main function
+*** uberjars
+**** you can bundle up your app in an uberjar with all dependencies
+**** you need :aot [package.core] for your class containing main in project.clj
+
+#+begin_src clojure
+;; example project.clj for a command-line app being bundled in an uberjar
+(defproject async-tea-party "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :license {:name "Eclipse Public License"
+            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
+  :main async-tea-party.core
+  :aot [async-tea-party.core])
+#+end_src
+
+**** then just run =lein uberjar
+**** run it with =java -jar target/package-name-0.1.0-SNAPSHOT-standalone.jar=
+** 6 - Communication with core.async
+*** core.async allows independent threads to communicate through channels
+*** you must add the org.clojure/core.async dependency to project.clj
+*** examples have =(:require [clojure.core.async :as async])=
+*** channels
+**** create a channel with =(def tea-channel (async/chan)=
+**** create a buffered channel with =(def tea-channel (async/chan 10))=
+**** close a channel with =close!=: =(async/close! tea-channel)=
+**** channel is closed to new inputs
+**** if there are still values in the channel, they can be taken off
+*** put and take
+**** synchronous blocking put is >!!
+**** put tea on the channel: =(async/>!! tea-channel :cup-of-tea)=
+**** synchronous blocking take is <!!
+**** take tea from the channel: =(async/<!! tea-channel)=
+**** taking from an empty channel returns =nil=
+**** asynchronous put is >!  It must be used in a =go= block
+**** asynchronous get is <!  It also needs to be in a =go= block
+*** a =go-loop= is a go block with a loop awaiting values in a channel
+
+#+begin_src clojure
+(def tea-channel (async/chan 10))
+
+(async/go-loop []
+               (println "Thanks for the " (async/<! tea-channel))
+               (recur))
+#+end_src clojure
+
+**** go blocks have their own threads and are lightweight processes
+*** =alts!= let's you poll several channels to use fastest or serve multiples
+
+#+begin_src clojure
+;; an example of serving multiple channels in one go-loop
+(def tea-channel (async/chan 10))
+(def milk-channel (async/chan 10))
+(def sugar-channel (async/chan 10))
+
+(async/go-loop []
+  (let [[v ch] (async/alts! [tea-channel
+                             milk-channel
+                             sugar-channel])]
+    (println "Got " v " from " ch)
+    (recur)))
+
+(async/>!! sugar-channel :sugar)
+;; Will print to stdout:
+;; Got :sugar from #ManyToManyChannel@2555e95
+
+(async/>!! milk-channel :milk)
+;; Will print to stdout:
+;; Got :milk from #ManyToManyChannel@1a1850e5
+
+(async/>!! tea-channel :tea)
+;; Will print to stdout:
+;; Got :tea from #ManyToManyChannel@130f42ba
+#+end_src
+
+*** Example
+
+#+begin_src clojure
+;; an example of using fastest response
+(ns async-tea-party.core
+  (:require [clojure.core.async :as async]))
+
+(def google-tea-service-chan (async/chan 10))
+(def yahoo-tea-service-chan (async/chan 10))
+
+;; to add some ms delay
+(defn random-add []
+ (reduce + (repeat (rand-int 1000000) 1)))
+
+(defn request-google-tea-service []
+  (async/go
+    (random-add)
+    (async/>! google-tea-service-chan
+      "tea compliments of google")))
+
+(defn request-yahoo-tea-service []
+  (async/go
+    (random-add)
+    (async/>! yahoo-tea-service-chan
+      "tea compliments of yahoo")))
+
+;; Note: this looks like it just leaves the slow response on its channel
+;; unless it still dequeues but doesn't use the losing value
+(defn request-tea []
+  (request-google-tea-service)
+  (request-yahoo-tea-service)
+  (async/go (let [[v] (async/alts!
+                       [google-tea-service-chan
+                        yahoo-tea-service-chan])]
+              (println v))))
+
+(request-tea)
+;; Will print to stdout
+;; tea compliments of yahoo (or google)
+
+;; Note: The above won't work from the command line, since we're
+;; calling println in an asynchronous action.  The main loop will
+;; think we're done and the program will exit.  We could instead
+;; queue the resulting tea to a result-chan in the go block, and do
+;; a blocking get (async/<!!) in the main loop and print there.
+#+end_src
+
+** 7 - Creating Web Applications with Clojure
+*** create app using compojure template: =lein new compojure cheshire-cat=
+*** start a webserver on port 3000 with =lein ring server=
+**** you need to restart the server if you update dependencies
+*** =defroutes= has routes like =GET "/"=
+*** cheshire library is useful for manually crafting json responses
+*** ring-json middleware lets you easily serve json resource
+
+#+begin_src clojure
+;; example handler with default and json middware and
+;; cheshire-cat route serving json using rr/response(ns cheshire-cat.handler
+(ns cheshire-cat.handler
+  (:require [compojure.core :refer :all]
+            [compojure.route :as route]
+            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
+            [ring.middleware.json :as ring-json]
+            [ring.util.response :as rr]))
+
+(defroutes app-routes
+  (GET "/" [] "Hello World")
+  (GET "/cheshire-cat" []
+       ;; I had to manually set content-type, because the new site-defaults
+       ;; was trying to set it to octet-stream based off file extension (none)
+       (rr/content-type
+         (rr/response {:name "Cheshire Cat" :status :grinning})
+         "text/json"))
+  (route/not-found "Not Found"))
+
+(def app
+  (-> app-routes
+      (wrap-defaults site-defaults)
+      (ring-json/wrap-json-response)))
+#+end_src
+
+*** ClojureScript
+**** it's just a library.  add the dependency to project.clj
+**** also add the lein-cljsbuild plugin to project.clj, and some config
+
+#+begin_src clojure
+(defproject cheshire-cat "0.1.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :url "http://example.com/FIXME"
+  :min-lein-version "2.0.0"
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.520"]
+                 [compojure "1.6.1"]
+                 [ring/ring-defaults "0.3.2"]
+                 [ring/ring-json "0.4.0"]]
+  :plugins [[lein-ring "0.12.5"]
+            [lein-cljsbuild "1.1.7"]]
+  :ring {:handler cheshire-cat.handler/app}
+  :cljsbuild {
+              :builds [{
+                        :source-paths ["src-cljs"]
+                        :compiler     {
+                                       :output-to     "resources/public/main.js"
+                                       :optimizations :whitespace
+                                       :pretty-print  true
+                                       }
+                        }]
+              }
+  :profiles
+  {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
+                        [ring/ring-mock "0.3.2"]]}})
+rc clojure
+#+end_src
+
+**** you can get a cljs repl with =lein trampoline cljsbuild repl-rhino=
+**** differences between ClojureScript and Clojure
+***** you can call JavaScript code with =js/=
+
+#+begin_src clojure
+(js/Date)
+;; ->"Sat Mar 23 2019 19:11:12 GMT-0400 (EDT)"
+#+end_src
+
+***** agents and refs are unavailable, but we do have atoms
+***** in ClojureScript, only integer and floating-point numbers are supported
+**** you need an html page to load the javascript
+
+#+begin_src html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cheshire Cat</title>
+  </head>
+  <body>
+    <div id="cat-name">Name</div>
+    <div id="status">Status</div>
+
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript">cheshire_cat.core.init()</script>
+  </body>
+</html>
+#+end_src
+
+**** in a terminal run =lein cljsbuild auto= to automatically build your main.js
+**** you still need to reload to see changes; at least without figwheel
+**** get a browser connected repl with =lein trampoline cljsbuild repl-list=
+***** include it in your core.cljs file to connect with app
+
+#+begin_src clojurescript
+(ns cheshire-cat.core
+  (:require [clojure.browser.repl :as repl]))
+
+(defn ^:export init []
+  (repl/connect "http://localhost:9000/repl"))
+#+end_src
+
+**** to fetch json, we're adding cljs-http and core.async dependencies
+***** restart your lein cljsbuild after adding new dependencies
+***** example of fetching an endpoint with cljs-http
+
+#+begin_src clojurescript
+(ns cheshire-cat.core
+  (:require-macros [cljs.core.async.macros :refer [go]])
+  (:require [clojure.browser.repl :as repl]
+            [cljs-http.client :as http]
+            [cljs.core.async :refer [<!]]))
+
+(defn ^:export init []
+  (repl/connect "http://localhost:9000/repl")
+  (go
+    (let [response (<! (http/get "/cheshire-cat"))]
+      (js/alert (:body response)))))
+#+end_src
+
+**** DOM manipulation cannot be done with the library enfocus any longer
+
+Unfortunately, at this point I had to quit following along.
+Enfocus hasn't been updated since 2017, so it doesn't work with Clojure 1.10.
+I have an alert with the json body, and will have to look for some other
+way to do DOM manipulation in ClojureScript.
+
+** 8 - The Power of Macros
+*** Macros are a way to do meta-programming in Clojure
+**** Macros let you create and implement your own language features
+**** They reduce the lines of code for a program, making it more concise
+**** They encapsulate patterns and repetitive code and replace it
+*** =when= is a macro
+
+#+begin_src clojure
+(defmacro when
+  "Evaluates test. If logical true, evaluates body in an implicit do."
+  {:added "1.0"}
+  [test & body]
+  (list 'if test (cons 'do body)))
+#+end_src
+
+*** you can see how a macro expands with =macroexpand-1=
+
+#+begin_src clojure
+;; when using macroexpand-1, we need to quote the code that we want to expand
+(macroexpand-1
+  '(when (= 2 2) (println "It is four!")))
+;; -> (if (= 2 2)
+;;      (do (println "It is four!")))
+#+end_src
+
+*** creating our own macros
+**** original code with repetition
+
+#+begin_src clojure
+(defn hi-queen [phrase]
+  (str phrase ", so please your Majesty."))
+
+(defn alice-hi-queen []
+  (hi-queen "My name is Alice"))
+
+(alice-hi-queen)
+;; -> "My name is Alice, so please your Majesty."
+
+(defn march-hare-hi-queen []
+  (hi-queen "I'm the March Hare"))
+
+(defn white-rabbit-hi-queen []
+  (hi-queen "I'm the White Rabbit"))
+
+(defn mad-hatter-hi-queen []
+  (hi-queen "I'm the Mad Hatter"))
+#+end_src
+
+**** opportunity for improvement
+
+We see a pattern in the previous example.  The function name is the character
+name with a hyphen and then "-hi-queen," and the string of the character's
+introduction is returned with the polite "so please your Majesty."
+
+If we have two piece of data, the name of the symbol and the introduction,
+we could generate the function with a macro.
+
+**** start at the end: with how we want to call our macro and the result
+
+#+begin_src clojure
+;; we want our macro to generate these functions, given the symbol of
+;; the function and the introduction.  So we would call it like:
+(def-hi-queen alice-hi-queen "My name is Alice")
+
+;; when that macro is evaluated, it should create the following:
+(defn alice-hi-queen []
+  (hi-queen "My name is Alice"))
+#+end_src
+
+**** define the macro with =defmacro=
+
+#+begin_src clojure
+;; notice how we quote data we don't want evaluated during the definition process
+(defmacro def-hi-queen [name phrase]
+  (list 'defn
+        (symbol name)
+        []
+        (list 'hi-queen phrase)))
+
+;; let's test how it expands
+(macroexpand-1 '(def-hi-queen alice-hi-queen "My name is Alice"))
+;; -> (defn alice-hi-queen []
+;;      (hi-queen "My name is Alice"))
+#+end_src
+
+**** improved code
+
+#+begin_src clojure
+(defmacro def-hi-queen [name phrase]
+  (list 'defn
+        (symbol name)
+        []
+        (list 'hi-queen phrase)))
+;; -> #'user/def-hi-queen
+
+(defn hi-queen [phrase]
+  (str phrase ", so please your Majesty."))
+
+;; now one liners to define all our functions
+(def-hi-queen alice-hi-queen "My name is Alice")
+(def-hi-queen march-hare-hi-queen "I'm the March Hare")
+(def-hi-queen white-rabbit-hi-queen "I'm the White Rabbit")
+(def-hi-queen mad-hatter-hi-queen "I'm the Mad Hatter")
+
+(alice-hi-queen)
+;; -> "My name is Alice, so please your Majesty."
+#+end_src
+
+**** with templating, we could make this even more concise
+
+#+begin_src clojure
+;; this uses the syntax-quote ` and the unquote ~
+(defmacro def-hi-queen [name phrase]
+  `(defn ~(symbold name) []
+    (hi-queen )~phrase))
+#+end_src
+
+*** don't use macros unless you have to
+**** macros are harder to understand than functions
+**** macros are harder to compose (you can't pass them to map or filter)
+*** when do you use them
+
+You need macros to overcome the limitation of functions when code is evaluated.
+With functions, the parameters are always eagerly evaluated. This is the case
+in the =when= macro. It has parameters that are used in a control structure
+that we do not want to eagerly evaluate. Another reason to use a macro is if
+you have some code that you want to be evaluated when the macro is evaluated,
+at /compile time/, rather than /runtime/ when functions are evaluated. Finally,
+another good reason to use a macro is if you want a custom syntax that cannot
+be evaluated with the normal function's syntax. In this case, you need to
+transform the function's syntax before you can call them.
+
+* Section 2 - Living Clojure Training Program
+** 9 - Joining the Clojure Community
+*** Clojure Documentation
+**** http://clojuredocs.org/
+**** Grimoire: https://www.conj.io/
+**** Go to the Clojure source: https://github.com/clojure/clojure
+*** Which Libraries to Use
+**** Clojars: https://clojars.org/
+**** The Clojure Toolbox: https://www.clojure-toolbox.com/
+**** ClojureWerkz: http://clojurewerkz.org/
+*** Clojure News
+**** Clojure Mailing List: https://groups.google.com/forum/#!forum/clojure
+**** Planet Clojure: http://planet.clojure.in/
+**** Clojure Reddit: https://www.reddit.com/r/Clojure/
+**** Twitter #clojure: https://twitter.com/search?q=%23clojure&src=typd
+*** Find Other Clojurists
+**** Clojurians Slack: https://clojurians.herokuapp.com/
+**** IRC: chat.freenode.net on ports 6665-6667, 6697 SSL. #clojure channel
+** 10 - Weekly Living Clojure Training Plan
+- [X] Week 1: http://www.4clojure.com/
+- [ ] Week 2: http://www.4clojure.com/
+- [ ] Week 3: http://www.4clojure.com/
+- [ ] Week 4: https://github.com/gigasquid/wonderland-clojure-katas
+- [ ] Week 5: https://github.com/gigasquid/wonderland-clojure-katas
+- [ ] Week 6: https://github.com/gigasquid/wonderland-clojure-katas
+- [ ] Week 7: Web Project
+** 11 - Further Adventures
+*** Transducers
+
+#+begin_src clojure
+;; this is a big example to show four ways that you can use transducers
+;; they're basically partially applied maps and filters
+;; this example only requires a core.async dependency in profile.clj
+(ns queen-of-hearts.core
+  (:require [clojure.core.async :as async]))
+
+(def flowers ["white carnation"
+              "yellow daffodil"
+              "yellow rose"
+              "red rose"
+              "white rose"
+              "purple lily"
+              "pink carnation"])
+
+;; the queen demands red flowers
+(defn paint-it-red [s]
+  (str "red "
+       (last (clojure.string/split s #"\s"))))
+
+;; the queen only allows roses
+(defn is-a-rose? [s]
+  (= "rose"
+     (last (clojure.string/split s #"\s"))))
+
+;; we build a set of transducers from unapplied maps and filters
+(def fix-for-the-queen-xform
+  (comp
+    (map paint-it-red)
+    (filter is-a-rose?)))
+
+;; now there are four ways to use the transducers
+
+;; into - a nonlazy way to turn the transformation into a collection
+(def with-into (into [] fix-for-the-queen-xform flowers))
+
+;; sequence - a lazy way to turn the transformation into a collection
+(def with-sequence (sequence fix-for-the-queen-xform flowers))
+
+;; transduce - which acts like reduce on all the transformed elements
+(def with-transduce (transduce fix-for-the-queen-xform
+                               (completing #(str %1 %2 ":"))
+                               ""
+                               flowers))
+
+;; use core.async channels to do the transformations
+(def flower-chan (async/chan 1 fix-for-the-queen-xform))
+
+(def result-chan (async/reduce
+                   (completing #(str %1 %2 ":"))
+                   ""
+                   flower-chan))
+
+(async/onto-chan flower-chan flowers)
+
+(def flowers-for-the-queen (async/<!! result-chan))
+#+end_src
