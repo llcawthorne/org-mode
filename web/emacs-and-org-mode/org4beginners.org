@@ -3,7 +3,7 @@
 #+TODO: TODO IN-PROGRESS WAITING DONE
 
 * Summary of org4beginners tutorial
-  http://orgmode.org/worg/org-tutorials/org4beginners.html
+http://orgmode.org/worg/org-tutorials/org4beginners.html
 
 ** Minimum emacs knowledge
 *** M is Alt, C is Ctrl, S is Shift
@@ -24,9 +24,8 @@
 *** C-h t :: Emacs tutorial
 *** #+STARTUP: showall :: put at top to showall on file open
 *** Text formatting
-
-  You can make words *bold*, /italic/, _underlined_, =code= and ~verbatim~, 
-  and, if you must, +strike-through+.
+    You can make words *bold*, /italic/, _underlined_, =code= and ~verbatim~, 
+    and, if you must, +strike-through+.
 *** Ordered and unordered list
     1. Ordered lists start with a number and a dot
     2. Unordered lists start with -, +, or \*
@@ -95,7 +94,6 @@
 ** TODO Remember orgcard at: http://orgmode.org/orgcard.txt 
 * Items below are from messing with tutorial features
 * Welcome to org-mode
-
   Welcome, and thanks for trying out Org-mode. Making outlines in
   org is very simple. It is just text! Just start typing.
 * This is a headline, it starts with one or more stars
@@ -103,7 +101,6 @@
 * Working with lists
 ** Moving around in our outline
 ** Moving around headlines
-
 * Lord of the Rings
   My favorite scenes are (in this order)
   1. The attack of the Rohirrim

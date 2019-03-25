@@ -21,8 +21,8 @@
 * Reading List :reading:
 #+CATEGORY: Reading
 ** Clojure :programming:
-- [ ] /Living Clojure/
-- [ ] /Spacemacs: Clojure development made simple/ [[https://practicalli.github.io/spacemacs/][Book Link]]
+- [X] /Living Clojure/
+- [ ] /Practicalli - Spacemacs/ [[https://practicalli.github.io/spacemacs/][Book Link]]
 - [ ] /Clojure for the Brave and True/
 - [ ] /Getting Clojure/
 - [ ] /Programming Clojure/
