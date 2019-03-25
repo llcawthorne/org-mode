@@ -21,7 +21,7 @@
 * Reading List :reading:
 #+CATEGORY: Reading
 ** Clojure :programming:
-- [ ] /Living Clojure/
+- [X] /Living Clojure/
 - [ ] /Spacemacs: Clojure development made simple/ [[https://practicalli.github.io/spacemacs/][Book Link]]
 - [ ] /Clojure for the Brave and True/
 - [ ] /Getting Clojure/
@@ -36,9 +36,9 @@
 - [ ] /Learn You a Haskell for Great Good!/
 - [ ] /Anatomy of Programming Languages/
 ** Mathematics
+- [ ] /How to Read and Do Proofs/
 - [ ] /Introduction to Mathematical Thinking/
 - [ ] /Book of Proof/
-- [ ] /How to Read and Do Proofs/
 - [ ] /How to Prove It/
 - [ ] /Discrete Mathematics Using a Computer/
 - [ ] /Haskell Road to Logic Maths and Programming/
@@ -62,7 +62,13 @@
 - [ ] /Modern Java in Action/
 - [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
 - [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
-** Upcoming Releases :programming:
+** Algorithms :programming:
+- [ ] /Grokking Algorithms/
+- [ ] /A Common-Sense Guide to Data Structures and Algorithms/
+- [ ] /Algorithms - A Functional Programming Approach/
+- [ ] /The Imposter's Handbook/
+- [ ] /Introduction to Algorithms - 3e/
+** Upcoming Releases                                           :programming:
 - [ ] /Get Programming with Clojure/
 - [ ] /Get Programming with Scala/
 - [ ] /Grokking Functional Programming/

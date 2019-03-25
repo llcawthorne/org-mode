@@ -1,0 +1,79 @@
+* I - Lisp is Power
+** Getting Started with Lisp
+*** Two main dialects of Lisp
+**** Common Lisp; what this book will focus on
+**** Scheme
+*** Common Lisp is a multiparadigm language
+*** Install CLISP to work along with book
+*** If you make a mistake in the repl, just type :q
+** Creating Your First Lisp Program
+*** Create new top-level definitions (global vars) with =defparameter=
+
+#+begin_src lisp
+(defparameter *small* 1)
+(defparameter *big* 100)
+#+end_src
+**** Name global variables with earmuffs: *foo*
+**** =defparameter= will overwrite existing variables with the same name
+**** Define global variables with =defvar= and it won't overwrite previous vars
+*** Define functions with =defun=
+
+#+begin_src lisp
+(defun function_name (arguments)
+  ...)
+#+end_src
+*** =ash= is the arithmetic shift function
+**** (ash (+ *big* *small*) -1) is the average of *big* and *small*
+**** it is commonly used for binary searches
+*** =setf= is used to change the value of variable
+
+#+begin_src lisp
+(setf *big* (1- (guess-my-number)))
+
+(setf *small* (1+ (guess-my-number)))
+#+end_src
+*** Define local variables with =let=
+
+#+begin_src lisp
+(let ((a 5)
+      (b 6))
+  (+ a b))
+;; -> 11
+#+end_src
+*** Define local functions with =flet=
+
+#+begin_src lisp
+(flet ((f (n)
+          (+ n 10))
+       (g (n)
+          (- n 3)))
+  (g (f 5)))
+;; -> 12
+#+end_src
+*** Make function names available in defined functions with =labels=
+
+#+begin_src lisp
+;; below function b calls a, so we needed labels
+;; labels is also needed for recursion
+(labels ((a (n)
+            (+ n 5))
+         (b (n)
+            (+ (a n) 6)))
+  (b 10))
+;; -> 21
+#+end_src
+** Exploring the Syntax of Lisp Code
+*** *Syntax* represents the rules needed to be followed to be valid in a language
+**** Having simple syntax is a defining feature of Lisp
+*** *Semantics* is the meaning of something
+**** You can write code with similar semantics (meaning) in most languages
+*** Basic datatypes in Lisp
+**** Symbols: any stand-alone word
+***** letters, numbers, and characters like + = / * = < > ? ! _
+***** case insensitive
+**** Numbers: floating point or integer (based on decimal point present or not)
+***** 1 and 1.0 are two different numbers
+***** integers are upconverted to float in mixed math
+***** division of integers returns a rational number
+**** Strings: characters surrounded by double quotes
+***** escape special characters (like ") with a backslash ("\"stop!\"")

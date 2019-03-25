@@ -1,0 +1,97 @@
+* 1 - The Truth of It All
+** What is a proof?
+
+A proof is a convincing argument expressed in the language of mathematics
+that a statements is true.
+** A => B
+*** If A is true, then B is true
+*** A is the *hypothesis*
+*** B is the *conclusion*
+*** Truth table
+
+A | B | A => B
+______________
+T | T |   T
+T | F |   F
+F | T |   T
+F | F |   T
+*** You can assume A is true; your job is to conclude that B is true
+
+This is because if A is False, the statement A => B is true.  So we only need
+to be concerned with the case of A being true.
+
+*** Examples of mathematical statements that amount to A => B
+**** The sum of the first n positive integers is n(n + 1)/2.
+***** Hypothesis: n is a positive integer
+***** Conclusion: The sum of the first n positive integers is n(n + 1)/2.
+**** Quadratic equations
+
+Example: The quadratic equation ax^2 + bx + c = 0 has two real roots provided
+that b^2 - 4ac > 0, where a!=0, b, and c are given real numbers.
+
+Hypothesis: a, b, and c are real numbers with a!=0 and b^2 - 4ac > 0.
+
+Conclusion: The quadratic equation ax^2 + bx + c = 0 has two real roots.
+**** Two lines tangent to the endpoints of the diameter of a circle are parallel
+
+Hypothesis: L_1 and L_2 are two lines that are tangent to the endpoints of the
+diameter of a circle.
+
+Conclusion: L_1 and L_2 are parallel.
+
+**** There is a real number x such that x = 2^(-x)
+
+Hypothesis: None, other than your previous knowledge of mathematics.
+
+Conclusion: There is a real number x such that x = 2^(-x)
+* 2 - The Forward-Backward Method
+** The *forward process* and *backward process*
+
+Recall, when proving A => B, you can assume that A is true and you must use
+this information to reach the conclusion that B is true.  In attempting to
+reach the conclusion that B is true, you will go through a *backward process*.
+(ie. working backward from the conclusion).  When you make specific use of the
+information contained in A, you will go through a *forward process*. (ie.
+working forward from the assumption A).
+** The *backward process*
+*** Key question of *backward process*
+
+Begin by asking, "How can I conclude that the statement B is true?" to find a
+key question that will lead to your result B.
+
+A proper key question for the statements "The triangle XYZ is isosceles." might
+be "How can I show that a triangle is isosceles?"  It is an abstract question
+that relies on our general knowledge of triangles and clear away irrelevant
+details from the specific problem (for example, it doesn't matter that the
+triangle in the problem is called XYZ vs ABC).
+
+*** Answering the key question
+
+Answering the key question is a two step process.  First find an abstract
+answer that contains no symbols from the specific problem.  Then apply
+this abstract answer to the specific problem using appropriate notation.
+
+Example: "How can I show that a triangle is isosceles?"
+Step 1: "Show that two of its sides have equal length."
+Step 2: "To show that two of its sides have equal length
+  means to show that x = y." (where x and y are sides of a given triangle)
+
+This gives us a new statement B1: x = y, where B1 => B.
+
+*** Continue generating key questions until you can no longer ask/answer them
+** The *forward process*
+*** You can assume that the A in an A => B statement is True
+*** Derive new true statements from the assumption A
+*** Combine and use the new statements to produce more true statements
+*** One common step is to rewrite statements in different forms
+*** The forward process is directed at finding B1 from the backward process
+** Reading Proofs
+*** Why is reading a condensed proof challenging?
+**** The steps are sometimes out of order
+**** The names of the techniques used are often omitted
+**** Several steps of the proof are often combined into a single step
+*** Steps for reading a condensed proof
+**** Determine which techniques are used
+**** Verify all of the steps involved by filling in missing details
+** The forward-backward method is likely the best to start with
+* 3 - On Definitions and Mathematical Terminology
