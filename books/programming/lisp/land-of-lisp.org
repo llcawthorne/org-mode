@@ -1,0 +1,428 @@
+* I - Lisp is Power
+** Getting Started with Lisp
+*** Two main dialects of Lisp
+**** Common Lisp; what this book will focus on
+**** Scheme
+*** Common Lisp is a multiparadigm language
+*** Install CLISP to work along with book
+*** If you make a mistake in the repl, just type :q
+** Creating Your First Lisp Program
+*** Create new top-level definitions (global vars) with =defparameter=
+
+#+begin_src lisp
+(defparameter *small* 1)
+(defparameter *big* 100)
+#+end_src
+**** Name global variables with earmuffs: *foo*
+**** =defparameter= will overwrite existing variables with the same name
+**** Define global variables with =defvar= and it won't overwrite previous vars
+*** Define functions with =defun=
+
+#+begin_src lisp
+(defun function_name (arguments)
+  ...)
+#+end_src
+*** =ash= is the arithmetic shift function
+**** (ash (+ *big* *small*) -1) is the average of *big* and *small*
+**** it is commonly used for binary searches
+*** =setf= is used to change the value of variable
+
+#+begin_src lisp
+(setf *big* (1- (guess-my-number)))
+
+(setf *small* (1+ (guess-my-number)))
+#+end_src
+*** Define local variables with =let=
+
+#+begin_src lisp
+(let ((a 5)
+      (b 6))
+  (+ a b))
+;; -> 11
+#+end_src
+*** Define local functions with =flet=
+
+#+begin_src lisp
+(flet ((f (n)
+          (+ n 10))
+       (g (n)
+          (- n 3)))
+  (g (f 5)))
+;; -> 12
+#+end_src
+*** Make function names available in defined functions with =labels=
+
+#+begin_src lisp
+;; below function b calls a, so we needed labels
+;; labels is also needed for recursion
+(labels ((a (n)
+            (+ n 5))
+         (b (n)
+            (+ (a n) 6)))
+  (b 10))
+;; -> 21
+#+end_src
+** Exploring the Syntax of Lisp Code
+*** *Syntax* represents the rules needed to be followed to be valid in a language
+**** Having simple syntax is a defining feature of Lisp
+**** Parentheses are there to keep the amount of syntax to a minimum
+*** *Semantics* is the meaning of something
+**** You can write code with similar semantics (meaning) in most languages
+*** Basic datatypes in Lisp
+**** Symbols: any stand-alone word
+***** letters, numbers, and characters like + = / * = < > ? ! _
+***** case insensitive
+**** Numbers: floating point or integer (based on decimal point present or not)
+***** 1 and 1.0 are two different numbers
+***** integers are upconverted to float in mixed math
+***** division of integers returns a rational number
+**** Strings: characters surrounded by double quotes
+***** escape special characters (like ") with a backslash ("\"stop!\"")
+*** Two reader modes
+**** Code mode
+
+The default mode of the reader.  Try to evaluate the head of a list as a
+function applied to the rest of the list as arguments.  It also tries to
+evaluate symbols, unless you prefix them with ' to enable data mode.
+
+**** Data mode
+
+Switch to data mode by prefixing with quote: '(1 2 3)
+
+*** Lists in Lisp
+**** cons
+
+You can =cons= any item on to another, but you normally cons on to a list.
+Note that both nil and 'nil act as the empty list.  nil is the list
+terminator in Lisp.  When Lispers talk about using =cons=, they say
+they are /consing/ something.
+
+#+begin_src lisp
+(cons 'chicken 'cat) ;; => (CHICKEN . CAT)
+(cons 'chicken nil)  ;; => (CHICKEN)
+(cons 'chicken ())   ;; => (CHICKEN)
+(cons 'chicken '(1 2) ;; => (CHICKEN 1 2)
+(cons 'chicken (cons 1 (cons 2 ()))) ;; => (CHICKEN 1 2)
+#+end_src
+
+A list is a series of cons cells containing and element of the list and
+a pointer to the rest of the list.
+
+**** car
+
+=car= returns the head of a list.  It is also called =first=.
+It basically takes the element out of the first cons cell and
+removes the cell, leaving the rest of the list.
+
+#+begin_src lisp
+(car '(beef chicken)) ;; -> BEEF
+#+end_src
+
+**** cdr
+
+=cdr= returns everything except the head of the list.  It is also called =rest=
+It returns the rest of the list pointed to in the second part of the cons cell.
+
+#+begin_src lisp
+(cdr '(pork beef chicken)) ;; -> (BEEF CHICKEN)
+(car (cdr '(pork beef chicken))) ;; -> BEEF
+#+end_src
+**** cadr, caddr, caaddr, and more
+
+=cadr= returns the =car= of the =cdr= of a list. There are more combinations
+of =car= and =cdr= defined standard.  Like =caddr=.  You can use any function
+of the form c*r up to four levels deep.  =cadadr= is already defined (four
+levels deep), but =cadadar= is not (five levels deep).
+
+#+begin_src lisp
+(cadr '(pork beef chicken)) ;; -> BEER
+(caadr '((beef pork) (chicken sammich)) ;; -> CHICKEN
+(cadddr '(beef pork chicken sammich) ;; -> SAMMICH
+#+end_src
+**** list
+
+=list= is a convenience function that will create a list out of several items
+without you having to manually cons it together.  the list is the same as if
+you had defined it from multiple calls to =cons= or defined it literally with
+a quote ' in front.
+
+#+begin_src lisp
+(list 'pork 'beef 'chicken) ;; -> (PORK BEEF CHICKEN)
+#+end_src
+**** you can nest lists
+
+#+begin_src lisp
+(car '((peas carrots tomatoes) (pork beef chicken)))
+;; -> (PEAS CARROTS TOMATOES)
+(cdr car '((peas carrots tomatoes) (pork beef chicken)))
+;; -> (CARROTS TOMATOES)
+(cdar '((pea carrots tomatoes) (pork beef chicken)))
+;; -> (CARROTS TOMATOES)
+(cddr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> (DUCK)
+(caddr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> DUCK
+(cddar '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> (TOMATOES)
+(cadadr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> BEEF
+#+end_src
+* II - Lisp is Symmetry
+** Make Decisions with Conditions
+*** The Symmetry of nil and ()
+**** Empty Equals False
+
+In Clojure, we would have to check =null list= or =seq list= to get False.
+Everything is "truthy" in Clojure except =nil= and =false=, but =nil= is not
+just an alias for the empty list (although you can =cons= items on to =nil=
+to start lists).
+
+**** A list containing an item is True
+**** A typical list-eating function
+
+#+begin_src lisp
+(defun my-length (list)
+  (if list
+    (1+ (my-length (cdr list)))
+    0))
+#+end_src
+
+**** The Four Disguises of ()
+***** '()
+***** 'nil
+***** nil
+***** ()
+***** Any value not equivalent to () is true
+***** This doesn't work the same in Scheme (or Clojure)
+*** The Conditionals: if and Beyond
+**** =if= makes different things happen when conditions are true
+
+#+begin_src lisp
+(if (= (+ 1 2) 3)
+    'yup
+    'nope)
+;; -> YUP
+
+(if (oddp 5)
+    'odd-number
+    'even-number)
+;; -> ODD_NUMBER
+
+(if '()
+    'the-list-has-stuff-in-it
+    'the-list-is-empty)
+;; -> THE-LIST-IS-EMPTY
+#+end_src)
+
+**** =if= is a /special form/; it doesn't evaluate both branches
+**** to do more than one thing in a branch, sequence actions with =progn=
+
+#+begin_src lisp
+(defvar *number-was-odd* nil)
+
+(if (oddp 5)
+    (progn (setf *number-was-odd* t)
+           'odd-number)
+    'even-number)
+;; -> ODD-NUMBER
+> *number-was-odd*
+;; -> T
+#+end_src
+**** =when= and =unless= contain a built-in =progn=
+
+With =when=, all enclosed expressions are evaluated when the condition
+is true.  With =unless=, all enclosed expressions are evaluated when the
+condition is false.  Unlike =if=, there is no alternate branch.  They return
+=nil= when the condition is the opposite value and do nothing.
+
+#+begin_src lisp
+(defvar *number-is-odd* nil)
+(when (oddp 5)
+      (setf *number-is-odd* t)
+      'odd-number)
+;; -> ODD-NUMBER
+> *number-is-odd*
+;; -> T
+
+(unless (oddp 4)
+        (setf *number-is-odd* nil)
+        'even-number)
+;; -> EVEN-NUMBER
+> *number-is-odd*
+;; -> NIL
+#+end_src
+**** the =cond= form is the classic way to do branching in Lisp
+
+=cond= has a baked in =prog=, can handle more than one branch, and can
+evaluate several conditions in succession. Note that it has more parentheses
+than the Clojure version of =cond=.
+
+#+begin_src lisp
+(defvar *arch-enemy* nil)
+(defun pudding-eater (person)
+       (cond ((eq person 'henry) (setf *arch-enemy* 'stupid-lisp-alien)
+                                 '(curse you lisp alien - you at my pudding))
+             ((eq person 'johnny) (setf *arch-enemy* 'useless-old-johnny)
+                                  '(i hope you choked on my pudding johnny))
+             (t                   '(why you eat my pudding stranger?))))
+> (pudding-eater 'johnny)
+;; -> (I HOPE YOU CHOKED ON MY PUDDING JOHNNY)
+> *arch-enemy*
+JOHNNY
+#+end_src
+**** =case= lets you supply a value to be compared with =eq=
+
+Note: the case command uses =eq= for comparisons, so it is usually used
+for branching on symbol values. It cannot be used to branch on string
+values, among other things. We will look at comparing stuff with eq,
+equal, and more later in the book.
+
+#+begin_src lisp
+(defun pudding-eater (person)
+       (case person
+             ((henry)   (setf *arch-enemy* 'stupid-lisp-alien)
+                        '(curse you lisp alien - you ate my pudding))
+             ((johnny)  (setf *arch-enemy* 'useless-old-johnny)
+                        '(i hope you choked on my pudding johnny))
+             (otherwise '(why you eat my pudding stranger?))))
+#+end_src
+
+**** =and= and =or= are stealth conditionals
+
+=and= and =or= are simple mathematical operators that act as stealth
+conditionals. Lisp uses /shortcut Boolean evaluation/, so that once it
+determines the statement is true for =or= or false for =and=, it no longer
+evaluates the remaining statements.
+
+#+begin_src lisp
+(and (oddp 5) (oddp 7) (oddp 9))
+;; -> T
+(or (oddp 4) (oddp 7) (oddp 8))
+;; -> T
+
+(defparameter *is-it-even* nil)
+(or (oddp 4) (setf *is-it-even* t))
+;; -> T
+> *is-it-even*
+;; -> T
+(defparameter *is-it-even* nil)
+(or (oddp 5) (setf *is-it-even* t))
+;; -> T
+> *is-it-even*
+;; -> NIL
+
+;; a real world example
+(and *file-modified* (ask-user-about-saving) (save-file))
+#+end_src
+
+**** Using Functions That Return More than Just the Truth
+
+Since any non-nil value evaluates to true, we often return something other
+than true from functions.  =member= returns the rest of the list starting from
+the matching item, and =find-if= returns the item it found.  An unfortunate
+side effect of this is that you can't use =find-if= with =null= in a condition.
+
+#+begin_src lisp
+(member 1 '(3 4 1 5))
+;; -> (1 5)
+(if (member 1 '(3 4 1 5))
+    'one-is-in-the-list
+    'one-is-not-in-the-list)
+;; -> 'ONE-IS-IN-THE-LIST
+
+(find-if #'oddp '(2 4 5 6))
+;; -> 5
+(if (find-if #'oddp '(2 4 5 6))
+    'there-is-an-odd-number
+    'there-is-no-odd-number)
+;; -> 'THERE-IS-AN-ODD-NUMBER
+#+end_src
+
+**** Comparing Stuff: eq, equal, and More
+***** Conrad's Rule of Thumb for Comparing Stuff
+****** Use =EQ= to compare symbols
+****** Use =EQUAL= for everything else
+***** Use =eq= to compare symbols
+***** =equal= will tell you when two things "look the same"
+***** =eql= compares symbols, numbers, and characters
+***** =equalp= is like =equal= with a few twists
+
+=equalp= can compare strings with different case, and it can compare
+integers with floating point values.  Otherwise, it is like =equal=.
+
+***** The remaining comparisons are like =equal= for certain datatypes
+
+= only works for numbers, =string-equal= handles strings, =char-equal=
+works for characters.
+
+** Building a Text Game Engine
+*** Functional Style
+
+Functions written in a /functional programming/ style will reference only
+parameters or variables declared in or passed to the function itself, and
+will do nothing besides return a value. A function in this style will always
+return the same result, as long as the same values are given as parameters.
+In our game this chapter, =look= and =walk= are not functional because they
+relies on or change global variables.
+
+*** Association Lists
+
+We'll talk about this a lot more in Chapter 7, but here's one in use:
+
+#+begin_src lisp
+(defparameter *nodes* '((living-room (you are in the living-room.
+                                      a wizard is snoring loudly on the couch.))
+                        (garden (you are in a beautiful garden.
+                                 there is a well in front of you.))
+                        (attic (you are in the attic.
+                                there is a giant welding torch in the corner))))
+
+(defun describe-location (location nodes)
+  (cadr (assoc location nodes)))
+
+(describe-location 'living-room *nodes*)
+;; -> (YOU ARE IN A LIVING-ROOM. A WIZARD IS SNORING LOUDLY ON THE COUCH).)
+#+end_src
+
+*** Quasiquoting
+
+Quasiquoting allows you to create chunks of data that have small pieces
+of Lisp code embedded in them. It uses ` and , Both the ' and ` flip us into
+data mode, but ` can be unquoted using the , character to flip back to code
+mode.
+
+#+begin_src lisp
+(defparameter *edges* '((living-room (garden west door)
+                         (attic upstairs ladder))
+                        (garden (living-room east door))
+                        (attic (living-room downstairs ladder))))
+
+(defun describe-path (edge)
+  `(there is a ,(caddr edge) going ,(cadr edge) from here.))
+#+end_src
+
+*** =mapcar=
+
+=mapcar= will apply a function to every member of a list.
+
+#+begin_src lisp
+(mapcar #'car '((foo bar) (baz qux)))
+;; -> (foo baz)
+
+(mapcar #'describe-path '((GARDEN WEST DOOR) (ATTIC UPSTAIR LADDER)))
+;; -> ((THERE IS A DOOR GOING WEST FROM HERE.))
+;;     (THERE IS A LADDER GOING UPSTAIRS FROM HERE.))
+#+end_src
+*** #' is short-hand for the =function= operator
+
+Unlike Scheme, Common Lisp has a namespace for functions and another for
+variables. That's why we use #' to refer to a function name.  Because of
+this difference in namespace, Scheme is a Lisp-1 and Common Lisp is a Lisp-2.
+
+*** =apply= let's you give it a function and a list containing arguments
+
+#+begin_src lisp
+(apply #'append '((mary had) (a) (little lamb)))
+;; -> (MARY HAD A LITTLE LAMB)
+#+end_src
+** Interacting with the World: Reading and Printing in Lisp
