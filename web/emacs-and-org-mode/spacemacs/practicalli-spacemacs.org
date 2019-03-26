@@ -7,6 +7,7 @@ https://practicalli.github.io/spacemacs/
 - SPC h SPC ;; bring up help for spacemacs
 - SPC h d f ;; describes a function
 - SPC h d k ;; describes a keybinding
+
 ** Vim Basics
 *** Modes and their colors
 
@@ -94,7 +95,6 @@ up from a popup window with SPC '
 
 Hit SPC b b.  Navigate to buffer names you want to delete by moving the cursor
 with C-j and C-k.  Mark a buffer for deletion using C-SPC.  Then once all 
-buffers are marked, hit M-D to delete marked buffers. M-D didn't work for me
-when I tried it, but C-z then choose Kill from the list did work.
+buffers are marked, hit M-D to delete marked buffers. 
 
 * 

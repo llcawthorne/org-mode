@@ -149,7 +149,7 @@ developer
 **** Namespaces are organized and controlled access to vars
 **** Create or switch to namespaces with =ns=
 **** Check what namespace you are in with =*ns*=
-**** Refer to a variable in another names with fully qualified name
+**** Refer to a variable in another namespace with fully qualified name
 ***** =alice.favfoods/fav-food= ;; namespace before /
 **** Require another namespace: =(require clojure.set)=
 ***** Refer to functions with the namespace: =clojure.set/union=
@@ -179,7 +179,7 @@ developer
 **** Useful predicates: =true?=, =false?=, =nil?=
 **** =not= returns the negation of its argument
 **** =nil= and =false= are both logically false in tests
-**** All other values are =true=
+**** All other values are =true=, including '()
 **** Use (=) (equal sign) to check for equality
 ***** Works like Java =equals= method
 ***** Collections of different types with same elements are equal
@@ -358,7 +358,7 @@ developer
 ;; -> "The flowers are red and blue"
 
 ;; you can specify default values with :or
-(let [{flower1 :flower1 flower2 :flowr2 :or {flower2 "missing"}}
+(let [{flower1 :flower1 flower2 :flower2 :or {flower2 "missing"}}
       {:flower1 "red"}]
   (str "The flowers are " flower1 " and " flower2))
 ;; -> "The flowers are red and missing"
@@ -448,6 +448,24 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
         []
         [:mouse nil :duck nil nil :lory])
 ;; -> [:mouse :duck :lory]
+
+;; calculate primes until 1000
+(reduce
+  (fn [primes number]
+    (if (some zero? (map (partial mod number) primes))
+      primes
+      (conj primes number)))
+  [2]
+  (take 1000 (iterate inc 3)))
+;; -> [2 3 5 7 11 13 17 ... 991 997]
+
+;; the first 100 Fibonacci numbers
+(reduce
+  (fn [a b]
+    (conj a (+ (last a) (last (butlast a)))))
+  [0N 1N]
+  (range 98))
+;; -> [0 1 1 2 3 5 8 ... 218922995834555169026N]
 #+end_src
 
 **** =filter= will keep elements of a collection that match a predicate
@@ -493,7 +511,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 #+end_src
 
 **** other useful transformations
-***** =flatten= takes a nested collection and returns a flattened sequences
+***** =flatten= takes a nested collection and returns a flattened sequence
 ***** =vec= turns a sequence into a vector
 ***** =into= conj's all the items of one collection onto another
 
@@ -649,13 +667,13 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 
 #+begin_src clojure
 (ns caterpillar.network
-  (:import (java.net INetAddress)))
+  (:import (java.net InetAddress)))
 
 (.getHostName (InetAddress/getByName "localhost"))
 ;; -> "localhost"
 
 ;; we could've done this without importing via fully qualified names
-(java.net.INetAddress/getByName "localhost")
+(java.net.InetAddress/getByName "localhost")
 ;; -> #<Inet4Address localhost/127.0.0.1>
 #+end_src
 **** You can also import with =import=: =(import 'java.util.UUID)=
@@ -755,7 +773,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 
 (defprotocol Edible
   (bite-right-side [this])
-  (bit-left-side [this]))
+  (bite-left-side [this]))
 
 (defrecord WonderlandMushroom [color height]
   Edible
@@ -773,7 +791,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 
 ;; Now define two mushrooms
 (def alice-mushroom (WonderlandMushroom. "blue dots" "3 inches"))
-(def reg-mushroom (RegularMushroom "brown" "1 inches"))
+(def reg-mushroom (RegularMushroom. "brown" "1 inches"))
 
 (bite-right-side alice-mushroom)
 ;; -> "The blue dots bite makes you grow bigger"
@@ -797,7 +815,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
   (bite-left-side [this]
     (str "The bite makes you grow smaller")))
 
-(def alice-mushroom (WonderlandMushroom).))
+(def alice-mushroom (WonderlandMushroom.))
 (bite-right-side alice-mushroom)
 ;; -> "The bite makes you grow bigger
 #+end_src
@@ -805,7 +823,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 **** The Edible protocol implemented instead with =if= and =hash-map=
 
 #+begin_src clojure
-;; No protocol definition for this
+;; No protocol definition required for this example
 ;; Don't overuse records, types and protocols because you have an OOP background
 (def alice-mushroom
   {:type "wonderland" :color "blue polka dots" :size "12 inches"})
@@ -869,7 +887,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
   :aot [async-tea-party.core])
 #+end_src
 
-**** then just run =lein uberjar
+**** then just run =lein uberjar=
 **** run it with =java -jar target/package-name-0.1.0-SNAPSHOT-standalone.jar=
 ** 6 - Communication with core.async
 *** core.async allows independent threads to communicate through channels
@@ -985,7 +1003,7 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
 
 #+begin_src clojure
 ;; example handler with default and json middware and
-;; cheshire-cat route serving json using rr/response(ns cheshire-cat.handler
+;; cheshire-cat route serving json using rr/response
 (ns cheshire-cat.handler
   (:require [compojure.core :refer :all]
             [compojure.route :as route]
@@ -1039,7 +1057,6 @@ a function calls itself, that's recursion.  In Clojure, we often use loop-recur.
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
                         [ring/ring-mock "0.3.2"]]}})
-rc clojure
 #+end_src
 
 **** you can get a cljs repl with =lein trampoline cljsbuild repl-rhino=
@@ -1163,7 +1180,7 @@ We see a pattern in the previous example.  The function name is the character
 name with a hyphen and then "-hi-queen," and the string of the character's
 introduction is returned with the polite "so please your Majesty."
 
-If we have two piece of data, the name of the symbol and the introduction,
+If we have two pieces of data, the name of the symbol and the introduction,
 we could generate the function with a macro.
 
 **** start at the end: with how we want to call our macro and the result
@@ -1222,8 +1239,8 @@ we could generate the function with a macro.
 #+begin_src clojure
 ;; this uses the syntax-quote ` and the unquote ~
 (defmacro def-hi-queen [name phrase]
-  `(defn ~(symbold name) []
-    (hi-queen )~phrase))
+  `(defn ~(symbol name) []
+    (hi-queen) ~phrase))
 #+end_src
 
 *** don't use macros unless you have to
