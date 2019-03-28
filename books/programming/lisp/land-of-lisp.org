@@ -426,3 +426,453 @@ this difference in namespace, Scheme is a Lisp-1 and Common Lisp is a Lisp-2.
 ;; -> (MARY HAD A LITTLE LAMB)
 #+end_src
 ** Interacting with the World: Reading and Printing in Lisp
+*** Printing and Reading Text
+**** use =print= to print stuff to the console on its own line
+
+=print= and =prin1= both print Lisp data structures. Strings are in quotes
+and symbols are in all caps. Numbers look pretty normal. Characters look
+like #\j.
+
+**** multiple calls to =prin1= print stuff on the same line
+
+The 1 means keep it on 1 line. Normal =print= precedes its output with a
+newline and follows it with a space.
+
+**** the =read= function lets the user enter something into the program
+
+=read= reads Lisp data structures.  You need to surround strings with quotes.
+A string without quotes is interpreted as a symbol. It will read numbers as
+numbers or floats.
+
+#+begin_src lisp
+(defun say-hello ()
+       (print "Please type your name:")
+       (let ((name (read)))
+            (print "Nice to meet you, ")
+            (print name)))
+#+end_src)
+
+**** A character in lisp is #\j
+
+Some special characters include #\newline, #\tab, and #\space
+
+**** =princ= prints stuff for humans, it doesn't insert newline
+
+=princ= leaves off the quotes from strings and the #\ from characters.
+
+**** =read-line= reads a string as input, up to a newline
+
+Read line will read the name as a string and take everything up to the newline
+into the name variable.
+
+#+begin_src lisp
+(defun say-hello ()
+       (princ "Please type your name:")
+       (let ((name (read-line)))
+            (princ "Nice to meet you, ")
+            (princ name)))
+#+end_src
+*** The Symmetry Between Code and Data in Lisp
+**** Lisp is /homoiconic/; it uses the same data structures for code and data
+**** =eval= reads data as code
+
+Warning: Inexperienced use of =eval= can pose a security risk!
+
+#+begin_src lisp
+;; let's store a chunk of data in a variable
+(defparameter *foo* '(+ 1 2))
+;; what if we want to execute that code.  =eval=
+(eval *foo*)
+;; -> 3
+#+end_src
+
+**** A Simple Custom REPL
+
+A REPL literally only takes =read=, =eval=, =print=, and =loop=!
+=read= reads the command as a symbol, =eval= evaluates it as a function,
+=print= outputs what the function returns, loop makes it do it over and over.
+
+#+begin_src lisp
+(defun game-repl ()
+  (loop (print (eval (read)))))
+> (game-repl)
+(look)
+
+(YOU ARE IN THE LIVING-ROOM)...
+#+end_src
+
+**** A More Customized REPL
+***** =game-repl=
+
+Our goal is to be able to type "look" and "walk east" and do the game commands.
+First we capture cmd using game-read, so we can see if the command is 'QUIT,
+instead of making the user exit with Ctrl+C.  Then we eval and print, but
+with custom versions we'll write shortly.  Finally, the game-repl calls itself.
+
+#+begin_src lisp
+(defun game-repl ()
+  (let ((cmd (game-read)))
+    (unless (eq (car cmd) 'quit)
+      (game-print (game-eval cmd))
+      (game-repl))))
+#+end_src
+
+***** =game-read=
+
+=read= has two things we need to fix. First, we don't want to have to type
+our command in parentheses, so we'll =read-line= a string then add our
+parentheses afterwards. Also with read, we needed a quote in front of any
+function commands. We should be able to type "walk east" without a quote
+in front of east, so again, we'll take in a string and modify it by adding
+the quote after the user enters it.
+
+=read-from-string= works like =read= but it reads a syntax expression or other
+Lisp datatype from a string instead of directly from the console. We are going
+to tweak our string from =read-line= by =concatenate='ing quotes around it.
+The result in =cmd= is that when someone types "walk east", we end up with
+(walk east) in =cmd=. But we're going to pull off the =cdr= of =cmd= and map
+=quote-it= across, so we end up with (walk 'east), which is what we had to
+type in the REPL last chapter.  =(list 'quote 'east)= is equal to 'EAST.
+(Unlike (list 'east), which equals (EAST)). We are quoting the raw parameter
+by putting it in a list with =quote= command in front. =quote= is the head of
+the list, so it gets evaluated to return 'EAST, which gets put back in our
+initial list and gets the function call cons'ed on to the head of it.
+
+#+begin_src lisp
+(defun game-read ()
+       (let ((cmd (read-from-string
+                       (concatenate 'string "(" (read-line) ")"))))
+       (flet ((quote-it (x)
+                    (list 'quote x)))
+            (cons (car cmd) (mapcar #'quote-it (cdr cmd))))))
+> (game-read)
+walk east
+;; -> (WALK 'EAST)
+#+end_src
+
+***** =game-eval=
+
+The main problem with =eval= is it would let the player run any Lisp command,
+even one unrelated to the game. So we're going to write an =eval= that only
+allows certain commands to be called.
+
+#+begin_src lisp
+(defparameter *allowed-commands* '(look walk pickup inventory))
+
+(defun game-eval (sexp)
+       (if (member (car sexp) *allowed-commands*)
+           (eval sexp)
+         '(i do not know that command.)))
+#+end_src
+
+***** =game-print=
+
+Finally, let's get our output out of all uppercase, and out of parentheses.
+First =prin1-to-string= will print our list of symbols to a string, then we'll
+=string-trim= away the parentheses then coerce it to a list.  At this point it
+looks something like this:
+
+#+begin_src lisp
+> (coerce (string-trim "() " (prin1-to-string '(a beautiful garden))) 'list)
+;; -> (#\A #\Space #\B #\E #\A #\U #\T #\I #\F #\U #\L #\Space #\G #\A #\R #\D #\E #\N)
+#+end_src
+
+The only reason the list parentheses are there is because it is =coerce='d to a
+list, and as you see it is a list of characters. We feed this to =tweak-text=
+along with a t since the first letter should be capitalized and a =nil= for lit.
+After =tweak-text= is done with it, we =coerce= it back to a string.  If we
+were to =coerce= what we had above to a string without tweaking it, we would
+get "A BEAUTIFUL GARDEN".
+
+=tweak-text= processes our list of characters. It uses =cond= to check for
+different conditions. First it checks if the char is a space and if so leaves
+it unchanged and processes the next item. Next it checks if it is a sentence
+terminator, and if so makes a not to capitalize the next character. If it's a
+quote, we eliminate it and flip the lit parameter which interprets characters
+literally and doesn't let us drop down to the capitalization rules. This let's
+us handle some uncommon situations in our symbols, like "iPad" or "comma,".
+When lit is set, it just =cons='s the unmodified char back on to the list.
+Next we see if we have caps, and if so =cons= the =char-upcase= of the item on
+to the rest of the list. And finally, for a normal character, we =cons= the
+=char-downcase= of the item on to the rest of the list. I don't really
+understand why we =or= caps and lit, since if lit was true, we wouldn't make it
+to the =or= line. It seems like we only need to test caps.
+
+#+begin_src lisp
+(defun tweak-text (lst caps lit)
+  (when lst
+    (let ((item (car lst))
+          (rest (cdr lst)))
+      (cond ((eq item #\space) (cons item (tweak-text rest caps lit)))
+            ((member item '(#\! #\? #\.)) (cons item (tweak-text rest t lit)))
+            ((eq item #\") (tweak-text rest caps (not lit)))
+            (lit (cons item (tweak-text rest nil lit)))
+            ((or caps lit) (cons (char-upcase item) (tweak-text rest nil lit)))
+            (t (cons (char-downcase item) (tweak-text rest nil nil)))))))
+
+(defun game-print (lst)
+  (princ (coerce (tweak-text (coerce (string-trim "() "
+                                                  (prin1-to-string lst))
+                                     'list)
+                             t
+                             nil)
+                 'string))
+  (fresh-line))
+#+end_src
+**** The Dangers of =read= and =eval=
+
+Despite us only executing functions from a whitelist, we are still vulnerable
+to attacks involving reader macros. So as general advice, you should try not
+to rely on =read= and =eval= in production Lisp code.
+
+** Lambda: A Function So Important It Deserves Its Own Chapter
+*** =lambda= lets you create a function without giving it a name
+** Going Beyond Basic Lists
+*** Dotted Lists
+
+A list in Lisp that ends in something other than a =nil= is referred
+to as a dotted list.
+
+#+begin_src lisp
+;; What if we cons a number onto another number instead of a list?
+(cons 1 (cons 2 3))
+;; -> (1 2 . 3)
+#+end_src
+*** Pairs
+
+A pair is a dotted list of length 2.
+
+#+begin_src lisp
+(cons 2 3)
+;; -> (2 . 3)
+#+end_src
+
+*** Circular Lists
+
+The final cons cell of a list can point back at its head!
+
+#+begin_src lisp
+;; before playing with circular lists, run this
+(setf *print-circle* t)
+
+(defparameter foo '(1 2 3))
+;; we're going to make an infinite list of (1 2 3 1 2 3 1 2 3 ...)
+(setf (cdddr foo) foo)
+;; -> #1=(1 2 3 . #1)#)
+#+end_src
+
+*** Association Lists (alists)
+
+An alist consists of key/value pairs stored in a list.  By convention, if a key
+appears multiple times in a list, it is assumed the first appearance of the key
+contains the desired value.  Alists are commonly used but are not very efficient
+for dealing with more than a dozen or so items, so are often replaced with
+other data structures as a program matures.
+
+#+begin_src lisp
+(defparameter *drink-order* '((bill . double-espresso)
+                              (lisa . small-drip-coffee)
+                              (john . medium-latte)))
+> (assoc 'lisa *drink-order*)
+;; -> (LISA . SMALL-DRIP-COFFEE)
+
+;; push adds an item to an alist.  first match is returned by assoc
+(push '(lisa . large-mocha-with-whipped-cream) *drink-order*)
+;; -> ((LISA . LARGE-MOCHA-WITH-WHIPPED-CREAM)
+;;     (BILL . DOUBLE-ESPRESSO)
+;;     (LISA . SMALL-DRIP-COFFEE)
+;;     (JOHN . MEDIUM-LATTE))
+
+> (assoc 'lisa *drink-order*)
+;; -> (LISA . LARGE-MOCHA-WITH-WHIPPED-CREAM)
+#+end_src
+*** Coping with Complicated Data
+**** Visualizing Tree-like Data
+
+Lists are elegant for storing trees.
+
+#+begin_src lisp
+(defparameter *house* '((walls (mortar (cement)
+                                       (water)
+                                       (sand))
+                               (bricks))
+                        (windows (glass)
+                                 (frame)
+                                 (curtains))
+                        (roof (shingles)
+                              (chimney))))
+#+end_src
+
+**** Visualizing Graphs
+
+Graphs can be stored in cons cells, but they are difficult to visualize.  It's
+hard to get a decent understanding of the structure of the game world from the
+following:
+
+#+begin_src lisp
+(defparameter *wizard-nodes* '((living-room (you are in the living-room.
+                                a wizard is snoring loudly on the couch.))
+                               (garden (you are in a beautiful garden.
+                                there is a well in front of you.))
+                               (attic (you are in the attic.  there
+                                is a giant welding torch in the corner.))))
+(defparameter *wizard-edges* '((living-room (garden west door)
+                                            (attic upstairs ladder))
+                               (garden (living-room east door))
+                               (attic (living-room downstairs ladder))))
+#+end_src
+
+***** Graphviz to the Rescue!
+****** Converting Node Identifiers
+
+A Graphviz identifier or a node can contain only letters, digits, and the
+underscore character.  We'll replace non-alphanumeric characters with _.
+
+#+begin_src lisp
+(defun dot-name (exp)
+  (substitute-if #\_ (complement #'alphanumericp) (prin1-to-string exp)))
+
+> (dot-name 'living-room)
+;; -> "LIVING_ROOM"
+> (dot-name 'foo!)
+;; -> "FOO_"
+#+end_src
+
+****** Adding Labels to Graph Nodes
+
+The label will consist of the node name and the data linked to the node in the
+node alist.  We're going to limit it to 30 characters.
+
+#+begin_src lisp
+(defparameter *max-label-length* 30)
+
+(defun dot-label (exp)
+  (if exp
+    (let ((s (write-to-string exp :pretty nil)))
+      (if (> (length s) *max-label-length*)
+             (concatenate 'string (subseq s 0 (- *max-label-length* 3)) "...")
+          s))
+    ""))
+#+end_src
+
+****** Generating the DOT Information for the Nodes
+
+Now that we can generate a name and label for each node we can write a function
+that takes an alist of nodes and generates the DOT information that encodes
+them.  Note: =mapc= is like =mapcar= except it doesn't return the transformed
+list.  We don't need the return value, since we're calling =princ=.
+
+#+begin_src lisp
+(defun nodes->dot (nodes)
+  (mapc (lambda (node)
+          (fresh-line)
+          (princ (dot-name (car node)))
+          (princ "[label=\"")
+          (princ (dot-label node))
+          (princ "\"];"))
+    nodes))
+#+end_src
+
+****** Converting Edges into DOT Format
+
+Next, we need DOT information for the edges that link our nodes.  They will
+become the arrows in the output.
+
+#+begin_src lisp
+(defun edges->dot (edges)
+  (mapc (lambda (node)
+    (mapc (lambda (edge)
+            (fresh-line)
+            (princ (dot-name (car node)))
+            (princ "->")
+            (princ (dot-name (car edge)))
+            (princ "[label=\"")
+            (princ (dot-label (cdr edge)))
+            (princ "\"];"))
+          (cdr node)))
+    edges))
+#+end_src
+
+****** Generating All the DOT Data
+
+To complete our generation of the DOT data, we call both =nodes->dot= and
+=edges->dot= and wrap it up with some extra decoration.
+
+#+begin_src lisp
+(defun graph->dot (nodes edges)
+  (princ "digraph{")
+  (nodes->dot nodes)
+  (edges->dot edges)
+  (princ "}"))
+#+end_src
+
+****** Turning the DOT File into a Picture
+
+We are going to capture the DOT file data, put it into a file, then execute
+the dot command through the command line.  It is common in Lisp to create
+small functions that have zero arguments.  They are officially called
+/nullary functions/.  Lispers will often create them in order to describe
+a computation they don't want to run until later.  In this scenario, they are
+commonly called a /thunk/ or a /suspension/.  In this case, the thunk is a
+function that when called prints a DOT file to the console: =graph->dot=.
+Because =graph->dot= prints directly to the console, we can't pass its return
+value to =dot->png=, so instead we pass =graph->dot= as a thunk and =dot->png=
+calls it, captures the results, and sends them to a file.  By calling our
+stream we setup in =with-open-file= below *standard-output*, we capture output
+to the console and redirect it to fname.
+
+#+begin_src lisp
+(defun dot->png (fname thunk)
+  (with-open-file (*standard-output*
+                   fname
+                   :direction :output
+                   :if-exists :supersede)
+    (funcall thunk))
+  (ext:shell (concatenate 'string "dot -Tpng -O " fname)))
+#+end_src
+
+****** Creating a Picture of Our Graph
+
+Finally, we need a function that ties together all the pieces to let us
+easily create a graph from some nodes and edges:
+
+#+begin_src lisp
+(defun graph->png (fname nodes edges)
+  (dot->png fname
+            (lambda ()
+              (graph->dot nodes edges))))
+#+end_src)
+
+****** Creating Undirected Graphs
+
+It is also easy to create undirected graphs with Graphviz.  The following
+code is similar to what we've seen, but makes an undirected graph.
+
+#+begin_src lisp
+(defun uedges->dot (edges)
+  (maplist (lambda (lst)
+             (mapc (lambda (edge)
+                     (unless (assoc (car edge) (cdr lst))
+                       (fresh-line)
+                       (princ (dot-name (caar lst)))
+                       (princ "--")
+                       (princ (dot-name (car edge)))
+                       (princ "[label=\"")
+                       (princ (dot-label (cdr edge)))
+                       (princ "\"];")))
+               (cdar lst)))
+    edges))
+
+(defun ugraph->dot (nodes edges)
+  (princ "graph{")
+  (nodes->dot nodes)
+  (uedges->dot edges)
+  (princ "}"))
+
+(defun ugraph->png (fname nodes edges)
+  (dot->png fname
+            (lambda ()
+              (ugraph->dot nodes edges))))
+#+end_src)
+
+** This Ain't Your Daddy's Wumpus
