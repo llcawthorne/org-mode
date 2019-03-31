@@ -418,3 +418,288 @@ What you wrote does not type-check.
 *** Evaluation
 
 It runs but produces wrong answer, or an exception, or an infinite loop.
+* More ML
+** Compound Types in General
+
+We know of multiple base types like int, bool, unit, char, and real.
+We've already seen some compound types.  Tuples, lists, options.
+
+*** "Each of" (Product) types
+
+A value t contains values of each of t1 t2 ... tn
+Example: A tuple of int * bool has an int and a bool.
+
+*** "One of" (Sum) types
+
+A value t contains values of one of t1 t2 ... tn
+Example: An int option has either an int or NONE
+
+*** "Self reference" (Recursive) types
+
+A t value can refer to other t values.
+Example: A list is either nil or an element of type t and a list of type t.
+Note: List is an example of all three types.  It is recursive, an int list
+contains an int /and/ another int list /or/ it contains an empty list.
+
+** Records
+
+Records are a product type.  Very similar to tuples, but using named fields.
+Records are normally a better choice than tuples when there's a lot of 
+fields, since tuples use position where records name their fields.
+We don't have to declare a record type.  We can just define a record
+with curly braces.  You get accessors for fields in the form #field-name,
+like =#bar x= below.
+
+#+begin_src sml
+val x = {bar=(1+2, true andalso true), foo=3+4, baz=(false,9) }
+(* val x = {bar=(3,true),baz=(false,9),foo=7} *)
+(* x : {bar:int * bool, baz: bool * int, foo: int} *)
+
+#bar x;
+(* val it = (3,true) : int * bool *)
+#+end_src
+
+** Tuples as Syntactic Sugar
+
+There's no such thing as tuples in ML.  They are just records.  Tuples
+are just another way of writing records.  The field names are just 1, 2,
+...  (e1,...,en) is another way of writing {1=e1,...,n=en} and
+t1*...*tn is another way of writing {1:t1,...,n:tn}.  What we say is that
+tuples are /syntactic sugar/ for records with fields named 1, 2, ... n.
+
+** Datatype Bindings
+
+Datatype bindings are great for declaring Sum types.  These are also called
+"tagged unions", because the constructor used to create a type sticks around
+in the data as a tag.
+
+#+begin_src sml
+datatype mytype = TwoInts of int * int
+                | Str of string
+                | Pizza
+#+end_src
+
+- Adds a new type mytype to the environment.
+- Adds constructors to the envrionment: TwoInts, Str, and Pizza
+- A constructor is a function that makes values of the new type
+(or is a value of the new type, in the case of Pizza and other
+constructors without arguments)
+  * TwoInts : int * int -> mytype
+  * Str : string -> mytype
+  * Pizza : mytype
+Values
+- Any value of type mytype is made from one of the constructors
+- The value contains:
+  * A "tag" for "which constructor" (eg. TwoInts)
+  * The corresponding data (eg. (7,9))
+ 
+You access these values using pattern matching.
+
+** Pattern Matching
+*** Case Expressions with Datatypes
+
+Case expressions are a multi-branch conditional to pick branch based on
+variant.  It extracts data and introduce variable bindings local to that
+branch.  All branches must have the same type.
+
+#+begin_src sml
+datatype mytype = TwoInt of int * int
+                | Str of string
+                | Pizza
+
+(* mytype -> int *)
+fun f (x : mytype) =
+    case x of
+        Pizza => 3
+      | Str s => String.size s
+      | TwoInts(i1,i2) => i1 + i2
+#+end_src
+
+*** Case Expressions with Lists and Options
+
+Lists and Options are datatypes.  NONE and SOME are constructors.  
+[] and :: are also constructors.  Both can be matched on.
+
+#+begin_src sml
+fun inc_or_zero intoption =
+    case intoption of
+        NONE => 0
+      | SOME x => x + 1
+
+fun sum_list xs =
+    case xs of
+        [] => 0
+      | x::xs' => x + sum_list xs'
+
+fun append (xs,ys) =
+    case xs of
+        [] => ys
+      | x::xs' => x :: append(xs',ys)
+#+end_src
+
+*** Pattern Matching for Records and Tuples
+
+- The pattern (x1,...,xn) matches the tuple value (v1,...,vn)
+- The pattern {f1=x1, ..., fn=xn} matches the record value {f1=v1, ... ,fn=vn}
+
+#+begin_src sml
+(* this is bad style but works like our other examples with case *)
+fun sum_triple triple = 
+    case triple of
+        (x, y, z) => x + y + z
+
+fun full_name r =
+    case r of
+        {first=x, middle=y, last=z} => x ^ " " ^ y ^ " " ^ z
+#+end_src
+
+*** Val-Binding Patterns
+
+A val-binding can use a pattern, not just a variable.  val p = e
+In cases where we've used it before, we were just using a single variable
+as the pattern to match, which matches everything.
+It's usually poor style to put a constructor pattern in a val-binding,
+since it only tests for the one variant and raises an exception otherwise.
+
+#+begin_src sml
+(* this is ok style, but we will improve upon it shortly *)
+fun sum_triple triple =
+    let val (x, y, z) = triple
+    in
+        x + y + z
+    end
+
+fun full_name r =
+    let val {first=x, middle=y, last=z} = r
+    in
+        x ^ " " ^ y ^ " " ^ z
+    end
+#+end_src
+
+*** Function-Argument Patterns
+
+A function argument can also be a pattern and it matches against the
+argument in a function call.  fun f p = e
+
+#+begin_src sml
+(* best style *)
+fun sum_triple (x, y, z) =
+    x + y + z
+
+fun full_name {first=x, middle=y, last=z} =
+    x ^ " " ^ y ^ " " ^ z
+#+end_src
+
+In ML, every function takes exactly one argument.  What we call multi-
+argument functions are just functions taking one tuple argument,
+implemented with a tuple pattern in the function binding.
+
+** Useful Datatype Examples
+
+#+begin_src sml
+(* enumerations are a good use of datatypes *)
+datatype suit = Club | Diamond | Heart | Spade
+datatype rank = Jack | Queen | King | Ace | Num of int
+
+(* also, you may have alternate ways to identify real world things *)
+datatype id = StudentNum of int
+            | Name of string * (string option) * string
+
+(* also useful for expression trees *)
+datatype exp = Constant of int
+             | Negate   of exp
+             | Add      of exp
+             | Multiply of exp
+(* and here's an expression *)
+Add (Constant (10+9), Negate (Constant 4))
+
+(* and here's a eval function for expressions *)
+fun eval e =
+    case e of
+        Constant i      => i
+      | Negate e2       => ~ (eval e2)
+      | Add(e1,e2)      => (eval e1) + (eval e2)
+      | Multiply(e1,e2) => (eval e1) * (eval e2)
+
+(* we don't have to evaluate expressions, let's just count the number of Adds *)
+fun number_of_adds e = 
+    case e of
+        Constant i      => 0
+      | Negate e2       => number_of_adds e2
+      | Add(e1,e2)      => 1 + number_of_adds e1 + number_of_adds e2
+      | Multiple(e1,e2) => number_of_adds e1 + number_of_adds e2
+
+(* A final example finds the largest constant *)
+fun max_constant e =
+    let fun max_of_two(e1,e2) =
+            let val m1 = max_constant e1
+                val m2 = max_constant e2
+            in if m1 > m2 then m1 else m2 end
+    in
+    case e of
+          Constant i      => i
+        | Negate e2       => max_constant e2
+        | Add(e1,e2)      => max_of_two(e1,e2)
+        | Multiply(e1,e2) => max_of_two(e1,e2)
+    end
+
+(* A better max_constant uses Int.max *)
+fun max_constant2 e = 
+    case e of
+        Constant i        => i
+      | Negate e2         => max_constant e2
+      | Add(e1,e2)        => Int.max(max_constant e1, max_constant e2)
+      | Multiply(e1,e2)   => Int.max(max_constant e1, max_constant e2)
+#+end_src
+
+Add (Constant (10+9), Negate (Constant 4)) can be represented as a tree:
+
+        Add
+      /     \
+  Constant Negate
+      |      |
+     19    Constant
+             |
+             4
+
+** Type Synonyms
+
+A /type synonym/ is a new kind of binding: =type aname = t=. 
+It just creates another name for a type.  The type and new name are
+interchangeable in every way.
+
+#+begin_src sml
+datatype suit = Club | Diamond | Heart | Spade
+
+datatype rank = Jack | Queen | King | Ace | Num of int
+
+type card = suit * rank
+
+(* and if our students have an ID and a name, how about a record type *)
+type name_record = { student_num : int option,
+                     first       : string,
+                     middle      : string option,
+                     last        : string }
+#+end_src
+
+** Polymorphic Datatype Bindings
+
+You can put a type parameter between the word =datatype= and the type.
+
+#+begin_src sml
+datatype 'a option = NONE | SOME of 'a
+
+datatype 'a mylist = Empty | Cons of 'a * 'a mylist
+
+datatype ('a,'b) tree =
+    Node of 'a * ('a,'b) tree * ('a,'b) tree
+  | Leaf of 'b
+#+end_src
+
+Binding then introduces a type constructor, not a type.  option is not a
+type, but int option is.  Same with list; list is not a type, but 
+int list is a type.
+
+Note: You can pronounce 'a as alpha.
+
+* Something

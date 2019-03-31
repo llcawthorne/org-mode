@@ -1,172 +1,4 @@
-* I - Lisp is Power
-** Getting Started with Lisp
-*** Two main dialects of Lisp
-**** Common Lisp; what this book will focus on
-**** Scheme
-*** Common Lisp is a multiparadigm language
-*** Install CLISP to work along with book
-*** If you make a mistake in the repl, just type :q
-** Creating Your First Lisp Program
-*** Create new top-level definitions (global vars) with =defparameter=
 
-#+begin_src lisp
-(defparameter *small* 1)
-(defparameter *big* 100)
-#+end_src
-**** Name global variables with earmuffs: *foo*
-**** =defparameter= will overwrite existing variables with the same name
-**** Define global variables with =defvar= and it won't overwrite previous vars
-*** Define functions with =defun=
-
-#+begin_src lisp
-(defun function_name (arguments)
-  ...)
-#+end_src
-*** =ash= is the arithmetic shift function
-**** (ash (+ *big* *small*) -1) is the average of *big* and *small*
-**** it is commonly used for binary searches
-*** =setf= is used to change the value of variable
-
-#+begin_src lisp
-(setf *big* (1- (guess-my-number)))
-
-(setf *small* (1+ (guess-my-number)))
-#+end_src
-*** Define local variables with =let=
-
-#+begin_src lisp
-(let ((a 5)
-      (b 6))
-  (+ a b))
-;; -> 11
-#+end_src
-*** Define local functions with =flet=
-
-#+begin_src lisp
-(flet ((f (n)
-          (+ n 10))
-       (g (n)
-          (- n 3)))
-  (g (f 5)))
-;; -> 12
-#+end_src
-*** Make function names available in defined functions with =labels=
-
-#+begin_src lisp
-;; below function b calls a, so we needed labels
-;; labels is also needed for recursion
-(labels ((a (n)
-            (+ n 5))
-         (b (n)
-            (+ (a n) 6)))
-  (b 10))
-;; -> 21
-#+end_src
-** Exploring the Syntax of Lisp Code
-*** *Syntax* represents the rules needed to be followed to be valid in a language
-**** Having simple syntax is a defining feature of Lisp
-**** Parentheses are there to keep the amount of syntax to a minimum
-*** *Semantics* is the meaning of something
-**** You can write code with similar semantics (meaning) in most languages
-*** Basic datatypes in Lisp
-**** Symbols: any stand-alone word
-***** letters, numbers, and characters like + = / * = < > ? ! _
-***** case insensitive
-**** Numbers: floating point or integer (based on decimal point present or not)
-***** 1 and 1.0 are two different numbers
-***** integers are upconverted to float in mixed math
-***** division of integers returns a rational number
-**** Strings: characters surrounded by double quotes
-***** escape special characters (like ") with a backslash ("\"stop!\"")
-*** Two reader modes
-**** Code mode
-
-The default mode of the reader.  Try to evaluate the head of a list as a
-function applied to the rest of the list as arguments.  It also tries to
-evaluate symbols, unless you prefix them with ' to enable data mode.
-
-**** Data mode
-
-Switch to data mode by prefixing with quote: '(1 2 3)
-
-*** Lists in Lisp
-**** cons
-
-You can =cons= any item on to another, but you normally cons on to a list.
-Note that both nil and 'nil act as the empty list.  nil is the list
-terminator in Lisp.  When Lispers talk about using =cons=, they say
-they are /consing/ something.
-
-#+begin_src lisp
-(cons 'chicken 'cat) ;; => (CHICKEN . CAT)
-(cons 'chicken nil)  ;; => (CHICKEN)
-(cons 'chicken ())   ;; => (CHICKEN)
-(cons 'chicken '(1 2) ;; => (CHICKEN 1 2)
-(cons 'chicken (cons 1 (cons 2 ()))) ;; => (CHICKEN 1 2)
-#+end_src
-
-A list is a series of cons cells containing and element of the list and
-a pointer to the rest of the list.
-
-**** car
-
-=car= returns the head of a list.  It is also called =first=.
-It basically takes the element out of the first cons cell and
-removes the cell, leaving the rest of the list.
-
-#+begin_src lisp
-(car '(beef chicken)) ;; -> BEEF
-#+end_src
-
-**** cdr
-
-=cdr= returns everything except the head of the list.  It is also called =rest=
-It returns the rest of the list pointed to in the second part of the cons cell.
-
-#+begin_src lisp
-(cdr '(pork beef chicken)) ;; -> (BEEF CHICKEN)
-(car (cdr '(pork beef chicken))) ;; -> BEEF
-#+end_src
-**** cadr, caddr, caaddr, and more
-
-=cadr= returns the =car= of the =cdr= of a list. There are more combinations
-of =car= and =cdr= defined standard.  Like =caddr=.  You can use any function
-of the form c*r up to four levels deep.  =cadadr= is already defined (four
-levels deep), but =cadadar= is not (five levels deep).
-
-#+begin_src lisp
-(cadr '(pork beef chicken)) ;; -> BEER
-(caadr '((beef pork) (chicken sammich)) ;; -> CHICKEN
-(cadddr '(beef pork chicken sammich) ;; -> SAMMICH
-#+end_src
-**** list
-
-=list= is a convenience function that will create a list out of several items
-without you having to manually cons it together.  the list is the same as if
-you had defined it from multiple calls to =cons= or defined it literally with
-a quote ' in front.
-
-#+begin_src lisp
-(list 'pork 'beef 'chicken) ;; -> (PORK BEEF CHICKEN)
-#+end_src
-**** you can nest lists
-
-#+begin_src lisp
-(car '((peas carrots tomatoes) (pork beef chicken)))
-;; -> (PEAS CARROTS TOMATOES)
-(cdr car '((peas carrots tomatoes) (pork beef chicken)))
-;; -> (CARROTS TOMATOES)
-(cdar '((pea carrots tomatoes) (pork beef chicken)))
-;; -> (CARROTS TOMATOES)
-(cddr '((peas carrots tomatoes) (pork beef chicken) duck))
-;; -> (DUCK)
-(caddr '((peas carrots tomatoes) (pork beef chicken) duck))
-;; -> DUCK
-(cddar '((peas carrots tomatoes) (pork beef chicken) duck))
-;; -> (TOMATOES)
-(cadadr '((peas carrots tomatoes) (pork beef chicken) duck))
-;; -> BEEF
-#+end_src
 * II - Lisp is Symmetry
 ** Make Decisions with Conditions
 *** The Symmetry of nil and ()
@@ -876,3 +708,916 @@ code is similar to what we've seen, but makes an undirected graph.
 #+end_src)
 
 ** This Ain't Your Daddy's Wumpus
+*** Intro to the Game
+
+    "In this new version of Hunt the Wumpus, you are the Lisp alien. You and
+    the Wumpus have just robbed a liquor store and made off with the loot.
+    However, during the escape, the Wumpus decides to double-cross you and
+    run off with the money and your car. But before he drives off, you manage
+    to cap him a couple of times in the kidney.
+
+    Now you’re in a pretty tough situation. You don’t have a car or any money,
+    and no way to track down your former partner in crime. But you also have
+    no choice. You have your principles, so you’re going to /hunt the Wumpus/."
+
+*** Playing the Game
+
+The game is in my git repo for land-of-lisp as wumpus.lisp.  To start, you
+=(load "wumpus")= then type =(new-game)=.  Then you open the known-city.png in
+the directory you ran it from.  This is your auto-updating map of the city.  To
+explore a node, let's say Node 17, you type =(walk 17)=.  When you think you
+know the Wumpus' location, you need to charge that node, like =(charge 23)= to
+win the game.  Avoid glow-worms which show lights one node away and cops which
+show up as sirens on the node adjacent to the edge with cops.  The Wumpus
+leaves a blood trail two nodes away from his location, due to his injuries.
+Don't cheat and look at the full city.png in the directory where you started
+the new-game from.
+
+*** Full Code in wumpus.lisp, but also spread out below
+*** Defining the Edges of Congestion City
+
+Congestion City will be an undirected graph of 30 nodes and 45 edges.
+
+#+begin_src lisp
+(load "graph-utils")
+
+(defparameter *congestion-city-nodes* nil)
+(defparameter *congestion-city-edges* nil)
+(defparameter *visited-nodes* nil)
+(defparameter *node-num* 30)
+(defparameter *edge-num* 45)
+(defparameter *worm-num* 3)
+(defparameter *cop-odds* 15)
+
+;; random *node-num* will give us a number from 0 to 29 for 30 nodes
+;; so we're adding 1 to it to make it 1 to 30
+(defun random-node ()
+  (1+ (random *node-num*)))
+
+(defun edge-pair (a b)
+  (unless (eql a b)
+    (list (cons a b) (cons b a))))
+
+(defun make-edge-list ()
+  (apply #'append (loop repeat *edge-num*
+                               collect (edge-pair (random-node) (random-node)))))
+#+end_src))
+
+*** Looping with the =loop= Command
+
+Within the =loop= comman, we specify how many times to =repeat=, and then
+specify an object to collect with every loop.
+
+#+begin_src lisp
+(loop repeat 10
+      collect 1)
+;; -> (1 1 1 1 1 1 1 1 1 1)
+(loop for n from 1 to 10
+      collect n)
+;; -> (1 2 3 4 5 6 7 8 9 10)
+(loop for n from 1 to 10
+      collect (+ 100 n))
+;; -> (101 102 103 104 105 106 107 108 109 110)
+#+end_src
+
+*** Prevent Islands
+
+If we randomly generate a graph, it might not be all connected.  This code
+takes the list of edges, finds unconnected nodes, and connects these islands
+to the rest of the city network.  First, we need =direct-edges=, a utility
+function that finds all the edges in an edge list that start from a given node.
+It does this by creating a new list with all edges removed that don't have the
+current node in the =car= position.  To find islands we use =get-connected=,
+which takes an edge list and a source node and builds a list of all nodes
+connected to that node.  =find-islands= finds all our islands, and
+=connect-with-bridges= returns a list of additional edges to connect our
+islands together.  =connect-all-islands= ties all these together.  It appends
+the bridges from =connect-with-bridges= to the main =edge-list=.
+
+#+begin_src lisp
+(defun direct-edges (node edge-list)
+  (remove-if-not (lambda (x)
+                   (eql (car x) node))
+                 edge-list))
+
+(defun get-connected (node edge-list)
+  (let ((visited nil))
+    (labels ((traverse (node)
+               (unless (member node visited)
+                 (push node visited)
+                 (mapc (lambda (edge)
+                         (traverse (cdr edge)))
+                      (direct-edges node edge-list)))))
+      (traverse node))
+    visited))
+
+(defun find-islands (nodes edge-list)
+  (let ((islands nil))
+    (labels ((find-island (nodes)
+               (let* ((connected (get-connected (car nodes) edge-list))
+                      (unconnected (set-difference nodes connected)))
+                 (push connected islands)
+                 (when unconnected
+                   (find-island unconnected)))))
+      (find-island nodes))
+    islands))
+
+(defun connect-with-bridges (islands)
+  (when (cdr islands)
+    (append (edge-pair (caar islands) (caadr islands))
+            (connect-with-bridges (cdr islands)))))
+
+(defun connect-all-islands (nodes edge-list)
+  (append (connect-with-bridges (find-islands nodes edge-list)) edge-list))
+#+end_src
+
+*** Building the Final Edges for Congestion City
+
+=make-city-edges= creates a list of nodes, then it creates a random (but fully
+connected) edge list by calling =make-edge-list= and =connect-edge-list=.
+It then creates a random list of edges that have cops.  We define these using
+the =let*= command, which allows us to refer to previously defined variables
+from the same =let*= block.
+
+=edges-to-alist= converts a list of edges into an alist of edges.  For example,
+let's say we had nodes 1, 2, and 3, with 1 connected to 2, 2 connected to 1 and
+3, and 3 connected to 2.  As a list, this would be '((1 . 2) (2 . 1) (2 . 3)
+(3 . 2)).  As an alist, this would be '((1 (2)) (2 (1) (3)) (3 (2))).  To build
+this alist, =edges=to-list= first =mapcar=s over the nodes in the edge list.
+It builds the list of nodes with =remove-duplicates=.  Within the outer =mapcar=
+we do another =mapcar= to map across all the =direct-edges= to this node.
+Together, these nested =mapcar= functions allow =edges-to-alist= to convert
+the edges of a city into an alist.
+
+=add-cops= marks the edges in our alist that contain cops.  It uses nested
+=mapcar= commands to map across the edges within each node.  =intersection=
+tell us if items are shared between two lists.  Imagine our three node city
+again, where the alist is '((1 (2)) (2 (1) (3)) (3 (2))).  Now if we put cops
+between 2 and 3, it would look like '((1 (2)) (2 (1) (3 COPS)) (3 (2 COPS))).
+To get all edges connected to a given node, we call =(cdr (assoc node1 edges))=,
+then to see if a given edge contains cops:
+=(cdr (assoc node2 (cdr (assoc node1 edges))))=, which goes down two levels to
+grab the actual data linked to a specific edge between two nodes.
+
+#+begin_src lisp
+(defun make-city-edges ()
+  (let* ((nodes (loop for i from 1 to *node-num*
+                      collect i))
+         (edge-list (connect-all-islands nodes (make-edge-list)))
+         (cops (remove-if-not (lambda (x)
+                                (zerop (random *cop-odds*)))
+                              edge-list)))
+    (add-cops (edges-to-alist edge-list) cops)))
+
+(defun edges-to-alist (edge-list)
+  (mapcar (lambda (node1)
+            (cons node1
+                  (mapcar (lambda (edge)
+                            (list (cdr edge)))
+                          (remove-duplicates (direct-edges node1 edge-list)
+                                             :test #'equal))))
+          (remove-duplicates (mapcar #'car edge-list))))
+
+(defun add-cops (edge-alist edges-with-cops)
+  (mapcar (lambda (x)
+            (let ((node1 (car x))
+                  (node1-edges (cdr x)))
+              (cons node1
+                    (mapcar (lambda (edge)
+                              (let ((node2 (car edge)))
+                                (if (intersection (edge-pair node1 node2)
+                                                  edges-with-cops
+                                                  :test #'equal)
+                                    (list node2 'cops)
+                                    edge)))
+                            node1-edges))))
+          edge-alist))
+#+end_src
+
+*** Building the Nodes for Congestion City
+
+Now we need an alist for the nodes in our city.  These nodes may contains the
+Wumpus or the Glowworms, or they might contain various clues, such as blood,
+lights, or sirens.  Most of the clues are based on proximity with another node.
+The =neighbors= function looks up a node's neighbors.
+
+#+begin_src lisp
+(defun neighbors (node edge-alist)
+  (mapcar #'car (cdr (assoc node edge-alist))))
+
+(defun within-one (a b edge-alist)
+  (member b (neighbors a edge-alist)))
+
+(defun within-two (a b edge-alist)
+  (or (within-one a b edge-alist)
+      (some (lambda (x)
+              (within-one x b edge-alist))
+            (neighbors a edge-alist))))
+
+(defun make-city-nodes (edge-alist)
+  (let ((wumpus (random-node))
+        (glow-worms (loop for i below *worm-num*
+                          collect (random-node))))
+    (loop for n from 1 to *node-num*
+          collect (append (list n)
+                          (cond ((eql n wumpus) '(wumpus))
+                                ((within-two n wumpus edge-alist) '(blood!)))
+                          (cond ((member n glow-worms)
+                                 '(glow-worm))
+                                ((some (lambda (worm)
+                                         (within-one n worm edge-alist))
+                                       glow-worms)
+                                 '(lights!)))
+                          (when (some #'cdr (cdr (assoc n edge-alist)))
+                            '(sirens!)))))
+#+end_src
+
+*** Initializing a New Game of Grand Theft Wumpus
+
+We need to only show city nodes we visited and hide cops before we explore.
+=mapcan= is a variant of =mapcar= that assumes that the values generated by
+the mapping function are all lists that should be appended together.
+
+#+being_src lisp
+(defun new-game ()
+  (setf *congestion-city-edges* (make-city-edges))
+  (setf *congestion-city-nodes* (make-city-nodes *congestion-city-edges*))
+  (setf *player-pos* (find-empty-node))
+  (setf *visited-nodes* (list *player-pos*))
+  (draw-city)
+  (draw-known-city))
+
+(defun find-empty-node ()
+  (let ((x (random-node)))
+    (if (cdr (assoc x *congestion-city-nodes*))
+        (find-empty-node)
+        x)))
+
+(defun draw-city ()
+  (ugraph->png "city" *congestion-city-nodes* *congestion-city-edges*)):w
+
+(defun known-city-nodes ()
+  (mapcar (lambda (node)
+            (if (member node *visited-nodes*)
+                (let ((n (assoc node *congestion-city-nodes*)))
+                  (if (eql node *player-pos*)
+                      (append n '(*))
+                      n))
+                (list node '?)))
+          (remove-duplicates
+           (append *visited-nodes*
+                   (mapcan (lambda (node)
+                             (mapcar #'car
+                                     (cdr (assoc node *congestion-city-edges*))))
+                           *visited-nodes*)))))
+
+(defun known-city-edges ()
+  (mapcar (lambda (node)
+            (cons node (mapcar (lambda (x)
+                                 (if (member (car x) *visited-nodes*)
+                                     x
+                                     (list (car x))))
+                               (cdr (assoc node *congestion-city-edges*)))))
+          *visited-nodes*))
+
+(defun draw-known-city ()
+  (ugraph->png "known-city" (known-city-nodes) (known-city-edges)))
+#+end_src
+
+*** Walking Around Town
+
+Walk is used to move around.  You need to charge the final location of the
+Wumpus to win the game, but if you charge any non-Wumpus location, you lose.
+
+#+begin_src lisp
+(defun walk (pos)
+  (handle-direction pos nil))
+
+(defun charge (pos)
+  (handle-direction pos t))
+
+(defun handle-direction (pos charging)
+  (let ((edge (assoc pos (cdr (assoc *player-pos* *congestion-city-edges*)))))
+    (if edge
+        (handle-new-place edge pos charging)
+        (princ "That location does not exist!"))))
+
+(defun handle-new-place (edge pos charging)
+  (let* ((node (assoc pos *congestion-city-nodes*))
+         (has-worm (and (member 'glow-worm node)
+                        (not (member pos *visited-nodes*)))))
+    (pushnew pos *visited-nodes*)
+    (setf *player-pos* pos)
+    (draw-known-city)
+    (cond ((member 'cops edge) (princ "You ran into the cops. Game Over."))
+          ((member 'wumpus node) (if charging
+                                     (princ "You found the Wumpus!")
+                                     (princ "You ran into the Wumpus")))
+          (charging (princ "You wasted your last bullet.  Game Over."))
+          (has-worm (let ((new-pos (random-node)))
+                      (princ "You ran into a Glow Worm Gang!  You're now at ")
+                      (princ new-pos)
+                      (handle-new-place nil new-pos nil))))))
+#+end_src
+
+** Advanced Datatypes and Generic Programming
+*** Arrays
+**** Advantage of arrays: constant-time random access
+**** Working with Arrays
+
+Use =aref= to get an set items in an array.  =aref= with =setf= to set.
+
+#+begin_src lisp
+(make-array 3)
+;; -> #(NIL NIL NIL)
+(defparameter x (make-array 3))
+;; -> #(NIL NIL NIL)
+;; get the item at index 1 with aref
+(aref x 1)
+;; -> NIL
+(setf (aref x 1) 'foo)
+;; -> FOO
+x
+;; -> #(NIL FOO NIL)
+(aref x 1)
+;; -> FOO
+#+end_src
+
+***** An aside on =setf=
+
+Common Lisp supports /generic setters/.  In most cases, the code for pulling an
+item out of a data structure is identical to code for putting data into that
+structure.  The second argument to =setf= is a /generalized reference/, which
+supports a fairly complicated subset of Lisp.
+
+#+begin_src lisp
+(setf foo '(a b c))
+;; -> (A B C)
+(second foo)
+;; -> B
+(setf (second foo) 'z)
+;; -> Z
+foo
+;; -> (A Z C)
+(setf foo (make-array 4))
+;; -> #(NIL NIL NIL NIL)
+(setf (aref foo 2) '(x y z))
+;; -> (X Y Z)
+foo
+;; -> #(NIL NIL (X Y Z) NIL)
+(setf (car (aref foo 2)) (make-hash-table))
+;; -> #S(HASH-TABLE)
+(setf (gethash 'zoink (car (aref foo 2))) 5)
+;; -> 5
+foo
+;; -> #(NIL NIL (#S(HASH-TABLE (ZOINK . 5)) Y Z) NIL)
+#+end_src
+
+*** Hash Tables
+**** Like alists, except faster arbitrary element access
+**** Working with Hash Tables
+
+You'll notice below that =gethash= returns two nils.  The first nil is the
+actual value stored in the hash table.  The second nil indicates whether the
+key was found in the table.
+
+#+begin_src lisp
+(defparameter x (make-hash-table))
+;; -> #S(HASH-TABLE ...)
+(gethash 'yup x)
+;; -> NIL ;
+;;    NIL
+(setf (gethash 'yup x) '25)
+;; -> 25
+(gethash 'yup x)
+;; -> 25 ;
+;;    T
+#+end_src
+
+***** An aside on Returning Multiple Values
+
+Some core Lisp functions like =gethash= and =round= return multiple values.
+You can return multiple values too with the =values= function.  The first
+value is more important and used in follow-up calculations.  If you need the
+second value, you can bind it with =multiple-value-bind=.
+
+#+begin_src lisp
+(round 2.4)
+;; -> 2 ;
+;;    0.4
+(defun foo ()
+  (values 3 7))
+;; -> FOO
+(foo)
+;; -> 3 ;
+;;    7
+;; the first value is "default"
+(+ (foo) 5)
+;; -> 8
+;; but we can access both values
+(multiple-value-bind (a b) (foo)
+                     (* a b))
+;; -> 21
+#+end_src
+
+**** A Faster Grand Theft Wumpus Using Hash Tables
+
+alists were fine for our 30 node, 45 edge Grand Theft Wumpus, but if we tried
+with 1000 nodes and 1000 edges, it would be a lot slower.  Here's the code to
+convert our edge alist to a hash table.  As you see below, we can use =push=
+on hash tables too.
+
+#+begin_src lisp
+(defun hash-edges (edge-list)
+  (let ((tab (make-hash-table)))
+    (mapc (lambda (x)
+            (let ((node (car x)))
+              (push (cdr x) (gethash node tab))))
+      edge-list)
+    tab))
+
+;; now we need a new version of get-connected to use the hash
+(defun get-connected-hash (node edge-tab)
+  (let ((visited (make-hash-table)))
+    (labels ((traverse (node)
+               (unless (gethash node visited)
+                 (setf (gethash node visited) t)
+                 (mapc (lambda (edge)
+                         (traverse edge))
+                   (gethash node edge-tab)))))
+      (traverse node))
+    visited))
+#+end_src
+
+*** Performance Testing with =time=
+
+The only true way to tell if changing a data structure or algorithm makes
+your program faster is to time your code with the =time= command.
+
+#+begin_src lisp
+(setf *edge-num* 1000)
+(setf *node-num* 1000)
+
+(time (dotimes (i 100) (get-connected 1 (make-edge-list))))
+;; takes almost 60 seconds with alists, barely 1 sec with hash tables
+#+end_src
+
+*** Common Lisp Structures
+**** What are Structures?
+
+Structures can be used to represent objects with properties.
+
+#+begin_src lisp
+(defstruct person
+           name
+           age
+           waist-size
+           favorite-color)
+;; -> PERSON
+
+;; defstruct automatically creates make-person
+(defparameter *bob* (make-person :name "Bob"
+                                 :age 35
+                                 :waist-size 42
+                                 :favorite-color "blue"))
+;; -> *BOB*
+*bob*
+;; -> #S(PERSON :NAME "Bob" :AGE 35 :WAIST-SIZE 42 :FAVORITE-COLOR "blue")
+
+;; we can get bob's age from person-age, also automatically generated
+(person-age *bob*)
+;; -> 35
+(setf (person-age *bob*) 36)
+;; -> 36
+
+;; the reader can also create a person from the printed representation
+(defparameter *that-guy* #S(person :name "Bob" :age 35 :waist-size 42 :favorite-color "blue"))
+(person-age *that-guy*)
+;; -> 35
+#+end_src
+
+**** When to Use Structures
+
+There's nothing you can do with structures that you couldn't manage with lists
+and some accessor functions.  However the accessor functions are error-prone,
+and the list isn't self describing like a structure.  Structures also handle
+mutation better, so are better for objects likely to change.
+
+*** Handling Data in a Generic Way
+**** Working with Sequences
+***** Sequences: lists, arrays, and strings
+
+Library functions often work well with multiple types of data.  For example,
+the /sequence functions/ work generically across the three main ways of
+sequencing objects in Lisp: lists, arrays, and strings.  =length= can take any
+of those three and return its length.
+
+***** Sequence Functions for Searching
+
+=find-if= finds the first value that satisfies a predicate.
+=count= finds out how often an object appears in a sequence.
+=position= tells you where an item is located.
+=some= and =every= tell you if some or every value in a sequence obey a
+predicate.
+
+#+begin_src lisp
+(find-if #'numberp '(a b 5 d))
+;; -> 5
+(count #\s "mississippi")
+;; -> 4
+(position #\4 "2kewl4skewl")
+;; -> 5
+(some #'numberp '(a b 5 d))
+;; -> T
+(every #'numberp '(a b 5 d))
+;; -> NIL
+#+end_src
+
+***** Sequence Functions for Iterating Across a Sequence
+
+=reduce= allows you to iterate through a sequence and reduce it down to a
+single result.  =map= is like =mapcar= but it works on any sequence.
+You specify the type of sequence for =map= to return by passing an extra
+argument to the =map= function.  =subseq= lets you pull a subsequence out
+of a larger sequence by specifying starting and ending points.  The =sort=
+function lets you pass it an arbitrary function to use for sorting.  These
+functions are good to get you started.  For a more exhaustive list of functions,
+refer to the [[http://www.lispworks.com/documentation/HyperSpec/Front/index.htm][Common Lisp Hyperspec]].  It's complicated, but it has its own FAQ,
+[[https://www.hexstreamsoft.com/articles/getting-started-with-the-clhs/][Getting started with the Common Lisp HyperSpec]].
+
+#+begin_src lisp
+(reduce #'+ '(3 4 6 5 2))
+;; -> 20
+
+(reduce (lambda (best item)
+          (if (and (evenp item) (> item best))
+            item
+            best))
+        '(7 4 6 5 2)
+        :initial-value 0)
+;; -> 6 ;; the greatest even item in the list
+
+(map 'list
+  (lambda (x)
+    (if (eq x #\s)
+      #\S
+      x))
+  "this is a string")
+;; -> (“(#\t #\h #\i #\S #\  #\i #\S #\  #\a #\  #\S #\t #\r #\i #\n #\g)”
+
+(subseq "america" 2 6)
+;; -> "eric"
+
+(sort '(4 8 2 4 9 3 6) #'<)
+;; -> (2 3 4 5 6 8 9)
+#+end_src)
+
+**** Creating Your Own Generic Functions with Type Predicates and =defmethod=
+
+You can tell what type a variable has with the type predicates.  The most
+frequently used are: =arrayp=, =characterp=, =consp=, =functionp=,
+=hash-table-p=, =listp=, =numberp=, =stringp=, and =symbolp=.
+
+Here's a naive way to write an add function that works on lists or numbers.
+
+#+begin_src lisp
+;; this add works with numbers or lists
+;; if we aren't given two numbers or two lists, the cond returns nil
+(defun add (a b)
+  (cond ((and (numberp a) (numberp b)) (+ a b))
+        ((and (listp a) (listp b)) (append a b))))
+;; -> ADD
+(add 3 4)
+;; -> 7
+(add '(a b) '(c d))
+;; -> (A B C D)
+#+end_src
+
+A better way to do the same is /type dispatching/ via =defmethod=.  We can
+extend the results of =defmethod= to new types without modifying existing types,
+and the logic isn't all based around one big =cond= test.  Also, it can be
+better optimized by the Lisp compiler.  =defmethod= is like =defun=, but it
+allows us to write multiple functions with the same name.  The combination of
+=defmethod= and =defstruct= constitutes a simple object system.
+
+#+begin_src lisp
+(defmethod add ((a number) (b number))
+  (+ a b))
+;; -> ADD
+(defmethod add ((a list) (b list))
+  (append a b))
+;; -> ADD
+(add 3 4)
+;; -> 7
+(add '(a b) '(c d))
+;; -> (A B C D)
+#+end_src
+
+*** The Orc Battle Game
+**** Intro to the Game
+
+     “In the Orc Battle game, you’re a knight surrounded by 12 monsters,
+     engaged in a fight to the death. With your superior wits and your
+     repertoire of sword-fighting maneuvers, you must carefully strategize in
+     your battle with orcs, hydras, and other nasty enemies. One wrong move
+     and you may be unable to kill them all before being worn down by their
+     superior numbers. Using defmethod and defstruct, let’s dispatch some
+     whoop ass on these vermin!”
+
+**** Full Code in orc-battle.lisp
+**** Initialize Some Variables
+
+#+begin_src lisp
+(defparameter *player-health* nil)
+(defparameter *player-agility* nil)
+(defparameter *player-strength* nil)
+(defparameter *monsters* nil)
+(defparameter *monster-builders* nil)
+(defparameter *monster-num* 12)
+#+end_src
+
+**** Main Function and Basic Game Loop
+
+#+begin_src lisp
+(defun orc-battle ()
+  (init-monsters)
+  (init-player)
+  (game-loop)
+  (when (player-dead)
+    (princ "You have been killed.  Game Over."))
+  (when (monsters-dead)
+    (princ "Congratulations!  You have vanquished all of your foes.")))
+
+(defun game-loop ()
+  (unless (or (player-dead) (monsters-dead))
+    (show-player)
+    (dotimes (k (1+ (truncate (/ (max 0 *player-agility*) 15))))
+      (unless (monsters-dead)
+        (show-monsters)
+        (player-attack)))
+    (fresh-line)
+    (map 'list
+         (lambda (m)
+           (or (monster-dead m) (monster-attack m)))
+         *monsters*)
+    (game-loop)))
+#+end_src
+
+**** Player Management Functions
+
+#+begin_src lisp
+(defun init-player ()
+  (setf *player-health* 30)
+  (setf *player-agility* 30)
+  (setf *player-strength* 30))
+
+(defun player-dead ()
+  (<= *player-health* 0))
+
+(defun show-player ()
+  (fresh-line)
+  (princ "You are a valiant knight with a health of ")
+  (princ *player-health*)
+  (princ ", and agility of ")
+  (princ *player-agility*)
+  (princ ", and a strength of ")
+  (princ *player-strength*))
+
+(defun player-attack ()
+  (fresh-line)
+  (princ "Attack style: [s]tab [d]ouble swing [r]oundhouse: ")
+  (case (read)
+    (s (monster-hit (pick-monster)
+                    (+ 2 (randval (ash *player-strength* -1)))))
+    (d (let ((x (randval (truncate (/ *player-strength* 6)))))
+         (princ "Your double swing has a strength of ")
+         (princ x)
+         (fresh-line)
+         (monster-hit (pick-monster) x)
+         (unless (monsters-dead)
+           (monster-hit (pick-monster) x))))
+    (otherwise (dotimes (x (1+ (randval (truncate (/ *player-strength* 3)))))
+                 (unless (monsters-dead)
+                   (monster-hit (random-monster) 1))))))
+#+end_src
+
+**** Helper Functions for =player-attack=
+
+We need a way to generate random values from 1 to n, a way to pick a random
+monster, and a way to let the player select a monster.
+
+#+begin_src lisp
+(defun randval (n)
+  (1+ (random (max 1 n))))
+
+(defun random-monster ()
+  (let ((m (aref *monsters* (random (length *monsters*)))))
+    (if (monster-dead m)
+        (random-monster)
+        m)))
+
+(defun pick-monster ()
+  (fresh-line)
+  (princ "Monster #: ")
+  (let ((x (read)))
+    (if (not (and (integerp x) (>= x 1) (<= x *monster-num*)))
+        (progn (princ "That is not a valid monster number.")
+               (pick-monster))
+        (let ((m (aref *monsters* (1- x))))
+          (if (monster-dead m)
+              (progn (princ "That monster is already dead.")
+                     (pick-monster))
+              m)))))
+#+end_src
+
+**** Monster Management Functions
+
+#+begin_src lisp
+(defun init-monsters ()
+  (setf *monsters*
+        (map 'vector
+             (lambda (x)
+               (funcall (nth (random (length *monster-builders*))
+                                     *monster-builders*)))
+               (make-array *monster-num*))))
+
+(defun monster-dead (m)
+  (<= (monster-health m) 0))
+
+(defun monsters-dead ()
+  (every #'monster-dead *monsters*))
+
+(defun show-monsters ()
+  (fresh-line)
+  (princ "Your foes:")
+  (let ((x 0))
+    (map 'list
+         (lambda (m)
+           (fresh-line)
+           (princ "    ")
+           (princ (incf x))
+           (princ ". ")
+           (if (monster-dead m)
+               (princ "**dead**")
+               (progn (princ "(Health=")
+                      (princ (monster-health m))
+                      (princ ") ")
+                      (monster-show m))))
+         *monsters*)))
+#+end_src
+
+**** The Monsters (where we're using =defmethod= and =defstructure=!)
+***** Note: There's cool pictures of all these monsters in the book!
+***** The Generic Monster
+
+All monsters have a health meter that determines how many hits they take
+before they die.  When we declare a slot in a structure, we can put
+parentheses around the name and add a default value for that slot.
+=(defstruct monster (health (randval 10)))= declares a monster structure
+that has a health property that defaults to a random value from 1 to 10.
+Remember, defining this structure introduces a =make-monster= function to
+create entities.  We're using =defmethod= for =monster-hit= and
+=monster-show= so we can customize these for different types of monsters.
+Note for our monster structure =(type-of m)= will be monster.  Also,
+=monster-attack= is intentionally left empty, since the generic monster
+doesn't have an attack.  We'll customize this for each monster.
+
+#+begin_src lisp
+(defstruct monster (health (randval 10)))
+
+(defmethod monster-hit (m x)
+  (decf (monster-health m) x)
+  (if (monster-dead m)
+      (progn (princ "You killed the ")
+             (princ (type-of m))
+             (princ "! "))
+      (progn (princ "You hit the ")
+             (princ (type-of m))
+             (princ ", knocking off ")
+             (princ x)
+             (princ " health points! "))))
+
+(defmethod monster-show (m)
+  (princ "A fierce ")
+  (princ (type-of m)))
+
+;; intentionally left empty for the generic monster
+(defmethod monster-attack (m))
+#+end_src
+
+***** The Wicked Orc
+
+"The orc is a simple foe.  He can deliver a strong attack with his club,
+but otherwise he is pretty harmless.  Every orc has a club with a unique
+attack level.  Orcs are best ignored, unless there are orcs with an unusually
+powerful club attack that you want to cull from the herd at the beginning of a
+battle."
+
+Notice how we include all the properties from our =monster= in our =orc=.  Also
+notice that the orc relies on the generic monster =monster-hit= function rather
+than defining one of its own.
+
+#+begin_src lisp
+(defstruct (orc (:include monster)) (club-level (randval 8)))
+(push #'make-orc *monster-builders*)
+
+(defmethod monster-show ((m orc))
+  (princ "A wicked orc with a level ")
+  (princ (orc-club-level m))
+  (princ " club"))
+
+(defmethod monster-attack ((m orc))
+  (let ((x (randval (orc-club-level m))))
+    (princ "An orc swings his club at you and knocks off ")
+    (princ x)
+    (princ " of your health points.  ")
+    (decf *player-health* x)))
+#+end_src
+
+***** The Malicious Hydra
+
+"The hydra is a very nasty enemy.  It will attack you with its many heads,
+which you'll need to chop off to defeat it.  The hydra's special power is that
+it can grow a new head during each round of battle, which means you want to
+defeat it as early as possible."
+
+#+begin_src lisp
+(defstruct (hydra (:include monster)))
+(push #'make-hydra *monster-builders*)
+
+(defmethod monster-show ((m hydra))
+  (princ "A malicious hydra with ")
+  (princ (monster-health m))
+  (princ " heads."))
+
+(defmethod monster-hit ((m hydra) x)
+  (decf (monster-health m) x)
+  (if (monster-dead m)
+      (princ "The corpse of the fully decapitated and decapacitated hydra falls to the floor!")
+      (progn (princ "You lop off ")
+             (princ x)
+             (princ " of the hydra's heads! "))))
+
+(defmethod monster-attack ((m hydra))
+  (let ((x (randval (ash (monster-health m) -1))))
+    (princ "A hydra attacks you with ")
+    (princ x)
+    (princ " of its heads!  It also grows back one more head! ")
+    (incf (monster-health m))
+    (decf *player-health* x)))
+#+end_src
+
+***** The Slimy Slime Mold
+
+"The slime mold is a unique monster.  When it attacks you, it will wrap itself
+around your legs and immobilize you, letting the other bad guys finish you off.
+It can also squirt goo in your face.  You must think quickly in battle to
+decide if it's better to finish the slime off early in order to maintain your
+agility, or ignore it to focus on more vicious foes first."
+
+#+begin_src lisp
+(defstruct (slime-mold (:include monster)) (sliminess (randval 5)))
+(push #'make-slime-mold *monster-builders*)
+
+(defmethod monster-show ((m slime-mold))
+  (princ "A slime mold with a sliminess of ")
+  (princ (slime-mold-sliminess m)))
+
+(defmethod monster-attack ((m slime-mold))
+  (let ((x (randval (slime-mold-sliminess m))))
+    (princ "A slime mold wraps around your legs and decreases your agility by ")
+    (princ x)
+    (princ "!  ")
+    (decf *player-agility* x)
+    (when (zerop (random 2))
+      (princ "It also squirts in your face, taking away a health point!")
+      (decf *player-health*))))
+#+end_src
+
+***** The Cunning Brigand
+
+"The brigand is the smartest of all your foes.  He can use his whip or slingshot
+and will try to neutralize your best assets.  His attacks are not powerful, but
+they are a consistent two points for every round."
+
+Brigand uses the generic monster =monster-show=.
+
+#+begin_src lisp
+(defstruct (brigand (:include monster)))
+(push #'make-brigand *monster-builders*)
+
+(defmethod monster-attack ((m brigand))
+  (let ((x (max *player-health* *player-agility* *player-strength*)))
+    (cond ((= x *player-health*)
+           (princ "A brigand hits you with his slingshot, taking off 2 health points!  ")
+           (decf *player-health* 2))
+          ((= x *player-agility*)
+           (princ "A brigand catches your leg with his whip, taking off 2 agility points!  ")
+           (decf *player-agility* 2))
+          ((= x *player-strength* 2)
+           (princ "A brigand cuts your arm with his whip, taking off 2 strength points!  ")
+           (decf *player-strength* 2)))))
+#+end_src
+
+* III - Lisp is Hacking
+* IV - Lisp is Science
