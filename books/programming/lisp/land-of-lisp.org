@@ -1,3 +1,172 @@
+* I - Lisp is Power
+** Getting Started with Lisp
+*** Two main dialects of Lisp
+**** Common Lisp; what this book will focus on
+**** Scheme
+*** Common Lisp is a multiparadigm language
+*** Install CLISP to work along with book
+*** If you make a mistake in the repl, just type :q
+** Creating Your First Lisp Program
+*** Create new top-level definitions (global vars) with =defparameter=
+
+#+begin_src lisp
+(defparameter *small* 1)
+(defparameter *big* 100)
+#+end_src
+**** Name global variables with earmuffs: *foo*
+**** =defparameter= will overwrite existing variables with the same name
+**** Define global variables with =defvar= and it won't overwrite previous vars
+*** Define functions with =defun=
+
+#+begin_src lisp
+(defun function_name (arguments)
+  ...)
+#+end_src
+*** =ash= is the arithmetic shift function
+**** (ash (+ *big* *small*) -1) is the average of *big* and *small*
+**** it is commonly used for binary searches
+*** =setf= is used to change the value of variable
+
+#+begin_src lisp
+(setf *big* (1- (guess-my-number)))
+
+(setf *small* (1+ (guess-my-number)))
+#+end_src
+*** Define local variables with =let=
+
+#+begin_src lisp
+(let ((a 5)
+      (b 6))
+  (+ a b))
+;; -> 11
+#+end_src
+*** Define local functions with =flet=
+
+#+begin_src lisp
+(flet ((f (n)
+          (+ n 10))
+       (g (n)
+          (- n 3)))
+  (g (f 5)))
+;; -> 12
+#+end_src
+*** Make function names available in defined functions with =labels=
+
+#+begin_src lisp
+;; below function b calls a, so we needed labels
+;; labels is also needed for recursion
+(labels ((a (n)
+            (+ n 5))
+         (b (n)
+            (+ (a n) 6)))
+  (b 10))
+;; -> 21
+#+end_src
+** Exploring the Syntax of Lisp Code
+*** *Syntax* represents the rules needed to be followed to be valid in a language
+**** Having simple syntax is a defining feature of Lisp
+**** Parentheses are there to keep the amount of syntax to a minimum
+*** *Semantics* is the meaning of something
+**** You can write code with similar semantics (meaning) in most languages
+*** Basic datatypes in Lisp
+**** Symbols: any stand-alone word
+***** letters, numbers, and characters like + = / * = < > ? ! _
+***** case insensitive
+**** Numbers: floating point or integer (based on decimal point present or not)
+***** 1 and 1.0 are two different numbers
+***** integers are upconverted to float in mixed math
+***** division of integers returns a rational number
+**** Strings: characters surrounded by double quotes
+***** escape special characters (like ") with a backslash ("\"stop!\"")
+*** Two reader modes
+**** Code mode
+
+The default mode of the reader.  Try to evaluate the head of a list as a
+function applied to the rest of the list as arguments.  It also tries to
+evaluate symbols, unless you prefix them with ' to enable data mode.
+
+**** Data mode
+
+Switch to data mode by prefixing with quote: '(1 2 3)
+
+*** Lists in Lisp
+**** cons
+
+You can =cons= any item on to another, but you normally cons on to a list.
+Note that both nil and 'nil act as the empty list.  nil is the list
+terminator in Lisp.  When Lispers talk about using =cons=, they say
+they are /consing/ something.
+
+#+begin_src lisp
+(cons 'chicken 'cat) ;; => (CHICKEN . CAT)
+(cons 'chicken nil)  ;; => (CHICKEN)
+(cons 'chicken ())   ;; => (CHICKEN)
+(cons 'chicken '(1 2) ;; => (CHICKEN 1 2)
+(cons 'chicken (cons 1 (cons 2 ()))) ;; => (CHICKEN 1 2)
+#+end_src
+
+A list is a series of cons cells containing and element of the list and
+a pointer to the rest of the list.
+
+**** car
+
+=car= returns the head of a list.  It is also called =first=.
+It basically takes the element out of the first cons cell and
+removes the cell, leaving the rest of the list.
+
+#+begin_src lisp
+(car '(beef chicken)) ;; -> BEEF
+#+end_src
+
+**** cdr
+
+=cdr= returns everything except the head of the list.  It is also called =rest=
+It returns the rest of the list pointed to in the second part of the cons cell.
+
+#+begin_src lisp
+(cdr '(pork beef chicken)) ;; -> (BEEF CHICKEN)
+(car (cdr '(pork beef chicken))) ;; -> BEEF
+#+end_src
+**** cadr, caddr, caaddr, and more
+
+=cadr= returns the =car= of the =cdr= of a list. There are more combinations
+of =car= and =cdr= defined standard.  Like =caddr=.  You can use any function
+of the form c*r up to four levels deep.  =cadadr= is already defined (four
+levels deep), but =cadadar= is not (five levels deep).
+
+#+begin_src lisp
+(cadr '(pork beef chicken)) ;; -> BEER
+(caadr '((beef pork) (chicken sammich)) ;; -> CHICKEN
+(cadddr '(beef pork chicken sammich) ;; -> SAMMICH
+#+end_src
+**** list
+
+=list= is a convenience function that will create a list out of several items
+without you having to manually cons it together.  the list is the same as if
+you had defined it from multiple calls to =cons= or defined it literally with
+a quote ' in front.
+
+#+begin_src lisp
+(list 'pork 'beef 'chicken) ;; -> (PORK BEEF CHICKEN)
+#+end_src
+**** you can nest lists
+
+#+begin_src lisp
+(car '((peas carrots tomatoes) (pork beef chicken)))
+;; -> (PEAS CARROTS TOMATOES)
+(cdr car '((peas carrots tomatoes) (pork beef chicken)))
+;; -> (CARROTS TOMATOES)
+(cdar '((pea carrots tomatoes) (pork beef chicken)))
+;; -> (CARROTS TOMATOES)
+(cddr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> (DUCK)
+(caddr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> DUCK
+(cddar '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> (TOMATOES)
+(cadadr '((peas carrots tomatoes) (pork beef chicken) duck))
+;; -> BEEF
+#+end_src
 
 * II - Lisp is Symmetry
 ** Make Decisions with Conditions
