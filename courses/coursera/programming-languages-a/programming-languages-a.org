@@ -594,6 +594,62 @@ In ML, every function takes exactly one argument.  What we call multi-
 argument functions are just functions taking one tuple argument,
 implemented with a tuple pattern in the function binding.
 
+*** Nested Patterns
+
+We can nest patterns within other patterns.
+
+#+begin_src sml
+exception ListLengthMismatch
+
+fun zip3 list_triple = 
+    case list_triple of
+        ([],[],[]) => []
+      | (hd1::tl1,hd2::tl2,hd3::tl3) => (hd1,hd2,hd3)::zip3(tl1,tl2,tl3)
+      | _ => raise ListLengthMismatch
+
+fun unzip3 lst =
+    case lst of
+        [] => ([], [], [])
+      | (a,b,c)::tl => let val (l1,l2,l3) = unzip3 tl
+                       in
+                           (a::l1,b::l2,c::l3)
+                       end
+
+fun nondecreasing xs = (* int list -> bool *)
+    case xs of
+        [] => true
+      | _::[] => true
+      | head::(neck::rest) => head <= neck
+                              andalso nondecreasing (neck::rest)
+#+end_src
+
+*** Function Patterns
+
+If the entire function body is a case expression, you can instead write
+the function as a function pattern.
+
+#+begin_src sml
+datatype exp = Constant of int
+             | Negate of exp
+             | Add of exp * exp
+             | Multiply of exp * exp
+
+fun old_eval e =
+    case e of
+        Constant i => i
+      | Negate e2  => ~ (old_eval e2)
+      | Add(e1,e2) => (old_eval e1) + (old_eval e2)
+      | Multiply(e1,e2) => (old_eval e1) * (old_eval e2)
+
+fun eval (Constant i) = i
+  | eval (Negate e2)  = ~ (eval e2)
+  | eval (Add(e1,e2)) = (eval e1) + (eval e2)
+  | eval (Multiply(e1,e2)) = (eval e1) * (eval e2)
+
+fun append ([],ys) = ys
+  | append (x:xs',ys) = x :: append(xs',ys)
+#+end_src
+
 ** Useful Datatype Examples
 
 #+begin_src sml
@@ -701,5 +757,17 @@ type, but int option is.  Same with list; list is not a type, but
 int list is a type.
 
 Note: You can pronounce 'a as alpha.
+
+** Equality Types
+
+When you see ''a in a type, it means "equality types", only values that
+you can use = to compare.  = works on a lot of types: int, string, tuples
+containing equality types, and more.  = doesn't work on functions or reals.
+
+#+begin_src sml
+(* ''a * ''a -> string *)
+fun same_thing(x, y) =
+    if x=y then "yes" else "no"
+#+end_src
 
 * Something

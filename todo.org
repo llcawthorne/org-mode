@@ -16,8 +16,14 @@
 - [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
 - [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
 ** Programming Languages A :programming:
-- [ ] Finish watching second week's lectures
-- [ ] Homework 1
+- [X] Finish watching second week's lectures
+- [X] Homework 2
+- [ ] Finish watching third week's lectures
+- [ ] Homework 3
+- [ ] Finish watching fourth week's lectures
+- [ ] Homework 4
+- [ ] Finish watching fifth week's lectures
+- [ ] Homework 5
 * Reading List :reading:
 #+CATEGORY: Reading
 ** Clojure :programming:
@@ -31,10 +37,10 @@
 - [ ] /Clojure Applied/
 - [ ] /Mastering Clojure Macros/
 ** Haskell :programming:
+- [ ] /Anatomy of Programming Languages/
 - [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books Link]]
 - [ ] /Haskell Book/
 - [ ] /Learn You a Haskell for Great Good!/
-- [ ] /Anatomy of Programming Languages/
 ** Mathematics
 - [ ] /How to Read and Do Proofs/
 - [ ] /Introduction to Mathematical Thinking/
@@ -53,15 +59,17 @@
 - [ ] /How to Design Programs/
 - [ ] /Test Driven Development by Example/
 - [ ] /Growing Object-Oriented Software, Guided by Tests/
-- [ ] /Design It/
 - [ ] /Refactoring - 2nd Edition/
+- [ ] /Design It/
 - [ ] /Agile Software Development Principles Patterns and Practice/
 - [ ] /Code Complete/
 ** Work :programming:
-- [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
 - [ ] /Modern Java in Action/
+- [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
+- [ ] /Functional Programming in Java/
 - [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
-- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
+- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link
+- [ ] /Functional Programming in JavaScript/
 ** Algorithms :programming:
 - [ ] /Grokking Algorithms/
 - [ ] /A Common-Sense Guide to Data Structures and Algorithms/
