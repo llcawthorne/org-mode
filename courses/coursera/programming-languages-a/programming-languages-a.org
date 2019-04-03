@@ -206,7 +206,7 @@ fun better_max (xs : int list) =
             then hd xs
             else tl_ans
         end
-#+end_s
+#+end_src
 ** Options can return NONE when a value is inappropriate
 *** NONE or SOME e
 *** NONE has type 'a option
@@ -758,6 +758,7 @@ int list is a type.
 
 Note: You can pronounce 'a as alpha.
 
+<<<<<<< HEAD
 ** Equality Types
 
 When you see ''a in a type, it means "equality types", only values that
@@ -770,4 +771,77 @@ fun same_thing(x, y) =
     if x=y then "yes" else "no"
 #+end_src
 
-* Something
+** Exceptions
+
+New binding: exception MyFirstException
+             exception MySecondException of int * int
+raise is a primitive that throws an exception:
+             raise MyFirstException
+             raise (MySecondException(7,9))
+A handle expression can catch an exception:
+             e1 handle MyFirstException => e2
+             e1 handle MySecondException(x,y) => e2
+Your handle can pattern match for multiple types of exceptions.
+
+#+begin_src sml
+(* hd is not total.  It throws an exception when given an empty list *)
+fun hd xs =
+    case xs of
+        []   => raise List.Empty
+      | x::_ => x
+
+exception MyUndesirableCondition
+
+(* exceptions can be associated with data *)
+exception MyOtherException of int * int
+
+fun mydiv (x,y) =
+    if y=0
+    then raise MyUndesirableCondition
+    else x div y
+
+(* the caller can pass maxlist and exception to throw *)
+fun maxlist (xs,ex) = (* int list * exn -> int -- all exceptions are type exn *)
+    case xs of
+        [] => raise ex
+      | x::[] => x
+      | x::xs' => Int.max(x,maxlist(xs',ex))
+
+(* we can handle exceptions *)
+val z = maxlist ([],MyUndesirableCondition)
+        handle MyUndesirableCondition => 42
+#+end_src
+
+** Tail Recursion
+
+#+begin_src sml
+(* not tail recursive; builds up stack frames *)
+fun fac n = if n0 then 1 else n*fact(n-1)
+
+(* tail recursive using accumulator *)
+fun fact n =
+    let fun aux(n,acc) =
+          if n=0
+          then acc
+          else aux(n-1,acc*n)
+    in
+        aux(n,1)
+    end
+
+(* not tail recursive *)
+fun rev xs =
+    case xs of
+        [] => []
+      | x:xs' => (rev xs) @ [x]
+
+
+(* tail recursive *)
+fun rev xs =
+    let fun aux(xs,acc) =
+          case xs of
+              [] => acc
+            | x:xs' => aux(xs',x::acc)
+    in
+        aux(xs,[])
+    end
+#+end_src
