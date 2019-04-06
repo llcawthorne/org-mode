@@ -758,7 +758,6 @@ int list is a type.
 
 Note: You can pronounce 'a as alpha.
 
-<<<<<<< HEAD
 ** Equality Types
 
 When you see ''a in a type, it means "equality types", only values that

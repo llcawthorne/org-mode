@@ -10,12 +10,12 @@
 - 'C-u C-c C-l' to link to a file
 - 'M-x org-agenda' to view agenda (then 'f' and 'b' for forward/back)
 - In agenda, S-left or S-right move the schedule earlier or later
-* Class Tasks :class:
+* Class Tasks                                                                   :class:
 #+CATEGORY: Class
 ** Introduction to Mathematical Thinking
 - [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
 - [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
-** Programming Languages A :programming:
+** Programming Languages A                                                      :programming:
 - [X] Finish watching second week's lectures
 - [X] Homework 2
 - [ ] Finish watching third week's lectures
@@ -24,9 +24,9 @@
 - [ ] Homework 4
 - [ ] Finish watching fifth week's lectures
 - [ ] Homework 5
-* Reading List :reading:
+* Reading List                                                                  :reading:
 #+CATEGORY: Reading
-** Clojure :programming:
+** Clojure                                                                      :programming:
 - [X] /Living Clojure/
 - [ ] /Spacemacs: Clojure development made simple/ [[https://practicalli.github.io/spacemacs/][Book Link]]
 - [ ] /Clojure for the Brave and True/
@@ -36,26 +36,23 @@
 - [ ] /ClojureScript Unravelled/ [[https://funcool.github.io/clojurescript-unraveled/][Book Link]]
 - [ ] /Clojure Applied/
 - [ ] /Mastering Clojure Macros/
-** Haskell :programming:
-- [ ] /Anatomy of Programming Languages/
-- [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books Link]]
-- [ ] /Haskell Book/
-- [ ] /Learn You a Haskell for Great Good!/
-** Mathematics
-- [ ] /How to Read and Do Proofs/
-- [ ] /Introduction to Mathematical Thinking/
-- [ ] /Book of Proof/
-- [ ] /How to Prove It/
-- [ ] /Discrete Mathematics Using a Computer/
-- [ ] /Haskell Road to Logic Maths and Programming/
-** Lisp :programming:
+** Lisp                                                                         :programming:
 - [ ] /Land of Lisp/
 - [ ] /Realm of Racket/
 - [ ] /The Little Schemer/
 - [ ] /The Seasoned Schemer/
 - [ ] /The Reasoned Schemer/
 - [ ] /Structure and Interpretation of Computer Programs/
-** Software Development :programming:
+** Mathematics
+- [ ] /How to Read and Do Proofs/
+- [ ] /Mathematics/Calculus/AlgebraTrig.pdf/ ;; review
+- [ ] /Introduction to Mathematical Thinking/
+- [ ] /Book of Proof/
+- [ ] /How to Prove It/
+- [ ] /Discrete Mathematics Using a Computer/
+- [ ] /Haskell Road to Logic Maths and Programming/
+- [ ] /A Programmer's Introduction to Mathematics/
+** Software Development                                                         :programming:
 - [ ] /How to Design Programs/
 - [ ] /Test Driven Development by Example/
 - [ ] /Growing Object-Oriented Software, Guided by Tests/
@@ -63,20 +60,32 @@
 - [ ] /Design It/
 - [ ] /Agile Software Development Principles Patterns and Practice/
 - [ ] /Code Complete/
-** Work :programming:
+** Non-Technical 
+- [ ] /Hackers & Painters - Big Ideas from the Computer Age/
+- [ ] /Hackers - Heroes of the Computer Revolution/
+- [ ] /Godel, Escher, Bach/
+- [ ] /The Skeptics' Guide to the Universe/
+- [ ] /Masterminds of Programming/
+** Haskell                                                                      :programming:
+- [ ] /Anatomy of Programming Languages/
+- [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books Link]]
+- [ ] /Haskell Book/
+- [ ] /Learn You a Haskell for Great Good!/
+** Work                                                                         :programming:
 - [ ] /Modern Java in Action/
 - [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
+- [ ] /Beginning Java EE 7/
 - [ ] /Functional Programming in Java/
 - [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
-- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link
+- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
 - [ ] /Functional Programming in JavaScript/
-** Algorithms :programming:
+** Algorithms                                                                   :programming:
 - [ ] /Grokking Algorithms/
 - [ ] /A Common-Sense Guide to Data Structures and Algorithms/
 - [ ] /Algorithms - A Functional Programming Approach/
 - [ ] /The Imposter's Handbook/
 - [ ] /Introduction to Algorithms - 3e/
-** Upcoming Releases                                           :programming:
+** Upcoming Releases                                                            :programming:
 - [ ] /Get Programming with Clojure/
 - [ ] /Get Programming with Scala/
 - [ ] /Grokking Functional Programming/

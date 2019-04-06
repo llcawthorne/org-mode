@@ -1789,4 +1789,1325 @@ Brigand uses the generic monster =monster-show=.
 #+end_src
 
 * III - Lisp is Hacking
+** Looping with the =loop= Command
+*** The =loop= Macro
+
+Within =loop=, =for= allows you to declare a variable that iterates through
+a range of values.  By default, it will count through the integers starting
+at zero.  =below= tells the =for= construct to halt when it reaches a value,
+excluding the value itself.  =sum= adds together all values of a given
+expression and makes the loop return that number.
+
+#+begin_src lisp
+(loop for i
+      below 5
+      sum i)
+;; -> 10
+#+end_src
+
+*** Some =loop= Tricks
+**** Counting from a Starting Point to an Ending Point
+
+#+begin_src lisp
+(loop for i
+      from 5
+      to 10
+   sum i)
+;; -> 45
+#+end_src
+
+**** Iterating Through Values in a List
+
+#+begin_src lisp
+(loop for i
+      in '(100 20 3)
+    sum i)
+;; -> 123
+#+end_src
+
+**** doing Stuff in a Loop
+
+#+begin_src lisp
+(loop for i
+      below 5
+    do (print i))
+;; -> prints ut 0 1 2 3 4, each on its own line
+#+end_src
+
+**** Doing Stuff Under Certain Conditions
+
+#+begin_src lisp
+(loop for i
+      below 10
+    when (oddp i)
+    sum i)
+;; -> 25
+#+end_src
+
+**** Breaking out of a Loop Early
+
+#+begin_src lisp
+(loop for i
+      from 0
+   do (print i)
+   when (= i 5)
+   return 'falafel)
+;; -> prints 0 to 5 on separate lines, then it returns the value 'falafel
+#+end_src
+
+**** Collecting a List of Values
+
+The =collect= clause lets you return more than one item from the =loop=, in
+the form of a list.
+
+#+begin_src lisp
+(loop for i
+   in '(2 3 4 5 6)
+   collect (* i i))
+;; -> (4 9 16 25 36)
+#+end_src
+
+**** Using Multiple =for= Clauses
+
+The below iterates x and y at the same time, and returns a list of 10 numbers.
+The loop will stop when either =for= clause runs out of values.
+
+#+begin_src lisp
+(loop for x below 10
+      for y below 10
+      collect (+ x y))
+;; -> (0 2 4 6 8 10 12 14 16 18)
+#+end_src
+
+If we wanted to generate the cartesian product, we would need nested loops.
+
+#+begin_src lisp
+(loop for x below 10
+      collect (loop for y below 10
+                    collect (+ x y)))
+;; -> lots of output.  0 to 9, then 1 to 10, then 2 to 11, etc
+;;    this returns 10 lists of 10 items each, 100 items total
+#+end_src
+
+Double =for= clauses is an easy way to pair up values with an index.
+
+#+begin_src lisp
+(loop for i
+      from 0
+      for day
+      in '(monday tuesday wednesday thursday friday saturday sunday)
+      collect (cons i day))
+;; -> ((0 . MONDAY) (1 . TUESDAY) (2 . WEDNESDAY) ...)
+#+end_src
+
+**** There's ALOT of other =loop= tricks.  The book has a huge table.
+*** Using =loop= to Evolve!
+**** Intro to the Game
+
+Our game world is a simple rectangular plane, with edges that wrap around to
+the opposite side.  Most of this world is covered in steppes, meaning that very
+few plants grow for the animals to eat.  In the center of the world is a small
+jungle, where plants grow much faster.  Our animals, who are herbivores, will
+forage this world in search of food.
+
+**** Full Code in evolution.lisp
+**** Example of =loop=
+
+Here's two functions that use loop from evolution.lisp.  I didn't find this one
+instructive enough to break it all up in a org-file like I did Wumpus and Orc
+Battle.
+
+#+begin_src lisp
+(defun draw-world ()
+  (loop for y
+          below *height*
+        do (progn (fresh-line)
+                  (princ "|")
+                  (loop for x
+                          below *width*
+                        do (princ (cond ((some (lambda (animal)
+                                                 (and (= (animal-x animal) x)
+                                                      (= (animal-y animal) y)))
+                                               *animals*)
+                                         #\M)
+                                        ((gethash (cons x y) *plants*) #\*)
+                                        (t #\space))))
+                  (princ "|"))))
+
+(defun evolution ()
+  (draw-world)
+  (fresh-line)
+  (let ((str (read-line)))
+    (cond ((equal str "quit") ())
+          (t (let ((x (parse-integer str :junk-allowed t)))
+               (if x
+                   (loop for i
+                           below x
+                         do (update-world)
+                         if (zerop (mod i 100))
+                           do (princ #\.))
+                   (draw-world))
+               (evolution))))))
+#+end_src
+
+** Printing Text with the =format= Function
+*** Anatomy of the =format= Function
+
+#+begin_src lisp
+(format t "Add onion rings for only ~$ dollars more!" 1.5)
+;; OUTPUT: Add onion rings for only 1.50 dollars more!
+;; -> NIL
+#+end_src
+
+The first parameter is "The Destination Parameter".  It is =nil= to just create
+a string, =t= for printing to console, and =stream= to output to stream.
+Everything between quotes is "The Control String," and =~$= is a Control
+Sequence.  The 1.5 is a Value Parameter.
+
+***** The Destination Parameter
+****** =nil= to return value as a string
+****** =t= to print value to the console (and return =nil=)
+****** =stream= to write data to an output stream (covered next chapter)
+***** The Control String Parameter
+****** By default, the text in this string is printed as output
+****** /control sequences/ in the string affect the output
+******* All control sequences begin with ~
+******* Use =~s= and =~a= to print like =prin1= and =princ=
+
+Print any lisp value.  With =~s= it will show appropriate delimiters.  With
+=~a= it will show the value without delimiters.  We can adjust this further
+by putting a number n in front of the a or s to indicate the value should be
+padded with blank spaces on the right.  This will add spaces until the total
+width of the value is n.  =~10a= with "foo" will add seven spaces.  We can add
+spaces on the left by adding =@= like =~10@a= with "foo" will put seven spaces
+in front of foo.  Control sequences can take multiple parameters separated by
+,.  Like =~10,3a= with "foo" will cause the spaces to be added 3 at a time until
+10 is reached, so in this example, 9 spaces are added (the total width is 12).
+The second parameter to =~a= is rarely used.  The third parameter makes us
+print an exact number of spaces after a final formatted value, like =~,,4a= to
+print exactly 4 spaces after the data.  The fourth parameter chooses another
+character to pad with rather than space.  =~,,,4,'!@a= and "foo" will print
+"foo!!!!"
+
+#+begin_src lisp
+(format t "I am printing ~s in the middle of this sentence." "foo")
+;; I am printing "foo" in the middle of this sentence.
+(format t "I am printing ~a in the middle of this sentence." "foo")
+;; I am printing foo in the middle of this setence.
+(format t "I am printing ~10a within ten spaces of room." "foo")
+;; I am printing foo       within ten spaces of room.
+#+end_src
+
+******* Control Sequences for Formatting Numbers
+******** =~x= to display a number in hexadecimal.  =~b= for binary.
+******** =~d= is decimal, but can be combined with parameters
+
+=~:d= display a number with commas.  We can also use padding with =~d=, like
+=~10d= to make it a 10 space width number field.  With =~d= the padding
+character is the second parameter so =~10,'xd= with 1000000 is xxx1000000.
+
+******** =~f= is floating point and can be combined with parameters
+
+=~4f= displays a floating point that is four characters wide, so =~4f= with
+3.141593 will print "3.14" (the decimal is one of the four characters).  The
+second parameter to =~f= controls how many digits after the decimal point,
+so =~,4f= with 3.141593 will print "3.1416" (it rounds the number off).  The
+third parameter causes the value to be scaled by factors of 10.  So
+=~,,2f= and 0.77 will display "77.0"
+
+******** =~$= - monetary floating-point value
+******* You can print in columns with =~t= and =~:@= and =~<=
+******* =format= can iterate through lists with =~{= and =~}=
+
+#+begin_src lisp
+(format t "~{I see a ~a! ~}" *animals*)
+;; will print out "I see a whatever!" once for each animal in *animals*
+#+end_src
+
+***** Value Parameters
+****** Parameters following the control string contain data to be displayed
+*** Printing Multiple Lines of Output
+**** =terpri= will start a new line
+**** =fresh-line= will start a new line as long as there isn't already a new line
+**** =format= has two sequences for new lines
+***** =~%= is like =terpri=
+***** =~&= is like =fresh-line=
+***** Both take a parameter for number of lines, so =~5&= does 5 new lines
+*** Attack of the Robots Game
+**** Intro to the Game
+
+In this game, robots have taken over the world, and it's your job to destroy
+them.  To win the game, you need to strategically walk around the field to
+cause all robots to collide with each other.  The movement keys are:
+QWE/ASD/ZXC.  These characters form a grid on the left side of your keyboard,
+letting you move up, down, left, right, as well as diagonally.  You can
+also teleport with the T key.
+
+It's a pretty cool game.  A little easy.  But it would be impossible if you
+couldn't teleport.  Anyway, it shows abuse of the =loop= and =format= functions
+in about a page of code.
+
+**** Full Code in robots.lisp
+**** Full Code Also Here
+
+#+begin_src lisp
+(defun robots ()
+  (loop named main
+        with directions = '((q . -65) (w . -64) (e . -63) (a . -1)
+                            (d .   1) (z .  63) (x .  64) (c . 65))
+        for pos = 544
+        then (progn (format t "~%qwe/asd/zxc to move, (t)eleport, (l)eave:")
+                    (force-output)
+                    (let* ((c (read))
+                           (d (assoc c directions)))
+                      (cond (d (+ pos (cdr d)))
+                            ((eq 't c) (random 1024))
+                            ((eq 'l c) (return-from main 'bye))
+                            (t pos))))
+        for monsters = (loop repeat 10
+		             collect (random 1024))
+        then (loop for mpos in monsters
+                   collect (if (> (count mpos monsters) 1)
+			         mpos
+                               (cdar (sort (loop for (k . d) in directions
+					            for new-mpos = (+ mpos d)
+                                                 collect (cons (+ (abs (- (mod new-mpos 64)
+                                                                          (mod pos 64)))
+                                                                  (abs (- (ash new-mpos -6)
+                                                                          (ash pos -6))))
+                                                               new-mpos))
+                                           '<
+                                           :key #'car))))
+        when (loop for mpos in monsters
+                   always (> (count mpos monsters) 1))
+        return 'player-wins
+        do (format t
+                   "~%|~{~<|~%|~,65:;~A~>~}|"
+                   (loop for p
+                         below 1024
+                         collect (cond ((member p monsters)
+                                        (cond ((= p pos) (return-from main 'player-loses))
+                                              ((> (count p monsters) 1) #\#)
+                                              (t #\A)))
+                                       ((= p pos)
+                                        #\@)
+                                       (t
+                                        #\ ))))))
+#+end_src
+
+** Working with Streams
+*** Streams by Type of Resource
+**** Console Streams
+**** File Streams
+**** Socket Streams
+**** String Streams
+
+Rather than let you communicate with the outside world, string streams allow
+you to manipulate strings in new and interesting ways.
+
+*** Streams by Direction
+**** Output Streams
+
+You can do two things with an output stream:
+- Check whether the stream is valid.
+- Push a new item onto the stream.
+
+#+begin_src lisp
+;; output-stream-p tells us if a stream is valid
+(output-stream-p *standard-output*)
+;; -> T
+(write-char #\x *standard-output*)
+;; -> xNIL
+#+end_src
+
+**** Input Streams
+
+You can do two things with an input stream:
+- Check whether the stream is valid
+- Pop an item off of the stream
+
+#+begin_src lisp
+;; input-stream-p tests if a stream is valid
+(input-stream-p *standard-input*)
+;; -> T
+(read-char *standard-input*)
+;; 123
+;; -> #\1
+#+end_src
+
+*** Using Other Commands to Interact with Streams
+**** =print= takes an extra param: =(print 'foo *standard-output*)=
+**** lots of other commands also take a stream as a parameter
+*** Working with Files
+**** =with-open-file= should be your go to way to work with files
+
+#+begin_src lisp
+;; print "my data" to a file named data.txt
+(with-open-file (my-stream "data.txt" :direction :output)
+  (print "my data" my-stream))
+(with-open-file (my-stream "data.txt" :direction :input)
+  (read my-stream))
+;; -> "my data"
+#+end_src
+
+*** Working with Sockets
+**** Sending a Message over a Socket
+
+Get two clisp's up and running in different console windows.  One will be the
+server and the other the client.  The server is the one that listens.
+Note: this code is clisp specific
+The following opens a bidirectional stream between two consoles.
+
+#+begin_src lisp
+;; from the server do the following
+(defparameter my-socket (socket-server 4321))
+(defparameter my-stream (socket-accept my-socket))
+;; now from the client console
+(defparameter my-stream (socket-connect 4321 "127.0.0.1"))
+;; now use the stream from either
+;; from the client
+(print "Yo Server!" my-stream)
+;; from the server
+(read my-stream)
+;; -> "Yo Server!"
+(print "What up, Client!" my-stream)
+;; back on the client
+(read my-stream)
+;; -> "What up, Client!"
+;; now on both the client and server, run the following:
+(close my-stream)
+;; then on the server, run this to free up the port:
+(socket-server-close my-socket)
+#+end_src
+
+*** String Streams
+**** =make-string-input-stream= makes a string input stream
+**** =make-string-output-stream= makes a string output stream
+
+#+begin_src lisp
+(defparameter foo (make-string-output-stream))
+(princ "This will go into foo.  " foo)
+(princ "This will also go into foo.  " foo)
+(get-output-stream-string foo)
+;; -> "This will go into foo.  This will also go into foo.  "
+#+end_src
+
+**** String Streams are useful for debugging and creating complex strings
+**** =with-output-to-string=) macro is great for debugging
+
+#+begin_src lisp
+(with-output-to-string (*standard-output*)
+  (princ "the sum of ")
+  (princ 5)
+  (princ " and ")
+  (princ 2)
+  (princ " is ")
+  (princ (+ 2 5)))
+;; -> "the sum of 5 and 2 is 7"
+#+end_src
+
+** Let's Create a Web Server!
+*** Error Handling in Common Lisp
+**** Signal a Condition with =error= like =(error "foo")=
+**** Create Custom Conditions with =define-condition=
+
+Yes, starting with two () ()'s is on purpose.
+
+#+begin_src lisp
+(define-condition foo () ()
+  (:report (lambda (condition stream)
+             (princ "Stop FOOing around, numbskull!" stream))))
+;; now we can signal our custom condition with =error=
+(error 'foo)
+#+end_src)
+
+**** Intercept Conditions with =handler-case=
+
+#+begin_src lisp
+(define-condition foo () ()
+  (:report (lambda (condition stream)
+             (princ "Stop FOOing aroun, numbskull!" stream))))
+
+(defun bad-function ()
+  (error 'foo))
+
+(handler-case (bad-function)
+  (foo () "somebody signaled foo!")
+  (bar () "somebody signaled bar!"))
+;; -> "somebody signaled foo!"
+#+end_src)))
+
+**** Use =unwind-protect= to always run a piece of code
+
+You can usually use a with- macro and avoid calling =unwind-protect= directly.
+
+#+begin_src lisp
+;; the message needs to be printed, even after the divide by zero
+(unwind-protect (/ 1 0)
+                (princ "I need to say 'flubyduby' no matter what"))
+#+end_src
+
+*** Writing a Web Server from Scratch
+**** Decoding the Values of Request Parameters
+
+The follow code decodes params (like foo%3F to foo)?) and turns them
+into alist from a string of params like "name=bob&age=25&gender=male"
+
+#+begin_src lisp
+;; this takes the two characters after the % in an http encoded string
+;; (the two hex digits) and converts it to a char.  for invalid codes,
+;; it returns #\Space by default, but that is a parameter
+;; for (http-char #\3 #\F) it would return "?"
+(defun http-char (c1 c2 &optional (default #\Space))
+  (let ((code (parse-integer
+               (coerce (list c1 c2) 'string)
+               :radix 16
+               :junk-allowed t)))
+    (if code
+        (code-char code)
+        default)))
+
+;; this decodes a param, for example given "foo" it returns "foo"
+;; for "foo%3F" it returns "foo?", and "foo+bar" is "foo bar"
+(defun decode-param (s)
+  (labels ((f (lst)
+             (when lst
+               (case (car lst)
+                 (#\% (cons (http-char (cadr lst) (caddr lst))
+                            (f (cdddr lst))))
+                 (#\+ (cons #\space (f (cdr lst))))
+                 (otherwise (cons (car lst) (f (cdr lst))))))))
+    (coerce (f (coerce s 'list)) 'string)))
+
+;; this parses params in the form "name=bob&age=25&gender=male"
+;; returns an alist: ((NAME . "bob") (AGE . "25") (GENDER . "male"))
+(defun parse-params (s)
+  (let* ((i1 (position #\= s))
+         (i2 (position #\& s)))
+    (cond (i1 (cons (cons (intern (string-upcase (subseq s 0 i1)))
+                          (decode-param (subseq s(1+ i1) i2)))
+                    (and i2 (parse-params (subseq s (1+ i2))))))
+          ((equal s "") nil)
+          (t s))))
+#+end_src
+
+**** Parsing the Request Header
+
+The first line of the request header looks like
+"GET /lolcats.html HTTP/1.1" or with params
+"GET /lolcats.html?extra-funny=yes HTTP/1.1".  We're skipping the method
+(GET or POST, etc), which a fancier web server would handle.
+The rest of the header looks like:
+"Host: www.mywebsite.com
+ User-Agent: Mozilla/5.0
+ Header: Value, etc"
+
+#+begin_src lisp
+;; this parses an http request header, for example:
+;; "GET /lolcats.html HTTP/1.1" would return ("lolcats.html")
+;; it also parses URL params, so:
+;; "GET /lolcats.html?extra-funny=yes HTTP/1.1" would return
+;; ("lolcats.html" (EXTRA-FUNNY . "yes"))
+(defun parse-url (s)
+  (let* ((url (subseq s
+                      (+ 2 (position #\space s))
+                      (position #\space s :from-end t)))
+         (x (position #\? url)))
+    (if x
+        (cons (subseq url 0 x) (parse-params (subseq url (1+ x))))
+        (cons url '()))))
+
+;; parse-url handles the first list.  get-header processes the rest of the
+;; request header and returns an alist
+(defun get-header (stream)
+  (let* ((s (read-line stream))
+         (h (let ((i (position #\: s)))
+              (when i
+                (cons (intern (string-upcase (subseq s 0 i)))
+                      (subseq s (+ i 2)))))))
+    (when h
+      (cons h (get-header stream)))))
+#+end_src
+
+**** Testing =get-header= with a String Stream
+
+We can test get-header with a string stream instead of waiting until we can
+supply it with a socket stream.  To do so, you can use
+=make-string-input-stream= to create a string stream.  This allows you to
+make a multi-line input-stream by hitting enter before closing your quotes.
+
+#+begin_src lisp
+[80]> (get-header (make-string-input-stream "  foo: 1
+bar: abc, 123
+"))
+;; -> ((|  FOO| . "1") (BAR . "abc, 123"))
+#+end_src
+
+**** Parsing the Request Body
+
+In a POST request, there are parameters store beneath the header, in an
+area known as the /request body/ or /request content/.  We can extract
+these will the following function:
+
+#+begin_src lisp
+;; this will parse a request body contained in a POST request
+;; it's stored like URL params, so we can re-use parse-params
+(defun get-content-params (stream header)
+  (let ((length (cdr (assoc 'content-length header))))
+    (when length
+      (let ((content (make-string (parse-integer length))))
+        (read-sequence content stream)
+        (parse-params content)))))
+#+end_src
+
+**** The =serve= Function
+
+#+begin_src lisp
+;; Now for the heart of our web server!
+(defun serve (request-handler)
+  (let ((socket (socket-server 8080)))
+    (unwind-protect
+         (loop (with-open-stream (stream (socket-accept socket))
+                 (let* ((url    (parse-url (read-line stream)))
+                        (path   (car url))
+                        (header (get-header stream))
+                        (params (append (cdr url)
+                                        (get-content-params stream header)))
+                        (*standard-output* stream))
+                   (funcall request-handler path header params))))
+      (socket-server-close socket))))
+#+end_src
+
+**** A simple request handler
+
+#+begin_src lisp
+;; We're going to define a simple request handler to provide our serve function
+(defun hello-request-handler (path header params)
+  (if (equal path "greeting")
+      (let ((name (assoc 'name params)))
+        (if (not name)
+            (princ "<html><form>What is your name?<input name='name' /></form></html>")
+            (format t "<html>Nice to meet you, ~a!</html>" (cdr name))))
+      (princ "Sorry...  I don't know that page.")))
+#+end_src
+
+Because of the way we designed it, the request handler is really easy to debug
+without even starting up the server.  Below is a session seeing how it works:
+
+#+begin_src lisp
+[82]> (load "web-server")
+;; Loading file /Users/Lewis/git/books/land-of-lisp/web-server.lisp ...
+;; Loaded file /Users/Lewis/git/books/land-of-lisp/web-server.lisp
+T
+[83]> (hello-request-handler "lolcats" '() '())
+Sorry...  I don't know that page.
+"Sorry...  I don't know that page."
+[84]> (hello-request-handler "greeting" '() '())
+<html><form>What is your name?<input name='name' /></form></html>
+"<html><form>What is your name?<input name='name' /></form></html>"
+[85]> (hello-request-handler "greeting" '() '((name . "Bob")))
+<html>Nice to meet you, Bob!</html>
+NIL
+#+end_src
+
+**** Launching the Website
+
+To test, we just need to load the web-server.lisp file in clisp and call
+=(serve #'hello-request-handler)= (remember, you need to start a reference
+to a function with #').  Then we can view our site at
+http://localhost:8080/greeting
+
 * IV - Lisp is Science
+** Ramping Lisp Up a Notch with Functional Programming
+*** The Central Philosophy of Functional Programming
+
+You should break your program into two parts:
+
+- The first, and biggest part, should be completely functional and free of side
+effects.  This is the clean part of your program.
+- The second, smaller part of your program is the part that has all the side
+effects, interacting with the user and the rest of the outside world.  This
+code is dirty and should be kept as small as possible.
+
+** Dice of Doom, a Game Written in the Functional Style
+*** The Rules of Dice of Doom
+
+"Here's the simplified rules we'll start with:
+
+- Two players (named A and B) occupy spaces on a hexagonal grid.  Each hexagon
+in the grid will have some six-sided dice on it, owned by the occupant.
+- During a turn, a player can perform any number of moves, but must perform
+at least one move.  If the player cannot move, the game ends.
+- A move consists of attacking a neighboring hexagon owned by the opponent.
+The player must have more dice in her hexagon than the neighboring hexagon in
+order to attack.  For now, all attacks will automatically lead to a win.  In
+future variants, we'll actually roll the dice for a battle.  But for now, the
+player with more dice just wins automatically.
+- After winning a battle, the losing player's dice are removed from the board,
+and all but one of the winning player's dice are moved onto the newly won
+hexagon.
+- After a player is finished making her moves, reinforcements are added to that
+player's dice armies.  Reinforcements to the player's occupied hexagons are
+added one die at a time, starting from the upper-left corner, moving across and
+down.  The maximum number of dice added as reinforcements is one less than the
+player took from the opponent in her completed turn.
+- When a player can no longer take her turn, the game has ended.  The player
+who occupies the most hexagons at this point is the winner.  (A tie is also
+possible.)"
+
+*** Full Code in dice-of-doom-v1.lisp
+
+I'm not going to embed all the code for dice of doom in this org-file.  A
+commented version exists on my git repo at
+https://github.com/llcawthorne/land-of-lisp/dice-of-doom-v1.lisp
+
+*** Memoization
+
+Since a pure function only calculates a result given its arguments, we can
+/memoize/ it as an optimization.  We basically remember the arguments and
+result of each call of the function.  It trades memory for performance.
+
+#+begin_src lisp
+;; This is what we'll be memoizing
+;; clean functional code to calculate the neighboring hexagons to a given hex
+;; a hexagon may have up to 6 neighbors (fewer if on edge of board)
+(defun neighbors (pos)
+  (let ((up (- pos *board-size*))
+        (down (+ pos *board-size*)))
+    (loop for p in (append (list up down)
+                           (unless (zerop (mod pos *board-size*))
+                             (list (1- up) (1- pos)))
+                           (unless (zerop (mod (1+ pos) *board-size*))
+                             (list (1+ pos) (1+ down))))
+          when (and (>= p 0) (< p *board-hexnum*))
+            collect p)))
+
+;; here's where we memoize it; using a hash table to store results
+(let ((old-neighbors (symbol-function 'neighbors))
+      (previous (make-hash-table)))
+  (defun neighbors (pos)
+    (or (gethash pos previous)
+        (setf (gethash pos previous) (funcall old-neighbors pos)))))
+#+end_src
+
+*** Tail Call Optimization
+**** Not Tail Recursive
+
+#+begin_src lisp
+(defun my-length (lst)
+  (if lst
+    (1+ (my-length (cdr lst)))
+    0))
+#+end_src
+
+**** Tail Recursive
+
+#+begin_src lisp
+(defun my-length (lst)
+  (labels ((f (lst acc)
+              (if lst
+                (f (cdr lst) (1+ acc))
+                acc)))
+    (f lst 0)))
+
+;; required for tail call optimization in clisp
+(compile 'my-length)
+#+end_src
+
+** The Magic of Lisp Macros
+*** A Simple Lisp Macro
+
+Imagine how many parentheses =let= uses.  It's kinda silly for a single var
+instead of a group of declarations.  Let's fix that.
+
+#+begin_src lisp
+;; original let
+(let ((foo (+ 2 3)))
+  (* foo foo)
+
+;; define our macro
+(defmacro let1 (var val &body body)
+ `(let ((,var ,val))
+    ,@body))
+
+;; now use our let1
+(let1 foo (+ 2 3)
+  (* foo foo))
+#+end_src
+
+*** Macro Expansion
+
+/macro expansion/ happens to your code before the core of the Lisp
+interpreter/compiler gets to see it.  The macro expander finds any macros
+in your code and converts them into regular Lisp code.  Macros are run at a
+different time than a function is run.  Functions run during execution, at
+/runtime/.  A macro runs before the program does, at /macro expansion time/.
+
+*** How Macros Are Transformed
+
+Recall our simple =let1= macro.
+
+#+begin_src lisp
+;; this is what it looks like when we define let1
+(defmacro let1 (var val &body body)
+  `(let ((,var ,val))
+     ,@body))
+
+;; this is what it looks like when we use let1
+(let1 foo (+ 2 3)
+  (* foo foo))
+#+end_src
+
+The =defmacro= call tells the macro expander that when you see =let1= you need
+to expand it.  It all has the arguments passed into it.  =let1= has three
+arguments: =var=, =val=, and =body=.   When we use the macro, =foo= is the
+=var=, =(+ 2 3)= is the =val=, and =((* foo foo))= is the =body=.  The =body=
+is a nested list, because it is accessed as a varargs parameter which is a list
+of all the remaining arguments.  We only put =(* foo foo)= when we used it, but
+when we access it we get a list of one element: =((* foo foo))=
+
+We use quasiquoting to define what the =let1= macro translates to in Lisp code.
+In our =let1= macro, the body is =`(let ((,var ,val)) ,@body))=.  The commas
+cause the values of =var= and =val= to be inserted at those locations.  The
+=body= argument is inserted using the splicing comma (,@).  It let's us insert
+the entire list of forms for the =body=.
+
+You can use the =macroexpand= command to see code generated by a macro.  Note
+how you have to quote the code you pass to =macroexpand=.  For example:
+
+#+begin_src lisp
+(macroexpand '(let1 foo (+ 2 3)
+                 (* foo foo)))
+;; -> (LET ((FOO (+ 2 3))) (* FOO FOO)) ;
+;;    T
+#+end_src
+
+*** More Complex Macros
+
+#+begin_src lisp
+;; consider this tail recursive length function
+(defun my-length (lst)
+  (labels ((f (lst acc)
+            (if lst
+              (f (cdr lst) (1+ acc))
+              acc)))
+     (f lst 0)))
+
+;; this handles checking the list is non-null and splitting it into head and tail
+;; this version contains a bug
+(defmacro split (val yes no)
+  `(if ,val
+    (let ((head (car ,val))
+          (tail (cdr ,val)))
+       ,yes)
+       ,no))
+
+;; improved my-length
+(defun my-length (lst)
+  (labels ((f (lst acc)
+            (split lst
+              (f tail (1+ acc))
+              acc)))
+    (f lst 0)))
+#+end_src
+
+**** Avoiding Repeated Execution in Macros
+
+Our split macro evaluates =val= three times.  This could cause side effects to
+fire multiple times (like if =val= was a =progn= statement with =princ= and a
+list at the end.  We can fix that with a =let= or even =let1= statement.
+
+#+begin_src lisp
+;; Warning!  Still contains a bug!
+(defmacro split (val yes no)
+  `(let1 x ,val
+    (if x
+       (let ((head (car x))
+             (tail (cdr x)))
+         ,yes)
+         ,no)))
+#+end_src
+
+**** Avoiding Variable Capture
+
+Our new =split= macro has another bug.  It captured the variable name =x=, so
+if we use it somewhere there is already a variable named =x=, it will shadow it.
+There is a Common Lisp function named =gensym= that generates a crazy variable
+name for you, so you're not likely to have collisions.
+
+#+begin_src lisp
+;; This version of split is safe to use
+(defmacro split (val yes no)
+  (let1 g (gensym)
+    `(let1 ,g ,val
+       (if ,g
+         (let ((head (car ,g))
+               (tail (cdr ,g)))
+           ,yes)
+           ,no))))
+#+end_src
+
+Note that our backquote doesn't start above until the second let1 statement.
+The first statement of setting =g= to =gensym= is run at macro expand time,
+not runtime.
+
+**** A Recursion Macro
+
+=my-length= could also use some cleanup of defining it's recursive =f= function
+to be tail recursive.  We're going to create a =recurse= macro to help with that.
+
+#+begin_src lisp
+;; to write this macro, we need to process a list of arguments and starting
+;; values, so we'll define a =pairs= function to help us out
+(defun pairs (lst)
+  (labels ((f (lst acc)
+            (split lst
+              (if tail
+                (f (cdr tail) (cons (cons head (car tail)) acc))
+                (reverse acc))
+              (reverse acc))))
+    (f lst nil)))
+(pairs '(a b c d e f))
+;; -> ((A . B) (C . D) (E . F))
+
+;; now for our recurse macro
+(defmacro recurse (vars &body body)
+  (let1 p (pairs vars)
+    `(labels ((self ,(mapcar #'car p)
+                ,@body))
+       (self ,@(mapcar #'cdr p)))))
+
+;; now let's cleanup =my-length=
+(defun my-length (lst)
+  (recurse (lst lst
+            acc 0)
+           (split lst
+             (self tail (1+ acc))
+             acc)))
+#+end_src
+
+*** Macros: Dangers and Alternatives
+
+The main drawback of macros is that they can make it hard for other programmers
+to understand your code.  Also, sometimes functional programming provides a
+better, more understandable, and more composable solution.  Consider cleaning
+up the recursion in =my-length= instead by using reduce.
+
+#+begin_src lisp
+(defun my-length (lst)
+  (reduce (lambda (x i)
+            (1+ x))
+          lst
+          :initial-value 0))
+#+end_src
+
+** Domain-Specific Languages
+*** Writing SVG Files
+**** Example SVG File
+
+#+begin_src xml
+<svg xmlns="http://www.w3.org/2000/svg">
+  <circle cx="50"
+          cy="50"
+          r="50"
+          style="fill:rgb(255,0,0);stroke:rgb(155,0,0)">
+  </circle>
+  <circle cx="100"
+          cy="100"
+          r="50"
+          style="fill:rgb(0,0,255);stroke:rgb(0,0,155)">
+  </circle>
+</svg>
+#+end_src
+
+**** Writing a Macro Helper Function
+
+Often, when writing a macro to perform a task, you'll find a lot of what
+your macro needs to do can be handled by a function instead.  Because of this
+it is often prudent to first write a helper function.  Here we will write one
+that prints a single opening or closing tag.
+
+#+begin_src lisp
+;; prints a single opening or closing tag
+(defun print-tag (name alst closingp)
+  (princ #\<)
+  (when closingp
+    (princ #\/))
+  (princ (string-downcase name))
+  (mapc (lambda (att)
+          (format t " ~a=\"~a\"" (string-downcase (car att)) (cdr att)))
+        alst)
+  (princ #\>))
+
+(print-tag "circle" '() t)
+;; </circle>
+(print-tag 'mytag '((color . blue) (height . 9)) nil)
+;; <mytag color="BLUE" height="9">
+#+end_src
+
+**** Creating the =tag= Macro
+
+=tag= macro improves on the =print-tag= function in several ways:
+- Tags always come in pairs, and we need to be able to nest tags
+  within other tags.  With a macro, we can execute code before and after
+  nested tags are evaluated.
+- Tag names and attribute names usually do not need to change in
+  a dynamic way.  Because of this, it's redundant to need to prefix tag
+  names with a single quote.  Tag names should be default be treated
+  as if they were in data mode.
+- Unlike tag names, it's desirable for the values of attributes to be
+  dynamically generated.  Our macro will have a syntax that places
+  the attribute values into code mode so we can execute Lisp code
+  to populate these values.
+
+#+begin_src lisp
+;; ideally, this is how our macro should work
+(tag mytag (color 'blue height (+ 4 5)))
+;; <mytag color="BLUE" height="9"></mytag>
+
+(defmacro tag (name atts &body body)
+  `(progn (print-tag ',name
+                     (list ,@(mapcar (lambda (x)
+                                       `(cons ',(car x) ,(cdr x)))
+                                     (pairs atts)))
+                     nil)
+          ,@body
+          (print-tag ',name nil t)))
+
+(tag mytag (color 'blue size 'big)
+  (tag first_inner_tag ())
+  (tag second_inner_tag ()))
+;; <mytag color="BLUE" size="BIG">
+;;   <first_inner_tag></first_inner_tag>
+;;   <second_inner_tag></second_inner_tag>
+;; </mytag>
+#+end_src))
+
+**** Using the =tag= Macro to Generate HTML
+
+#+begin_src lisp
+(tag html ()
+  (tag body ()
+    (princ "Hello World!")))
+;; <html><body>Hello World!</body></html>
+
+;; We could define special macros to make HTML even easier
+(defmacro html (&body body)
+  `(tag html ()
+     ,@body))
+(defmacro body (&body body)
+  `(tag body ()
+     ,@body))
+
+(html
+  (body
+    (princ "Hello World!")))
+;; <html><body>Hello World!</body></html>
+#+end_src)))
+
+**** Creating SVG-Specific Macros and Functions
+
+The first attribute =svg= assigns is just the source of the documentation
+for the SVG format, but the second allows us to embed links in SVG's.
+Then we need some helpers for colors, svg-style, and to draw circles.
+
+#+begin_src lisp
+(defmacro svg (&body body)
+  `(tag svg (xmlns "http://www.w3.org/2000/svg"
+             "xmlns:xlink" "http://www.w3.org/1999/xlink")
+        ,@body))
+
+;; We're storing colors as lists of RGB values: (255 0 0)
+;; this adds to all a colors RGB values to make it brighter or darker
+(defun brightness (col amt)
+  (mapcar (lambda (x)
+            (min 255 (max 0 (+ x amt))))
+          col))
+
+;; svg-style sets the style of an SVG picture element
+;; it sets the outline color to a darker variant of the fill color
+(defun svg-style (color)
+  (format nil
+          "~{fill:rgb(~a,~a,~a);stroke:rgb(~a,~a,~a)~}"
+          (append color
+                  (brightness color -100))))
+
+;; since we don't need to nest other tags within a circle, we can use a function
+(defun circle (center radius color)
+  (tag circle (cx (car center)
+                  cy (cdr center)
+                  r radius
+                  style (svg-style color))))
+
+;; Now we can draw our sample image from above
+(svg (circle '(50 . 50) 50 '(255 0 0))
+     (circle '(100 . 100) 50 '(0 0 255)))
+;; <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><circle cx="50" cy="50" r="50" style="fill:rgb(255,0,0);stroke:rgb(155,0,0)"></circle><circle cx="100" cy="100" r="50" style="fill:rgb(0,0,255);stroke:rgb(0,0,155)"></circle></svg>
+#+end_src
+
+**** Building a More Complicated SVG Example
+
+#+begin_src lisp
+;; svg also support polygons
+;; the poly con takes points like ((0 . 200) (10 . 100))
+;; and a color like red: (255 0 0)
+(defun polygon (points color)
+  (tag polygon (points (format nil
+                               "~{~a,~a ~}"
+                               (mapcan (lambda (tp)
+                                         (list (car tp) (cdr tp)))
+                                       points))
+                       style (svg-style color))))
+
+;; and this will generate a random walk from a value and length
+;; Example: (random-walk 100 10)
+;; Returns: (100 101 102 101 100 101 102 103 102 103)
+(defun random-walk (value length)
+  (unless (zerop length)
+    (cons value
+          (random-walk (if (zerop (random 2))
+                           (1- value)
+                           (1+ value))
+                       (1- length)))))
+
+;; now let's draw a slew of random walks to random_walk.svg
+(with-open-file (*standard-output* "random_walk.svg"
+                                   :direction :output
+                                   :if-exists :supersede)
+  (svg (loop repeat 10
+             do (polygon (append '((0 . 200))
+                                 (loop for x
+                                       for y in (random-walk 100 400)
+                                       collect (cons x y))
+                                 '((400 . 200)))
+                         (loop repeat 3
+                               collect (random 256))))))
+#+end_src
+
+*** Creating Custom Game Commands for Wizard's Adventure Game
+**** Creating New Commands by Hand
+
+To decide what your DSL should look like, you need to first create
+some commands by hand.  Then we can see if there are any common patterns
+between different commands that we can use as the basis for our DSL.
+
+***** Weld Command
+
+First, we want a way to let the player weld the chain and the bucket if
+they bring them to the welding machine in the attic.
+
+#+begin_src lisp
+(defun have (object)
+  (member object (inventory)))
+
+(defparameter *chain-welded* nil)
+
+(defun weld (subject object)
+  (if (and (eq *location* 'attic)
+           (eq subject 'chain)
+           (eq object 'bucket)
+           (have 'chain)
+           (have 'bucket)
+           (not *chain-welded*))
+      (progn (setf *chain-welded* t)
+             '(the chain is now securely welded to the bucket.))
+      '(you cannot weld like that.)))
+
+;; we need to add weld to our allowed game-repl commands
+(pushnew 'weld *allowed-commands*)
+#+end_src
+
+***** Dunk Command
+
+We also want to add a new command to let the player dunk the welded bucket
+in the garden well.
+
+#+begin_src lisp
+(defparameter *bucket-filled* nil)
+
+(defun dunk (subject object)
+  (if (and (eq *location* 'garden)
+           (eq subject 'bucket)
+           (eq object 'well)
+           (have 'bucket)
+           *chain-welded*)
+      (progn (setf *bucket-filled* 't)
+             '(the bucket is now full of water))
+      '(you cannot dunk like that.)))
+
+(pushnew 'dunk *allowed-commands*)
+#+end_src
+
+**** =game-action= Macro
+
+Dunk and Weld were very similar.  Let's define a macro that let's us define
+new commands like them.
+
+#+begin_src lisp
+(defmacro game-action (command subj obj place &body body)
+  `(progn (defun ,command (subject object)
+            (if (and (eq *location* ',place)
+                     (eq subject ',subj)
+                     (eq object ',obj)
+                     (have ',subj))
+                ,@body
+                '(i cannot ,command like that.)))
+          (pushnew ',command *allowed-commands*)))
+#+end_src
+
+**** Defining our commands with =game-action= macro
+
+#+begin_src lisp
+;; now we'll define weld and dunk with our new macro
+(defparameter *chain-welded* nil)
+
+(game-action weld chain bucket attic
+             (if (and (have 'bucket) (not *chain-welded*))
+                 (progn (setf *chain-welded* 't)
+                        '(the chain is now securely welded to the bucket.))
+                 '(you do not have a bucket.)))
+
+(defparameter *bucket-filled* nil)
+
+(game-action dunk bucket well garden
+             (if *chain-welded*
+                 (progn (setf *bucket-filled* 't)
+                        '(the bucket is now full of water))
+                 '(the water level is too low to reach.)))
+
+;; and a new command to splash the wizard
+(game-action splash bucket wizard living-room
+             (cond ((not *bucket-filled*) '(the bucket has nothing in it.))
+                   ((have 'frog) '(the wizard awakens and sees that you stole his frog.
+                                   he is so upset he banishes you to the netherworlds - you lose!  the end.))
+                   (t '(the wizard awakens from his slumber and greeets you warmly.
+                        he hands you the magic low-carb donut - you win!  the end.))))
+#+end_src
+
+** Lazy Programming
+*** Adding Lazy Evaluation to Lisp
+
+The idea is that we don't want to generate the whole game tree up front.  We
+want to generate branches only when they're needed.  Common Lisp doesn't have
+any built in support for this type of lazy evaluation, so we're going to add
+it through macros.
+
+*** Lazy Library being stored in lazy.lisp and in org src blocks
+**** Creating the =lazy= and =force= commands
+
+We can use =lazy= to wrap a piece of code we want lazily evaluated.  We call
+the code with =force= to force evaluation.
+
+#+begin_src lisp
+;; Here's an example of how these functions will work
+(defun add (a b)
+  (princ "I am adding now")
+  (+ a b))
+(defparameter *foo* (lazy (add 1 2)))
+;; -> *FOO*
+(force *foo*)
+;; I am adding now
+;; -> 3
+
+;; Here's the code for lazy
+(defmacro lazy (&body body)
+  (let ((forced (gensym))
+        (value (gensym)))
+    `(let ((,forced nil)
+           (,value nil))
+       (lambda ()
+         (unless ,forced
+           (setf ,value (progn ,@body))
+           (setf ,forced t))
+         ,value))))
+
+;; the force function is a lot simpler
+(defun force (lazy-value)
+  (funcall lazy-value))
+#+end_src
+
+**** Creating a Lazy Lists Library
+
+#+begin_src lisp
+;; now we can start a list library
+(defmacro lazy-cons (a d)
+  `(lazy (cons ,a ,d)))
+
+(defun lazy-car (x)
+  (car (force x)))
+
+(defun lazy-cdr (x)
+  (cdr (force x)))
+
+;; now lets use our lazy library to define the integers
+(defparameter *integers*
+  (labels ((f (n)
+             (lazy-cons n (f (1+ n)))))
+    (f 1)))
+;; (lazy-cdr *integers*) returns a function.  if you funcall it, you get
+;; (2 . #<FUNCTION)
+
+;; not all lazy lists are infinite, so we need lazy-nil
+(defun lazy-nil ()
+  (lazy nil))
+
+(defun lazy-null (x)
+  (not (force x)))
+#+end_src
+
+**** Converting Between Regular Lists and Lazy Lists
+
+#+begin_src lisp
+;; now we need a way to convert a regular list to a lazy list
+(defun make-lazy (lst)
+  (lazy (when lst
+          (cons (car lst) (make-lazy (cdr lst))))))
+
+;; (take 10 *integers*) returns '(1 2 3 4 5 6 7 8 9 10)
+(defun take (n lst)
+  (unless (or (zerop n) (lazy-null lst))
+    (cons (lazy-car lst) (take (1- n) (lazy-cdr lst)))))
+
+(defun take-all (lst)
+  (unless (lazy-null lst)
+    (cons (lazy-car lst) (take-all (lazy-cdr lst)))))
+#+end_src
+
+**** Mapping and Searching Across Lazy Lists
+
+#+begin_src lisp
+(defun lazy-mapcar (fun lst)
+  (lazy (unless (lazy-null lst)
+          (cons (funcall fun (lazy-car lst))
+                (lazy-mapcar fun (lazy-cdr lst))))))
+
+(defun lazy-mapcan (fun lst)
+  (labels ((f (lst-cur)
+             (if (lazy-null lst-cur)
+                 (force (lazy-mapcan fun (lazy-cdr lst)))
+                 (cons (lazy-car lst-cur) (lazy (f (lazy-cdr lst-cur)))))))
+    (lazy (unless (lazy-null lst)
+            (f (funcall fun (lazy-car lst)))))))
+
+(defun lazy-find-if (fun lst)
+  (unless (lazy-null lst)
+    (let ((x (lazy-car lst)))
+      (if (funcall fun x)
+          x
+          (lazy-find-if fun (lazy-cdr lst))))))
+
+(defun lazy-nth (n lst)
+  (if (zerop n)
+      (lazy-car lst)
+      (lazy-nth (1- n) (lazy-cdr lst))))
+#+end_src
+
+*** Dice of Doom, Version 2
+**** Commented source code in dice-of-doom-v2.lisp
+** Chapter 19 and 20
+
+I read these, but I didn't follow along with code, because it was using the
+web server, which I couldn't get to work properly or get any help on from
+StackOverflow.  Not sure why the web server is acting weird, but all this
+code is ten years old, so it's surprising the rest all works so well.
+
