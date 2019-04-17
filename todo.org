@@ -1,4 +1,4 @@
-# -*- Mode: org -*-
+# -* Mode: org -*-
 #+STARTUP: showall indent hidestars logreschedule
 #+TODO: TODO(t) INPR(i) WAIT(w) | DONE(d!)
 #+TAGS: { @home(h) @work(w) } reading(r) programming(p) class(c)
@@ -18,77 +18,336 @@
 ** Programming Languages A                                                      :programming:
 - [X] Finish watching second week's lectures
 - [X] Homework 2
-- [ ] Finish watching third week's lectures
-- [ ] Homework 3
+- [X] Finish watching third week's lectures
+- [X] Homework 3
 - [ ] Finish watching fourth week's lectures
 - [ ] Homework 4
 - [ ] Finish watching fifth week's lectures
 - [ ] Homework 5
 * Reading List                                                                  :reading:
 #+CATEGORY: Reading
+
+** Introductory Comments
+
+This is obviously a long-term reading list.  I'ld like to set a couple of
+near-term goals.  I want to alternate reading Clojure books and reading Lisp
+books, both to get comfortable with Clojure and in Lisp to work my way up
+to Structure and Interpretation of Computer Programs.  It wouldn't hurt to
+sprinkle in a few "Functional Programming" books too.  I probably won't make
+much progress on my Software Development book list while I'm focused on
+making my way through SiCP with alternate Clojure books.  Then I can start
+mixing in Software Development books and Algorithms books, with a reasonable
+goal of making my way back through Intro to Algorithms and making some progress
+in Software Development.  I have a pretty short list of Haskell books, whenever
+I want to focus on it again for a little bit.  The Haskell Book is quite a
+volume to work through, but none of it is that tough.  I have read it before
+and worked most of the exercises, so it's mostly review whenever I feel like
+reviewing Haskell.  I want to slip in Mathematics books to slowly work through
+here and there too, so there's a short list of those, mostly focused on logic
+and proof.  I'ld like to work my way up to tackling Algebra: Chapter 0 after
+I feel firmly grounded again in proof based mathematics.  The math books with
+examples in Haskell are especially interesting.  I've already read half of
+Discrete Math Using a Computer and was enjoying it, but I need to start over
+and take notes.  It has examples in Haskell.  So does the Haskell Road to
+Logic, Maths, and Programming.  Both are very interesting examples
+among the math books.  Get Programming with Haskell was really fun to start
+working through, so I'ld like to finish it sometime, even if I don't make
+it back to the Haskell Book in any rush.  Altogether it's about 150 books,
+and since I normally read at least one a week, a little slower with me taking
+notes, and also there's those huge textbooks in there that will probably bog
+me down a while (I'll probably read them concurrently with lighter fare),
+it's probably at least three to five years worth of reading.  New books will
+get added in various places, and I'll especially need to add more items to
+my Non-Technical books, because those are the ones I can relax and read
+without taking any notes.  I need some options for that.
+
+I have more compiler books and programming language books if I want to delve
+into either subject.  But the small listings provided should given me an
+adequate reading list to mix in when I feel like focusing on either topic.
+And I wouldn't mind randomly dipping into Artificial Intelligence: A Modern
+Approach, without trying to tackle a whole set of AI books.  I know I'll be
+working on my Software Development category books for a while, so I laid them
+out to initially focus on myself as a coder and tester and work towards a more
+architectural viewpoint.  I figure I'll be working on Software Development
+for a long time and have topic based excursions into other ideas for a bit.
+I don't have a lot of Mathematics, but I figure it will be a long-term
+category too.  Clojure has a lot of books, but I plan on focusing on that one
+for a bit, so should make some good progress through it.
+
 ** Clojure                                                                      :programming:
-- [X] /Living Clojure/
-- [ ] /Spacemacs: Clojure development made simple/ [[https://practicalli.github.io/spacemacs/][Book Link]]
-- [ ] /Clojure for the Brave and True/
-- [ ] /Getting Clojure/
-- [ ] /Programming Clojure/
-- [ ] /Joy of Clojure/
+- [X] /Living Clojure/ iBooks
+- [X] /Practicalli: Spacemacs/ [[https://practicalli.github.io/spacemacs/][Book Link]]
+- [X] /Getting Clojure/ iBooks
+- [X] /Programming Clojure/ iBooks
+- [X] /Clojure Distilled/ [[https://yogthos.github.io/ClojureDistilled.html][Web Link]]
+- [ ] /ClojureScript Koans/ [[http://clojurescriptkoans.com/][Web Link]]
+- [ ] /The Joy of Clojure/ iBooks or [[https://livebook.manning.com/#!/book/the-joy-of-clojure-second-edition][Manning]]
+  * [ ] /The Joy of Clojure/ Video Edition [[https://learning.oreilly.com/videos/the-joy-of/9781617291418VE][Safari Books]]
+- [ ] Clojure.org Guides [[https://clojure.org/guides/getting_started][Web Link]]
+- [ ] /Clojurescript Quick Start/ [[https://clojurescript.org/guides/quick-start][Web Page]]
+- [ ] /Parens of the Dead/ Videos [[http://www.parens-of-the-dead.com/][Web Link]]
+- [ ] /Learn Reagent Free/ Course [[https://www.jacekschae.com/courses/learn-reagent-free/21667-setup/61162-01-dev-setup][Web Link]]
+- [ ] Clojure Videos [[http://www.learn-clojure.com/clojure_videos.html][Web Link]]
+- [ ] /Clojure for the Brave and True/ [[https://www.braveclojure.com/clojure-for-the-brave-and-true/][Book Link]]
+- [ ] /Debugging for Java, Scala, and Clojure/ Video [[https://learning.oreilly.com/videos/-/9781491955093/continue][Safari Books]]
+- [ ] [[http://lampwww.epfl.ch/papers/idealhashtrees.pdf]["Ideal Hash Trees"]] by Phil Bagwell
+- [ ] [[http://tinyurl.com/clojure-persistent-vector]["Understanding Clojure's PersistentVector Implementation"]] by Karl Krukow
+- [ ] /Leiningen Tutorial/ [[https://github.com/technomancy/leiningen/blob/stable/doc/TUTORIAL.md][Web Link]]
+- [ ] /Learning Clojure Wikibook/ [[https://en.wikibooks.org/wiki/Clojure_Programming][Web Link]] fairly basic
+- [ ] /Clojure Programming Wikibook/ [[https://en.wikibooks.org/wiki/Clojure_Programming][Web Link]] has cool cookbook
+- [X] /ClojureBridge London Workshop/ [[https://clojurebridgelondon.github.io/workshop/][Web Link]] fairly basic review
+- [ ] /Practicalli: Clojure/ [[https://practicalli.github.io/clojure/][Book Link]]
+- [ ] /Practicalli: Clojure Webapps/ [[https://practicalli.github.io/clojure-webapps/][Book Link]]
+- [ ] /Web Development with Clojure/ [[https://learning.oreilly.com/library/view/web-development-with/9781680502152/][Safari Books]] 2016, so somewhat dated
+- [ ] /Practicalli: ClojureScript/ [[https://practicalli.github.io/clojurescript/][Book Link]]
+- [ ] /Modern CLJS/ [[https://github.com/magomimmo/modern-cljs][Book Link]]
 - [ ] /ClojureScript Unravelled/ [[https://funcool.github.io/clojurescript-unraveled/][Book Link]]
-- [ ] /Clojure Applied/
-- [ ] /Mastering Clojure Macros/
-** Lisp                                                                         :programming:
-- [ ] /Land of Lisp/
-- [ ] /Realm of Racket/
-- [ ] /The Little Schemer/
-- [ ] /The Seasoned Schemer/
-- [ ] /The Reasoned Schemer/
-- [ ] /Structure and Interpretation of Computer Programs/
-** Mathematics
-- [ ] /How to Read and Do Proofs/
-- [ ] /Mathematics/Calculus/AlgebraTrig.pdf/ ;; review
-- [ ] /Introduction to Mathematical Thinking/
-- [ ] /Book of Proof/
-- [ ] /How to Prove It/
-- [ ] /Discrete Mathematics Using a Computer/
-- [ ] /Haskell Road to Logic Maths and Programming/
-- [ ] /A Programmer's Introduction to Mathematics/
-** Software Development                                                         :programming:
-- [ ] /How to Design Programs/
-- [ ] /Test Driven Development by Example/
-- [ ] /Growing Object-Oriented Software, Guided by Tests/
-- [ ] /Refactoring - 2nd Edition/
-- [ ] /Design It/
-- [ ] /Agile Software Development Principles Patterns and Practice/
-- [ ] /Code Complete/
-** Non-Technical 
-- [ ] /Hackers & Painters - Big Ideas from the Computer Age/
-- [ ] /Hackers - Heroes of the Computer Revolution/
-- [ ] /Godel, Escher, Bach/
-- [ ] /The Skeptics' Guide to the Universe/
-- [ ] /Masterminds of Programming/
-** Haskell                                                                      :programming:
-- [ ] /Anatomy of Programming Languages/
-- [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books Link]]
-- [ ] /Haskell Book/
-- [ ] /Learn You a Haskell for Great Good!/
+- [ ] /Etudes for Clojurescript/ iBooks 2015 - check out more up-to-date first
+- [ ] /Clean Code: Functional Programming/ Videos [[https://cleancoders.com/videos][Web Link]]
+- [ ] /Reactive with ClojureScript Recipes/ [[https://learning.oreilly.com/api/v1/dashboard/continue/9781484230091][Safari Books]]
+- [ ] /Hands-On Reactive Programming with Clojure/ [[https://learning.oreilly.com/library/view/hands-on-reactive-programming/9781789346138/][Safari Books]] very recent (2019); no reviews
+- [ ] /Clojure in Action/ review iBooks or [[https://livebook.manning.com/#!/book/clojure-in-action-second-edition][Manning]]
+- [ ] /Clojure Applied/ iBooks
+- [ ] /Mastering Clojure Macros/ iBooks
+- [ ] /Clojure Recipes/ [[https://learning.oreilly.com/library/view/clojure-recipes/9780133430097/][Safari Books]] interesting things to try
+- [ ] /Functional Programming Patterns in Scala and Clojure/ [[https://learning.oreilly.com/api/v1/dashboard/continue/9781941222416][Safari Books]]
+- [ ] /Cider Docs/ [[https://cider.readthedocs.io/en/latest/][Web Link]]
+** Emacs/Spacemacs
+- [ ] How to Read Emacs Lisp [[http://emacslife.com/how-to-read-emacs-lisp.html][Web Link]]
+- [ ] YouTube - Spacemacs ABC  [[https://www.youtube.com/playlist?list=PLrJ2YN5y27KLhd3yNs2dR8_inqtEiEweE][Web Link]]
+- [ ] Emacs org-mode examples and cookbook [[http://ehneilsen.net/notebook/orgExamples/org-examples.html][Web Link]]
+- [ ] Emacs Rocks Videos [[http://emacsrocks.com/][Web Link]]
+- [ ] Mastering Emacs PDF
+** Lisp                                                   :programming:
+- [X] /Land of Lisp/ iBooks
+- [ ] /Scheme and the Art of Programming/ PDF
+- [ ] /Realm of Racket/ iBooks
+- [ ] /Teach Yourself Scheme in fixnum Days/ [[https://ds26gte.github.io/tyscheme/index.html][Web Link]]
+- [ ] /The Little Schemer/ PDF or hardcopy
+- [ ] /The Seasoned Schemer/ PDF or hardcopy
+- [ ] /The Reasoned Schemer/ PDF or hardcopy
+- [ ] /Structure and Interpretation of Computer Programs/ [[https://mitpress.mit.edu/sites/default/files/sicp/full-text/book/book.html][Book Link]]
+  * [ ] /SICP Lectures/ [[https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/video-lectures/][Web Link]]
+  * [ ] /SICPDistilled/ [[http://www.sicpdistilled.com/][Web Link]] has some early examples from SiCP in Clojure
+  * [ ] /SICP-Clojure Repo/ [[https://github.com/gregsexton/SICP-Clojure][Web Link]] has problems through Chapter 4
+  * [ ] /SICPClojure Project/ [[https://ecmendenhall.github.io/sicpclojure/pages/contents.html][Web Link]] chapter 1 and 2.1
+  * [ ] /SICP in Clojure Blogposts/ [[http://www.afronski.pl/tag/sicp/][Web Link]] Covers through Chapter 5!
+  * [ ] Optionally /Concrete Abstractions/ if I need a slower intro PDF
+- [ ] /Beautiful Racket/ [[https://beautifulracket.com/][Web Link]] tutorials on making languages
+- [ ] /Programming Languages: Application and Interpretation/ [[http://cs.brown.edu/courses/cs173/2012/book/][Book Link]]
+- [ ] /On Lisp/ PDF
+- [ ] /Let Over Lambda/ DJVU
+** Functional Programming                                 :programming:
+- [ ] /Object Oriented vs Functional Programming/ [[https://learning.oreilly.com/library/view/object-oriented-vs-functional/9781492048138/][Safari Books]]
+  * [ ] /Object Oriented and Functional Programming/ Video [[https://learning.oreilly.com/videos/object-oriented-and/9781491934555][Safari Books]]
+- [ ] /Becoming Functional/ iBooks or [[https://learning.oreilly.com/api/v1/dashboard/continue/9781491947487][Safari Books]] quick read at 157 pages
+- [ ] /Functional Thinking/ iBooks or [[https://learning.oreilly.com/library/view/functional-thinking/9781449365509/pr01.html][Safari Books]]
+  * [ ] /Functional Thinking Videos/ [[https://learning.oreilly.com/videos/functional-thinking/9781449368630/9781449368630-video152336][Safari Books]]
+- [ ] /Functional Programming: A PragPub Anthology/ [[https://learning.oreilly.com/api/v1/dashboard/continue/9781680502756][Safari Books]]
+- [ ] /The Functional Programming Video Collection/ [[https://learning.oreilly.com/videos/-/9781491968307/continue][Safari Books]]
+- [ ] /Functional Programming in Java 8/ [[https://learning.oreilly.com/videos/-/9781491969731/continue][Safari Books]]
+- [ ] /Functional Programming with Streams in Java 9/ Video [[https://learning.oreilly.com/videos/-/9781787283060/continue][Safari Books]]
+- [ ] /Java 9 Functional Data Processing/ Video [[https://learning.oreilly.com/videos/-/9781788390439/continue][Safari Books]]
+- [ ] /Functional Javascript/ iBooks (2013)
+** Non-Technical
+- [ ] /Hackers & Painters - Big Ideas from the Computer Age/ iBooks
+- [ ] /The Book of Why/ iBooks
+- [ ] /Math with Bad Drawings/ iBooks
+- [ ] /Hackers - Heroes of the Computer Revolution/ iBooks
+- [ ] /Code - The Hidden Language of Computer Hardware and Software/ iBooks
+- [ ] /How to Bake Pi/ iBooks
+- [ ] /The Code Book - The Science of Secrecy from Ancient Egypt to Quantum Cryptography/ iBooks
+- [ ] /The Joy of x/ iBooks
+- [ ] /Godel, Escher, Bach/ PDF or Hardcopy
+  * [ ] /Godel, Escher Bach/ Lectures [[https://ocw.mit.edu/high-school/humanities-and-social-sciences/godel-escher-bach/video-lectures/][Web Link]]
+- [ ] /A Brief History of Infinity: The Quest to Think the Unthinkable/ iBooks
+- [ ] /Beyond Infinity: An Expedition to the Outer Limits of Mathematics/ iBooks
+- [ ] /The Skeptics' Guide to the Universe/ iBooks
+- [ ] /NonZero - The Logic of Human Destiny/ iBooks
+- [ ] /The Art of Logic in an Illogical World/ iBooks
+- [ ] /Masterminds of Programming/ iBooks
+- [ ] /Pragmatic Thinking and Learning/ [[https://learning.oreilly.com/library/view/pragmatic-thinking-and/9781680500196][Safari Books]]
+- [ ] /The Art of Thinking Clearly/ iBooks
+- [ ] /Algorithms to Live By/ iBooks
+- [ ] /Coders at Work/ iBooks
+- [ ] /The Subtle Art of Not Giving a F*ck/ iBooks
+- [ ] Re-read /The Cathedral and the Bazaar/ iBooks
+- [ ] /The Ultimate Hitchhiker's Guide to the Galaxy/ iBooks
+- [ ] /Benjamin Franklin - An American Life/ iBooks
 ** Work                                                                         :programming:
-- [ ] /Modern Java in Action/
-- [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books Link]]
-- [ ] /Beginning Java EE 7/
-- [ ] /Functional Programming in Java/
-- [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/
-- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books Link]]
-- [ ] /Functional Programming in JavaScript/
+- [ ] /Inside the Java Virtual Machine/ [[https://www.artima.com/insidejvm/ed2/][Web Link]]
+- [ ] /Modern Java in Action/ [[https://learning.oreilly.com/library/view/modern-java-in/9781617293566/][Safari Books]]
+- [ ] /Moving to Java 9: Better Design and Simpler Code/ Video [[https://learning.oreilly.com/videos/moving-to-java/9780134857664][Safari Books]]
+- [ ] /Pragmatic Guide to Git/ [[https://learning.oreilly.com/library/view/pragmatic-guide-to/9781680500028][Safari Books]] or iBooks
+- [ ] /Modern Java Recipes/ [[https://learning.oreilly.com/library/view/modern-java-recipes/9781491973165/][Safari Books]]
+- [ ] /Pro Angular 6/ [[https://learning.oreilly.com/library/view/pro-angular-6/9781484236499/html/Part_1.xhtml][Safari Books]]
+- [ ] /A Software Engineer Learns Java and Object Oriented Programming/ iBooks
+- [ ] /Functional Programming in Java (Subramaniam)/ [[https://learning.oreilly.com/library/view/functional-programming-in/9781941222690/][Safari Books]]
+- [ ] /Beginning Java EE 7/ iBooks or [[https://learning.oreilly.com/library/view/beginning-java-ee/9781430246268/][Safari Books]]
+- [ ] /Practical Object Oriented Design/ iBooks
+- [ ] /Design Patterns: Elements of Reusable Object-Oriented Software/ iBooks or [[https://learning.oreilly.com/library/view/design-patterns-elements/0201633612/][Safari Books]] or Hardcopy
+- [ ] /Design Patterns (Clean Coders Video Series)/ [[https://learning.oreilly.com/videos/design-patterns-clean/9780135485965][Safari Books]]
+- [ ] /Programming Concurrency on the JVM/ [[https://learning.oreilly.com/library/view/programming-concurrency-on/9781941222973/][Safari Books]]
+- [ ] /Head First Design Patterns/ iBooks of [[https://learning.oreilly.com/library/view/head-first-design/0596007124/][Safari Books]]
+- [ ] /Head First Object-Oriented Analysis and Design/ [[https://learning.oreilly.com/library/view/head-first-object-oriented/0596008678/][Safari Books]]
+- [ ] /Java 9 Recipes: A Problem-Solution Approach/ [[https://learning.oreilly.com/library/view/java-9-recipes/9781484219751/][Safari Books]]
+- [ ] /Refactoring to Patterns/ [[https://learning.oreilly.com/library/view/refactoring-to-patterns/0321213351/][Safari Books]]
+- [ ] /Functional Programming in Java (Saumont)/ [[https://learning.oreilly.com/library/view/functional-programming-in/9781617292736/][Safari Books]]
+- [ ] /Spring in Action/ [[https://learning.oreilly.com/library/view/spring-in-action/9781617294945/][Safari Books]]
+- [ ] Udemy Course: Angular 7 - The Complete Guide [[https://www.udemy.com/the-complete-guide-to-angular-2/learn/][Web Link]]
+- [ ] Udemy Course: Learn Protractor [[https://www.udemy.com/protractor-tutorial/learn/v4/content][Web Link]]
+- [ ] Udemy Course: Go Full Stack with Spring Boot and Angular 7 [[https://www.udemy.com/full-stack-application-development-with-spring-boot-and-angular/learn/][Web Link]]
+- [ ] Udemy Course: Spring Framework 5: Beginner to Guru [[https://www.udemy.com/spring-framework-5-beginner-to-guru/learn/v4/content][Web Link]]
+** Web Development
+- [ ] /HTML5 and CSS3, 2nd Edition/ [[https://learning.oreilly.com/library/view/html5-and-css3/9781941222447/][Safari Books]] or iBooks
+- [ ] /Rediscovering JavaScript/ [[https://learning.oreilly.com/library/view/rediscovering-javascript/9781680506174/][Safari Books]]
+- [ ] /Test-Driving JavaScript Applications/ [[https://learning.oreilly.com/library/view/test-driving-javascript-applications/9781680502305/][Safari Books]]
+- [ ] /A Software Engineer Learns HTML5, JavaScript, and jQuery/ iBooks
+- [ ] /HTML & CSS: Design and Build Websites/ [[https://learning.oreilly.com/library/view/html-css/9781118206911/][Safari Books]]
+- [ ] /JavaScript and JQuery: Interactive Front-End Web Development/ [[https://learning.oreilly.com/library/view/javascript-and-jquery/9781118531648/][Safari Books]]
+- [ ] /Simplifying Javascript/ iBooks
+- [ ] /React Quickly/ [[https://learning.oreilly.com/library/view/react-quickly-painless/9781617293344/][Safari Books]]
+- [ ] /Functional Programming in JavaScript/ iBooks
+  * [ ] /Functional Programming JavaScript/ Video Edition [[https://learning.oreilly.com/videos/functional-programming-in/9781617292828VE][Safari Books]]
+- [ ] Udemy Course: Bootstrap 4 From Scratch With 5 Project U
+- [ ] Udemy Course: React JS Web Development  [[https://www.udemy.com/react-js-and-redux-mastering-web-apps/learn/][Web Link]]
+- [ ] Udemy Course: Node with React: Fullstack [[https://www.udemy.com/node-with-react-fullstack-web-development/learn/v4/content][Web Link]]
+- [ ] Udemy Course: ReduceJS [[https://www.udemy.com/redux-js-learn-to-use-redux-js-with-your-react-js-apps/learn/v4/content][Web Link]]
+- [ ] Udemy Course: The Complete Node.js Developer Course [[https://www.udemy.com/the-complete-nodejs-developer-course-2/learn/v4/content][Web Link]]
+** Mathematics
+- [X] /Introduction to Mathematical Thinking/
+- [ ] /How to Read and Do Proofs/ PDF
+  * [ ] /How to Read and Do Proofs/ Videos [[http://bcs.wiley.com/he-bcs/Books?action=resource&bcsId=8432&itemId=1118164024&resourceId=33036][Web Link]]
+- [ ] /Mathematics/Calculus/AlgebraTrig.pdf/ PDF ;; review
+- [ ] /Prelude to Mathematics/ iBooks
+- [ ] /A Programmer's Introduction to Mathematics/ PDF
+- [ ] /Good Math/ iBooks
+- [ ] /Discrete Mathematics Using a Computer/ PDF
+- [ ] /Haskell Road to Logic Maths and Programming/ PDF
+- [ ] /Discrete Mathematics for Computer Scientists/ PDF
+- [ ] /Book of Proof/ PDF
+- [ ] /How to Prove It/ PDF or Hardcopy
+- [ ] /Algebra: Chapter 0/ PDF
 ** Algorithms                                                                   :programming:
-- [ ] /Grokking Algorithms/
-- [ ] /A Common-Sense Guide to Data Structures and Algorithms/
-- [ ] /Algorithms - A Functional Programming Approach/
-- [ ] /The Imposter's Handbook/
-- [ ] /Introduction to Algorithms - 3e/
+- [ ] /Grokking Algorithms/ [[https://learning.oreilly.com/library/view/grokking-algorithms-an/9781617292231/][Safari Books]]
+  * [ ] /Grokking Algorithms/ Video Edition [[https://learning.oreilly.com/videos/grokking-algorithms-video/9781617292231VE][Safari Books]]
+- [ ] /A Common-Sense Guide to Data Structures and Algorithms/ [[https://learning.oreilly.com/library/view/a-common-sense-guide/9781680502794/][Safari Books]]
+- [ ] /Algorithms - A Functional Programming Approach/ PDF
+- [ ] /The Imposter's Handbook/ PDF
+- [ ] /Introduction to Algorithms - 3e/ PDF
+** Haskell                                                                      :programming:
+- [ ] /Get Programming with Haskell/ [[https://learning.oreilly.com/library/view/get-programming-with/9781617293764/kindle_split_037.html][Safari Books]]
+- [ ] /Learn You a Haskell for Great Good!/ [[http://learnyouahaskell.com/chapters][Book Link]]
+- [ ] /Anatomy of Programming Languages/ [[https://www.cs.utexas.edu/~wcook/anatomy/anatomy.htm][Book Link]]
+- [ ] /Haskell Book/ iBooks or PDF
+** Programming Languages                                  :programming:
+- [ ] /Seven Languages in Seven Weeks/ PDF
+- [ ] /Seven More Languages in Seven Weeks/ iBooks
+- [ ] /Seven Concurrency Models in Seven Weeks/ iBooks
+- [ ] /The Little Typer/ PDF
+- [ ] /Introduction to the Theory of Programming Langauges/ PDF short
+- [ ] /Essentials of Programming Languages/ PDF
+- [ ] /Programming Language Pragmatics/ PDF
+** Compilers
+- [ ] /Writing Compilers and Interpreters: A Software Engineering Approach/ iBooks
+- [ ] /K & R C/ PDF
+- [ ] /The C Answer Book/ PDF
+- [ ] /Build Your Own Lisp/ [[http://www.buildyourownlisp.com/][Web Link]]
+- [ ] /Write You a Scheme/ [[https://www.wespiser.com/writings/wyas/home.html][Web Link]]
+- [ ] /Language Implementation Patterns/ PDF (in Programming Languages folder)
+- [ ] /Implementing Programming Languages/ PDF
+- [ ] /Compilers Principles Techniques and Tools/ Dragon Book PDF or Hardcopy
+** Databases
+- [ ] /Seven Databases in Seven Weeks/ iBooks
+- [ ] /The Manga Guide to Databases/ PDF
+- [ ] /How Does a Database Work/ [[https://cstack.github.io/db_tutorial/][Web Link]]
+- [ ] /Database Design for Mere Mortals/ iBooks
+- [ ] /NoSQL for Mere Mortals/ iBooks
+** Operating Systems
+- [ ] /Write your Own Virtual Machine/ [[https://justinmeiners.github.io/lc3-vm/][Web Link]]
+- [ ] /Operating System Concepts 10th Edition/ PDF
+** Theory of Computation
+- [ ] /Think Complexity/ PDF or [[http://greenteapress.com/complexity2/html/index.html][Web Link]]
+- [ ] /Introducton to Theory of Computation/ TheoryOfComputation.pdf
+- [ ] /Introduction to the Theory of Computation/ Introduction-to-the-Theory-of-Computation.pdf
+- [ ] /The Nature of Computation/ PDF
+** Artificial Intelligence
+- [ ] /Introducing Artificial Intelligence - A Graphical Guide/ iBooks
+- [ ] /Grokking Deep Learning/ [[https://learning.oreilly.com/library/view/grokking-deep-learning/9781617293702/][Safari Books]]
+- [ ] /The Hundred-Page Machine Learning Book/ PDF
+- [ ] /Bayes Rules - A Tutorial Introduction/ iBook
+- [ ] /Think Bayes/ [[http://www.greenteapress.com/thinkbayes/html/index.html][Web Link]] or PDF
+- [ ] /Artificial Intelligence - A Modern Approach/ PDF
+- [ ] /Multiagent Systems/ PDF
+** Security
+- [ ] /The Manga Guide to Cryptography/ PDF
+- [ ] /Defensive Security Handbook/ [[https://learning.oreilly.com/library/view/defensive-security-handbook/9781491960370/][Safari Books]]
+- [ ] /Applied Cryptography/ [[https://learning.oreilly.com/library/view/applied-cryptography-protocols/9781119096726/][Safari Books]]
+- [ ] /Computer and Information Security Handbook/ [[https://learning.oreilly.com/library/view/computer-and-information/9780128039298][Safari Books]]
+** Software Development                                                         :programming:
+- [ ] /How to Design Programs/ iBooks or [[https://htdp.org/2018-01-06/Book/][Book Link]] read first to tie in with my scheme and Racket reading
+- [ ] /Clean Code/ Video Series [[https://learning.oreilly.com/videos/clean-code/9780134661742/9780134661742-CODE_01_00_00][Safari Books]]
+- [ ] /Clean Code Applied/ Video Series [[https://learning.oreilly.com/videos/clean-code-applied/9780134843810][Safari Books]]
+- [ ] /Apprenticeship Patterns/ [[https://learning.oreilly.com/library/view/apprenticeship-patterns/9780596806842][Safari Books]]
+- [ ] /Software Craftsmanship/ [[https://learning.oreilly.com/library/view/the-software-craftsman/9780134052625][Safari Books]]
+- [ ] /The Clean Coder/ iBooks or [[https://learning.oreilly.com/library/view/the-clean-coder/9780132542913/][Safari Books]]
+- [ ] /The Clean Coder/ Video Series [[https://learning.oreilly.com/videos/clean-coder-clean/9780134843803][Safari Books]]
+- [ ] /The Agile Samurai/ [[https://learning.oreilly.com/library/view/the-agile-samurai/9781680500066/][Safari Books]]
+- [ ] /Joel on Software/ iBooks
+- [ ] /Test Driven Development by Example/ [[https://learning.oreilly.com/library/view/test-driven-development/0321146530/][Safari Books]] or Hardcopy
+- [ ] /Growing Object-Oriented Software, Guided by Tests/ [[https://learning.oreilly.com/library/view/growing-object-oriented-software/9780321574442/][Safari Books]] or Hardcopy
+- [ ] /Practices of an Agile Developer/ [[https://learning.oreilly.com/library/view/practices-of-an/9781680500325][Safari Books]]
+- [ ] /The Way of the Web Tester/ [[https://learning.oreilly.com/library/view/the-way-of/9781680502251/][Safari Books]]
+- [ ] /UML Distilled/ iBooks or [[https://learning.oreilly.com/library/view/uml-distilled-a/0321193687/][Safari Books]]
+- [ ] /More Joel on Software/ PDF
+- [ ] /Agile Software Development Principles Patterns and Practice/ PDF
+- [ ] /Domain Specific Languages/ [[https://learning.oreilly.com/library/view/domain-specific-languages/9780132107549/][Safari Books]]
+- [ ] /Agile Principles, Patterns, and Practices in C#/ [[https://learning.oreilly.com/library/view/agile-principles-patterns/0131857258/][Safari Books]]
+- [ ] /DSLs in Action/ [[https://learning.oreilly.com/library/view/dsls-in-action/9781935182450/][Safari Books]]
+- [ ] /The Art of Agile Development/ [[https://learning.oreilly.com/library/view/the-art-of/9780596527679][Safari Books]]
+- [ ] /The Passionate Programmer/ [[https://learning.oreilly.com/library/view/the-passionate-programmer/9781680500165][Safari Books]]
+- [ ] /Refactoring - 2nd Edition/ [[https://learning.oreilly.com/library/view/refactoring-improving-the/9780134757681/][Safari Books]] or Hardcopy
+- [ ] /Beyond Legacy Code/ [[https://learning.oreilly.com/library/view/beyond-legacy-code/9781680501827][Safari Books]]
+- [ ] /xUnit Test Patterns: Refactoring Test Code/ [[https://learning.oreilly.com/library/view/xunit-test-patterns/9780131495050/][Safari Books]]
+- [ ] /The Best Software Writing I/ Joel Spolsky PDF
+- [ ] /The Nature of Software Development/ PDF
+- [ ] /Debug It!/ [[https://learning.oreilly.com/library/view/debug-it/9781680500110][Safari Books]]
+- [ ] /Software Design X-Rays/ [[https://learning.oreilly.com/library/view/software-design-x-rays/9781680505795][Safari Books]]
+- [ ] /Design It/ [[https://learning.oreilly.com/library/view/design-it/9781680502923/][Safari Books]] of PDF
+- [ ] /Release It!/ [[https://learning.oreilly.com/library/view/release-it-2nd/9781680504552/][Safari Books]]
+- [ ] /Ship It!/ [[https://learning.oreilly.com/library/view/ship-it/9781680500349][Safari Books]]
+- [ ] /Building Evolutionary Architectures/ iBooks
+- [ ] /Software Design Decoded - 66 Ways Experts Think/ PDF
+- [ ] /The Kaizen Way/ PDF
+- [ ] /Debugging Teams/ PDF
+- [ ] /Code Complete/ iBooks or [[https://learning.oreilly.com/library/view/code-complete-second/0735619670/][Safari Books]] or Hardcopy
+- [ ] /Create Your Successful Agile Project/ [[https://learning.oreilly.com/library/view/create-your-successful/9781680502947][Safari Books]]
+- [ ] Re-read /The Pragmatic Programmer/ PDF or Hardcopy
+- [ ] Re-read /The Mythical Man Month/ [[https://learning.oreilly.com/library/view/mythical-man-month-the/0201835959][Safari Books]] or PDF or Hardcopy
+- [ ] /Designing Data Intensive Applications/ iBooks
+- [ ] /Software Exorcism/ iBooks
+- [ ] /A Philosophy of Software Design/ iBooks
+- [ ] Re-read /Working Effectively with Legacy Code/ [[https://learning.oreilly.com/library/view/working-effectively-with/0131177052/][Safari Books]]
+- [ ] Re-read /Clean Code/ iBooks or [[https://learning.oreilly.com/library/view/clean-code/9780136083238/][Safari Books]]
+- [ ] Re-read /Clean Architecture/ iBooks
+** Software Design
+- [ ] /Domain Modeling Made Functional/ [[https://learning.oreilly.com/api/v1/dashboard/continue/9781680505481][Safari Books]]
+- [ ] /Domain-Driven Design Distilled/ [[https://learning.oreilly.com/library/view/domain-driven-design-distilled/9780134434964/][Safari Books]]
+  * [ ] /Domain-Driven Design Distilled/ Video [[https://learning.oreilly.com/videos/domain-driven-design-distilled/9780134593449][Safari Books]]
+- [ ] /Functional and Reactive Domain Modeling/ [[https://learning.oreilly.com/api/v1/dashboard/continue/9781617292248][Safari Books]]
+- [ ] /Domain-Driven Design: Tackling Complexity in the Heart of Software/ [[https://learning.oreilly.com/library/view/domain-driven-design-tackling/0321125215/][Safari Books]]
+- [ ] /Implementing Domain-Driven Design/ [[https://learning.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/][Safari Books]]
+- [ ] /Patterns, Principles, and Practices of Domain-Driven Design/ [[https://learning.oreilly.com/library/view/patterns-principles-and/9781118714706/][Safari Books]]
+- [ ] /Functional Application Designing/ Video [[https://learning.oreilly.com/videos/functional-application-designing/9781788479370][Safari Books]]
+** Finished Books to Enter Code From
+- [ ] Angular in Action
+- [ ] Learn Microservices with Spring Boot
+- [ ] Full Stack Development with JHipster
 ** Upcoming Releases                                                            :programming:
-- [ ] /Get Programming with Clojure/
-- [ ] /Get Programming with Scala/
-- [ ] /Grokking Functional Programming/
+- [ ] /Get Programming with Clojure/ [[https://livebook.manning.com/#!/book/get-programming-with-clojure][Manning]]
+- [ ] /Get Programming with Scala/ [[https://livebook.manning.com/#!/book/get-programming-with-scala][Manning]]
+- [ ] /Grokking Functional Programming/ PDF from [[https://www.manning.com/dashboard#][Manning]]
+- [ ] /Practical Security/ [[https://pragprog.com/book/rzsecur/practical-security][PragProg]] (not bought)
 * Personal Tasks
 #+CATEGORY: Personal
 ** DONE Find out more about [[http://orgmode.org/manual/Handling-links.html][handling links in org-mode]]

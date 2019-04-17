@@ -1,0 +1,539 @@
+* Data
+** Data and Operators
+*** Numbers and Symbols
+**** Symbols
+***** ( ) [ ] { } ; , " ' # \ cannot appear in symbols
+***** + - . can only appear as the first character of symbols
+***** Symbols used to represent some value are called /variables/
+***** =(define ten 10)= binds the value 10 to =ten=
+***** =(quote ten)= prevents evaluation of =ten= and prints literally =ten=
+***** ='ten= is another way to say =(quote ten)=
+**** Numbers
+***** The value of a number as an expression is the number itself
+***** An object whose value is the same as the object itself is a /constant/
+***** Scheme uses prefix notation for the standard mathematical operators
+**** Booleans
+***** =#t= and =#f= are constants for true and false
+***** Predicates
+****** =number?=
+****** =symbol?=
+****** =boolean?=
+****** =pair?= both nonempty lists and pairs are pairs
+****** =null?= returns =#t= for the empty list
+****** =procedure?= tests if its argument is a procedure
+****** Sameness Predicates
+******* = is used only to test sameness of numbers
+******* =eq?= is used to test the sameness of symbols
+******* =eqv?= tests sameness of numbers, symbols, and booleans
+******* =equal?= tests numbers, symbols, booleans, procedures, and lists
+******* =(eq? a b)= implies =(eqv? a b)= implies =(equal? a b)=
+*** Constructing Lists
+**** A list is a collection of items enclosed by parentheses
+**** =(cons 1 '())= equals =(1)=
+**** apply =cons= and the second argument isn't a list, you get a dotted pair
+*** Taking Lists Apart
+**** =(car ls)= returns the first item in =ls=
+**** =(cdr ls)= returns all but the first item in =ls=
+**** there's also =caar=, =cadr=, =caddr=, ..., =cddddr=
+** Procedures and Recursion
+*** Procedures
+**** =lambda= expressions are used to define procedures
+**** full form: =(lambda (parameter ...) body)=
+**** to name a procedure, use =(define procedure-name lambda-expression)=
+**** also =(define (procedure-name parameter ...) body)= works
+**** =list= takes any number of arguments and constructs a list containing them
+**** top-down programming defines main, then helping procedures, etc
+**** bottom-up programming starts with helpers and ends with main
+**** to load procedures from a file, use =(load "filename")=
+*** Conditional Expressions
+**** implement case analysis using a =cond= expression
+
+=cond= evaluates pairs of conditions and consequents within parentheses.
+The expression following =else= if evaluated if all conditions are false,
+and its value is return.  The expression following =else= is referred to
+as the alternative.  Each condition/consequent pair and the else/alternative
+pair are referred to as clauses.  The =else= is optional, but it is
+undefined what the =cond= will return if all conditions are false and there
+is no else, so we will avoid doing that.
+
+#+begin_src scheme
+(define type-of
+  (lambda (item)
+    (cond
+      ((pair? item) 'pair)
+      ((null? item) 'empty-list)
+      ((number? item) 'number)
+      ((symbol? item) 'symbol)
+      (else 'some-other-type))))
+#+end_src
+
+**** =if= works for two cases
+
+General syntax is =(if condition consequent alternative)= or simply
+=(if condition consequent)=.  An unspecified value is returned in the second
+case if condition is not true.
+
+#+begin_src scheme
+(define car-if-pair
+  (lambda (item)
+    (if (pair? item)
+      (car item)
+      item)))
+#+end_src
+
+**** any non-false value is =#t=
+**** compound conditions
+
+We build compound conditions by combining simple conditions with =and=, =or=,
+and =not=.  =and= and =or= short circuit evaluation.  The syntax of each is:
+
+=(and expr1 expr2 ... exprn)=
+=(or expr1 expr2 ... exprn)=
+=(not expr)=
+
+#+begin_src scheme
+(define singleton-list?
+  (lambda (ls)
+    (and (pair? ls) (null? (cdr ls)))))
+#+end_src
+
+*** Recursion
+
+First solve the simplest case or /base case/, then determine a simplifying
+operation which produces the base case.  In =last-item= below, the base case is
+a single item list and the simplifying operation is =cdr=.
+
+#+begin_src scheme
+(define last-item
+  (lambda (ls)
+    (cond
+      ((null? (cdr ls)) (car ls))
+      (else (last-item (cdr ls))))))
+
+;; scheme defines =member= but it returns either =#f= or a sublist whose first
+;; item is item.  ie. =(member 'b '(a b c))= is =(b c)=.
+;; this =member?= is just a =#t= or =#f= predicate
+(define member?
+  (lambda (item ls)
+    (cond
+      ((null? ls) #f)
+      (else (or (equal? (car ls) item)
+                (member? item (cdr ls)))))))
+
+(defn remove-1st
+  (lambda (item ls)
+    (cond
+      ((null? ls) '())
+      ((equal? (car ls) item) (cdr ls))
+      (else (cons (car ls) (remove-1st item (cdr ls)))))))
+#+end_src)
+
+*** Tracing and Debugging
+
+For tracing and debugging, it is useful to have =writeln= defined below.  You
+often put it in a =begin= special form.  A =begin= expression has any number of
+subexpressions following the keyword =begin=.  Each is evaluated in order and
+the value of the last subexpression is the value of the =begin= expression.
+When using a =begin= expression, all subexpressions except the last are
+included for their side effects.
+
+#+begin_src scheme
+(define writeln
+  (lambda args
+    (for-each display args)
+    (newline)))
+
+;; let's setup remove-1st for tracing.  =entering= and =leaving= will help
+(define entering
+  (lambda (test input cond-clause-number)
+    (begin
+      (if test (writeln "    Entering cond-clause-"
+                 cond-clause-number " with ls = " input))
+      test)))
+
+(define leaving
+  (lambda (result cond-clause-number)
+    (begin
+      (writeln "Leaving cond-clause-"
+        cond-clause-number " with result = " result)
+      result)))
+
+(define remove-1st-trace
+  (lambda (item ls)
+    (cond
+      ((entering (null? ls) ls 1)
+       (leaving '() 1))
+      ((entering (equal? (car ls) item) ls 2)
+       (leaving (cdr ls) 2))
+      ((entering 'else ls 3)
+       (leaving
+         (cons (car ls) (remove-1st-trace item (cdr ls)))
+         3)))))
+
+(begin
+  (writeln "The remove-1st expression")
+  (writeln "is applied to the list (1 2 3 4)")
+  (writeln "to build a new list without the number 2.")
+  (remove-1st-trace 3 '(1 2 3 4)))
+;; The remove-1st expression
+;; is applied to the list (1 2 3 4)
+;; to build a new list without the number 2.
+;;     Entering cond-clause-3 with ls = (1 2 3 4)
+;;     Entering cond-clause-3 with ls = (2 3 4)
+;;     Entering cond-clause-2 with ls = (3 4)
+;; Leaving cond-clause-2 with result = (4)
+;; Leaving cond-clause-3 with result = (2 4)
+;; Leaving cond-clause-3 with result = (1 2 4)
+;; -> (1 2 4)
+#+end_src
+
+** Data Abstraction and Numbers
+*** Operations on Numbers
+**** Useful new predicates
+***** =integer?= only true for integers
+***** =real?= true for real and integer numbers, otherwise false
+***** =zero?=
+***** =positive?=
+***** =negative?=
+**** Harmonic Sum
+
+In programs dealing with numbers, it is often the case that the recursion is
+accomplished by reducing the numerical argument each time the procedure calls
+itself with the smallest value of the numerical argument providing the
+terminating condition (in the case below =(zero? n)=).
+
+#+begin_src scheme
+(define sub1
+  (lambda (n)
+    (- n 1)))
+
+;; the sum of the first n numbers of the harmonic series
+;; the harmonic series is 1 + 1/2 + 1/3 + ... + 1/n
+(define harmonic-sum
+  (lambda (n)
+    (cond
+      ((zero? n) 0)
+      (else (+ (/ 1 n) (harmonic-sum (sub1 n)))))))
+#+end_src
+
+**** Advice on recursive calls
+
+In general, it is good practice to avoid redundant computations when recursive
+calls are made.  If you need to check a precondition, do it in a function that
+calls a helper that doesn't have to worry about the precondition.
+
+*** Exact Arithmetic and Data Abstraction
+**** Assume we have three functions
+***** =numr= and =denr= are the two selector procedures for rational numbers
+***** =make-ratl= is the constructor for rational numbers
+**** We can construct a whole family of rational functions
+
+Note: we don't have to worry yet about how to represent rational numbers.
+We can construct functions that use the three assumed functions to perform
+operations on rationals, and can come up with the details of the three
+assumed functions later.  What is especially nice about this approach is that
+we are free to change the data representation of =numr=, =denr=, and
+=make-ratl= later, and the rest of our procedures will still work.  That
+is the power of abstraction.  The functions defined below are all said to be
+/representation independent/.
+
+#+begin_src scheme
+;; a rational is zero when its numerator is zero
+(define rzero?
+  (lambda (rtl)
+    (zero? (numr rtl))))
+
+(define r+
+  (lambda (x y)
+    (make-ratl
+      (+ (* (numr x) (denr y)) (* (numr y) (denr x)))
+      (* (denr x) (denr y)))))
+
+(define r*
+  (lambda (x y)
+    (make-ratl
+       (* (numr x) (numr y))
+       (* (denr x) (denr y)))))
+
+(define r-
+  (lambda (x y)
+    (make-ratl
+      (- (* (numr x) (denr y)) (* (numr y) (denr x)))
+      (* (denr x) (denr y)))))
+
+(define rinvert
+  (lambda (rtl)
+    (if (rzero? rtl)
+      (error "reinvert: Cannot invert " rtl)
+      (make-ratl (denr rtl) (numr rtl)))))
+
+(define r/
+  (lambda (x y)
+    (r* x (rinvert y))))
+
+(define r=
+  (lambda (x y)
+    (= (* (numr x) (denr y)) (* (numr y) (denr x)))))
+
+(define rpositive?
+  (lambda (rtl)
+    (or (and (positive? (numr rtl)) (positive? (denr rtl)))
+        (and (negative? (numr rtl)) (negative? (denr rtl))))))
+
+(define r>
+  (lambda (x y)
+    (rpositive? (r- x y))))
+
+(define r<
+  (lambda (x y)
+    (rpositive (r- y x))))
+
+;; rmin and rmax are so similar, we're factoring it out into extreme-value
+(define extreme-value
+  (lambda (pred x y)
+    (if (pred x y)
+      x
+      y)))
+
+(define rmax
+  (lambda (x y)
+    (extreme-value r> x y)))
+
+(define rmin
+  (lambda (x y)
+    (extreme-value r< x y)))
+
+(define writeln
+  (lambda args
+    (for-each display args)
+    (newline)))
+
+(define rprint
+  (lambda (rtl)
+    (writeln (numr rtl) "/" (denr rtl))))
+#+end_src
+
+**** Now define our three functions and representation
+
+We will represent a rational with numerator =a= and denominator =b= as
+=(list a b)=, where =b= can never be zero.  If instead we wanted to represent
+rationals as a dotted pair, we would only have to change these three functions.
+
+One good improvement we could make is to simplify the fraction by dividing
+=int1= and =int2= by =(gcd int1 int2)=.  We didn't start with that optimization,
+but I've included it in the definition below.  We've also decided to store
+=int2= as a positive value.  The changes will apply to all rational numbers
+since everything calls =make-ratl= to create a rational number.
+
+#+begin_src scheme
+(define numr
+  (lambda (rtl)
+    (car rtl)))
+
+(define denr
+  (lambda (rtl)
+    (cadr rtl)))
+
+(define make-ratl
+  (lambda (int1 int2)
+    (if (zero? int2)
+      (error "make-ratl: The denominator cannot be zero.")
+      (if (negative? int2)
+        (list
+         (* (/ int1 (gcd int1 int2)) -1)
+         (* (/ int2 (gcd int1 int2)) -1))
+        (list
+         (/ int1 (gcd int1 int2))
+         (/ int2 (gcd int1 int2)))))))
+#+end_src
+
+** Data Driven Recursion
+*** Flat Recursion
+
+/Flat recursion/ is recursion over the top-level items of a list.
+
+#+begin_src scheme
+(define append
+  (lambda (ls1 ls2)
+    (if (null? ls1)
+      ls2
+      (cons (car ls1) (append (cdr ls1) ls2)))))
+
+(define reverse
+  (lambda (ls)
+    (if (null? ls)
+      '()
+      (append (reverse (cdr ls)) (list (car ls))))))
+
+(define merge
+  (lambda (sorted-ntpl1 sorted-ntpl2)
+    (cond
+      ((null? sorted-ntpl1) sorted-ntpl2)
+      ((null? sorted-ntpl2) sorted-ntpl1)
+      ((< (car sorted-ntpl1) (car sorted-ntpl2))
+       (cons (car sorted-ntpl1)
+             (merge (cdr sorted-ntpl1) sorted-ntpl2)))
+      (else (cons (car sorted-ntpl2)
+                  (merge sorted-ntpl1 (cdr sorted-ntpl2)))))))
+
+(define remove
+  (lambda (item ls)
+    (cond
+      ((null? ls) '())
+      ((equal? (car ls) item) (remove item (cdr ls)))
+      (else (cons (car ls) (remove item (cdr ls)))))))
+#+end_src
+
+*** Mutual Recursion
+
+Mutual recursion isn't the most efficient way to write =odd?= and =even?=, but
+it is a good demonstration of functions calling each other recursively.
+The base case is that zero is even.
+
+#+begin_src scheme
+(define sub1
+  (lambda (int)
+     (- int 1)))
+
+(define even?
+  (lambda (int)
+    (if (zero? int)
+      #t
+      (odd? (sub1 int)))))
+
+(define odd?
+  (lambda (int)
+    (if (zero? int)
+      #f
+      (even? (sub1 int)))))
+#+end_src
+
+*** Deep Recursion
+
+/Deep recursion/ is recursion over all the sublists of a list.  It is also
+called /tree recursion/.  In it, you apply the recursive function to both
+the =car= and =cdr= of a list, if the =car= is a list also.
+
+#+begin_src scheme
+(define add1
+  (lambda (int)
+    (+ int 1)))
+
+;; count-all counts all the items in a list that are not pairs
+;; it recurses into nested lists
+(define count-all
+  (lambda (ls)
+    (cond
+      ((null? ls) 0)
+      ((not (pair? (car ls))) (add1 (count-all (cdr ls))))
+      (else (+ (count-all (car ls)) (count-all (cdr ls)))))))
+
+;; we could avoid the not, and combine the last two checks into an =if=
+;; if we wanted, like follows in =remove-all=
+(define remove-all
+  (lambda (item ls)
+    (cond
+      ((null? ls) '())
+      ((equal? (car ls) item) (remove-all item (cdr ls)))
+      (else (cons (if (pair? (car ls))
+                      (remove-all item (car ls))
+                      (car ls))
+                  (remove-all item (cdr ls)))))))
+
+(define reverse-all
+  (lambda (ls)
+    (if (null? ls)
+        '()
+        (append (reverse-all (cdr ls))
+                (list (if (pair? (car ls))
+                      (reverse-all (car ls))
+                      (car ls)))))))
+#+end_src)
+
+*** Tree Representation of Lists
+*** Numerical Recursion and Iteration
+*** Analyzing the Fibonacci Algorithm
+** Locally Defined Procedures
+*** Overview
+*** Let and Letrec
+*** Symbolic Manipulation of Polynomials
+*** Binary Numbers
+** Interactive Programming
+*** Overview
+*** Strings
+*** Implicit begin
+*** Input and Output
+*** Two Famous Problems
+* Procedures as Values
+** Abstracting Procedures
+*** Overview
+*** Procedures as Arguments and Values
+*** Currying
+*** Procedural Abstraction of Flat Recursion
+*** Procedural Abstraction of Deep Recursion
+** Sets and Relations
+*** Overview
+*** Quantifiers
+*** Sets
+*** Representing Sets
+*** Ordered Pairs, Functions and Relations
+* Managing State
+** Using Vectors
+*** Overview
+*** Vectors
+*** Representing Vectors
+*** Matrices
+** Sorting and Searching
+*** Overview
+*** Sorting
+*** Searching
+*** Relational Calculus
+** Mutation
+*** Overview
+*** Assignment and State
+*** Box-and-Pointer Representation of Cons Cells
+** Object-Oriented Programming
+*** Overview
+*** Boxes, Counters, Accumulators, and Gauges
+*** Stacks
+*** Queues
+*** Circular Lists
+*** Buckets and Hash Tables
+** Simulation: Objects in Action
+*** Overview
+*** Randomness
+*** The Gas Station Simulation
+* Extending the Language
+** Declaring Special Forms
+*** Overview
+*** Declaring a Simple Special Form
+*** Macros
+** Using Streams
+*** Overview
+*** Delayed Lists
+*** Streams
+*** Using Character Data
+*** Files
+* Control
+** Introduction to Continuations
+*** Overview
+*** Contexts
+*** Escape Procedures
+*** Continuations from Contexts and Escape Procedures
+*** Experimenting with call/cc
+*** Defining escaper
+*** Escaping from Infinite Loops
+*** Escaping from Flat Recursions
+*** Escaping from Deep Recursions
+** Using Continuations
+*** Overview
+*** Review of call/cc
+*** Making Loops with One Continuation
+*** Experimenting with Multiple Continuations
+*** Escaping from and Returning to Deep Recursions
+*** Coroutines: Continuations in Action
+*** Grune's Problem
+*** Final Thoughts
+* The End
+
+#  LocalWords:  Letrec eqv
