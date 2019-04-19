@@ -1,0 +1,3439 @@
+* Part 1 - Basics
+** Hello, Clojure
+*** A Note on Typical Commenting
+
+ "Typically Clojure programmers will use a single semicolon when they add a
+ comment to the end of a line with some code but will double up on the semicolons
+ if the comment is all alone on its own line."
+
+ #+begin_src clojure
+ ;; Do two semicolons add up to a whole colon?
+
+ (println "Hello, world!")  ; Say hi
+ #+end_src
+
+*** (function argument1 argument2 ...)
+*** =def= binds a symbol to a value
+
+ Give def an identifier (or a /symbol/ in Clojure-speak) and a value, and =def=
+ will associate, or /bind/, the symbol to the value.
+
+ #+begin_src clojure
+ ;; this will bind 30.0 to the-average
+ (def the-average (/ (+ 20 40.0) 2.0))
+ #+end_src
+
+ Clojure programmers have adopted the
+ all-lower-case-with-words-separated-by-dashes conventions - also known as
+ kebab case - when picking symbols.  Ex: first-name, the-average
+
+ You can't include parentheses, square brackets, or braces in symbols.  You also
+ cannot include @ or ^ characters.  Otherwise, the rules are pretty loose.
+ this&that|other and Much=M*re! are both valid Clojure symbols.  Symbols cannot
+ start with a digit and symbols that start with a colon are really keywords.
+
+*** =defn= defines a function
+
+ #+begin_src clojure
+ (defn hello-world []
+   (println "Hello, world!"))
+
+ (defn say-welcome [what]
+   (println "Welcome to" what))
+
+ (say-welcome "Clojure")
+ ;; Welcome to Clojure
+
+ ;; Clojure functions return the last thing computed
+ ;; also parameters don't have to be separated by commas or anything
+ (defn average [a b]
+   (/ (+ a b) 2.0))
+
+ (average 5.0 10.0)
+ ;; -> 7.5
+ #+end_src
+
+*** you can create a new project with =lein new project-name=
+*** the main function is called =-main=
+*** you need to define your functions before you use them
+
+ Clojure code tends to read from the bottom up, with the lower-level functions
+ defined first.  You can get around this with =declare=, but =declare= is
+ normally reserved for situations like mutually recursive functions.
+
+*** =def= and =defn= use the same pool of names
+** Vectors and Lists
+*** Vector
+**** Immutable
+**** Fast random access
+**** Denoted by square brackets: [], [1 2 3], [true "Hi" 8.0 [1 2] "what?"]
+*** Useful Vector Functions
+**** =vector= makes a vector of its arguments
+**** =vec= takes a collection and returns the equivalent vector
+
+ #+begin_src clojure
+ (vec '(1 2 3))
+ ;; -> [1 2 3]
+ (vec {:key1 "value1" :key2 "value2"})
+ ;; -> [[:key1 "value1"] [:key2 "value2]]
+ #+end_src
+
+**** =count= tells you how many elements are in a vector
+**** =first= returns the first element of the vector
+**** =rest= returns all but the first element of the vector
+
+ =rest= returns a sequence, a generic kind of collection.
+ =rest= on an empty vector will return an empty sequence.
+
+**** =nth= takes a vector and an index and returns the item at the index (from 0)
+**** =conj= takes a vector and item(s) and adds the item(s) to the end
+**** =cons= takes an item and a vector an ads to the front of the vector
+
+ =cons= also returns a sequence, not a vector.
+
+*** Real World Vector Examples
+
+ When there aren't great algorithmic issues at stake, Clojure programmers
+ generally reach for square brackets.
+
+ #+begin_src clojure
+ (defn escape-html [string]
+   (replace-all string [["&" "&amp;"]
+                        ["\"" "&quot;"]
+                        ["<" "&lt;"]
+                        [">" "&gt;"]]))
+
+ (defroutes routes
+   [[["/" {:get home-page} ^:interceptors [bootstrap/html-body]
+     ["/hiccup" {:get hiccup-page}]
+     ["/enlive" {:get enlive-page}]
+     ["/mustache" {:get mustache-page}]
+     ["/stringtemplate" {:get string-templatepage}]
+     ["/comb" {:get comb-page}]]]])
+ #+end_src
+
+*** List
+**** Immutable
+**** Slow random access (linked list)
+**** Count is stored in the list, so fast to calculate
+**** You need to quote (') lists, except empty (): '(1 2 3)
+*** Useful List Functions
+**** =list= turns its arguments into a list =(list 3 4 "hi")= is ='(3 4 "hi")=
+**** the vector functions work too, but =conj= adds to the front of the list
+** Maps, Keywords, and Sets
+*** Maps
+**** maps only require curly braces {} and key/value pairs
+
+ #+begin_src clojure
+ {"title" "Oliver Twist" "author" "Dickens" "published" 1838}
+ ;; you could also define it with =hash-map=
+ (hash-map "title" "Oliver Twist"
+           "author" "Dickens"
+           "published" 1838)
+ (def book
+   {"title" "Oliver Twist" "author" "Dickens" "published" 1838})
+
+ ;; you can get the value with =get=, the map, and a key
+ (get book "published")
+ ;; -> 1838
+ ;; get takes a third argument for what to return if the key isn't there
+ (get book "taste" "chicken")
+ ;; -> "chicken"
+
+ ;; you can also use the map like a function
+ (book "published")
+ ;; -> 1838
+ ;; if you ask for a key that doesn't exist, you'll get back =nil=
+ #+end_src
+
+**** keywords commonly act as map keys
+
+ A keyword starts with a : but follows the same naming rules as symbols.
+ You can use a keyword like a function on a map to retrieve a value.
+ This is probably the most commonly seen way of using maps.
+
+ #+begin_src clojure
+ (def book
+   {:title "Oliver Twist" :author "Dickens" :published 1838})
+
+ (println "Title: " (:title book))
+ ;; Title: Oliver Twist
+ #+end_src
+
+**** add a new key/value to a map with =assoc=, =dissoc= to remove
+
+ Maps are immutable, so this doesn't modify the map.  It returns a new map with
+ the new key/value and all the old ones.
+
+ =assoc= and =dissoc= work with vectors too, but use numeric indexes rather than
+ keys.  Remember, vectors are indexed from 0.
+ (assoc [:title :by :published] 1 :author) yield [:title :author :published]
+
+ #+begin_src clojure
+ ;; you can associate multiple key/value pairs at a time
+ (assoc book :page-count 362 :title "War & Peace")
+ ;; -> {:title "War & Peace" :author "Dickens" :published 1838 :page-count 362}
+
+ ;; dissoc will remove a key/value or keys/values
+ ;; dissoc quietly ignores keys that aren't there
+ (disoc book :published :page-count :taste)
+ ;; -> {:title "War & Peace" :author "Dickens"}
+ #+end_src
+
+**** return the keys with =keys= and the values with =vals=
+**** there is a =sorted-map= that keeps its keys sorted
+*** Sets
+**** Sets use #{} for literal syntax
+
+ #+begin_src clojure
+ ;; you get an error if you repeat a value in a set literal
+ (def genres #{:sci-fi :romance :mystery})
+ (def authors #{"Dickens" "Austen" "King"})
+ #+end_src
+
+**** =set= takes a collection and returns the set equivalent to that collection
+
+ #+begin_src clojure
+ (set '(1 1 1 2 2 3 3 3 4))
+ ;; -> #{1 2 3 4}
+ #+end_src
+
+**** Check membership within =contains?= or use the set as a function
+
+ #+begin_src clojure
+ (contains? authors "Austen")  ; => true
+ (contains? genres "Austen")   ; => false
+ (authors "Austen")    ; => "Austen"
+ (genres :historical)  ; => nil
+ ;; keywords also work as functions on sets
+ (:sci-fi genres)     ; => :sci-fi
+ (:historical genres) ; => nil
+ #+end_src
+
+**** =conj= adds items to a set (returns a new set with the added item)
+**** =disj= removes items from a set (makes a new smaller set)
+*** Maps, Keywords, and Sets in the Wild
+**** Maps in =clojure.java.jdbc=
+
+ #+begin_src clojure
+ (require 'clojure.java.jdbc)
+ ;; this map configures the database
+ (def db {:dbtype "derby" :dbname "books"})
+ (clojure.java.jdbc/query db ["select * from books"])
+
+ ;; If we did a query, the results come back as a list of maps too
+ ({:id 10, :title "Oliver Twist", :author "Dickens"}
+  {:id 20, :title "Emma", :author "Austen"})
+ #+end_src
+
+**** Keywords are everywhere.  Here are some in boot.
+
+ #+begin_src clojure
+ ;; 11 keywords in 10 lines of code
+​ (​defn​ resolve-dependencies
+   [{:keys [checkouts] :as env}]
+ (​let​ [checkouts (set (map first checkouts))]
+   (->> [:dependencies :repositories :local-repo :offline? :mirrors :proxy]
+        (select-keys env)
+	         resolve-dependencies-memoized*
+	         ksort/topo-sort
+	         (keep
+	           (​fn​ [[p :as x]] (when-not (checkouts p)
+	           {:dep x :jar (dep->path x)}))))))
+ #+end_src
+
+**** Sets in =clojure.java.jdbc=
+
+ #+begin_src clojure
+ ;; here we use the set as a function to check for its values in a variable
+ (#{"derby" "h2" "hsqldb" "sqlite"} subprotocol)
+ ;; it will return nil if no matches, or the value if any match
+
+ ;; you can also map a set over a collection
+ (map #{"derby" "h2" "hsqldb" "sqlite"} ["h2" "derby"])
+ ;; -> ("h2" "derby")
+ #+end_src
+
+*** Staying Out of Trouble
+**** keywords are not strings; don't mix them up
+**** don't trust =nil=, use =contains?= to see if a key exists
+
+ Your map might contain a =nil= values, but =contains?= always tells you if a
+ key exists in the map.
+
+**** most list/vector operators treat maps as sequences of two element vectors
+**** remember, keywords act as functions that look themselves up in a map
+** Logic
+*** The Fundamental =if=
+
+ An =if= expression starts with the word =if=, which is followed by two or
+ three expressions.  First an expression to test (the conditional), then
+ the expression to evaluate if the conditional is true, and optionally an
+ expression to evaluate if the conditional is false.
+
+ The value returned from an =if= is the value returned from the last
+ expression evaluated in the =if=.  If you have an =if= without a false clause,
+ it returns =nil= when the conditional is false.
+
+ #+begin_src clojure
+ (defn print-greeting [preferred-customer]
+   (if preferred-customer
+     (println "Welcome back to Blotts Books!")
+     (println "Welcome to Blotts Books!")))
+
+ ;; short if expressions can be placed on one line
+ (if preferred-customer "So nice to have you back!")
+ #+end_src
+
+*** Conditional Testing in Clojure
+**** Equality Testing in Clojure is just =
+
+ The = function is built on the idea of structural equality: roughly, two values
+ are equal according to = if they have the same value.  Under the hood, = is
+ identical to the Java =equals= method.  A vector is equal to a list with the
+ same elements.
+
+**** Use =not== to test inequality
+**** >, <, >=, and <= work as expected
+**** There are a number of /is this a that?/ functions
+
+ #+begin_src clojure
+ (number? 1984)             ; Yes!
+ (number? "Anna Karenina")  ; "Anna Karenina" isn't a number
+ (string? "Anna Karenina")  ; Yes, it is a string
+ (keyword? "Anna Karenina") ; Not a keyword
+ (keyword? :anna-karenina)  ​; Yes a keyword.​
+ (map? :anna-karenina)      ​; Not a map.​
+ (map? {:title 1984})       ​; Yes!​
+ (vector? 1984)             ​; Nope.​
+ (vector? [1984])           ​; Yes!​
+ (coll? [1984])             ; a vector is a collection
+ (coll? {:key "value"}      ; a map is a collection
+ (coll? 1984)               ; a number isn't a collection
+ #+end_src
+
+**** =true= and =false= are lower case
+**** =and=, =or=, and =not= can assemble more complex expressions
+
+ =and= and =or= do short-circuit evaluation.
+
+**** =nil= is a "falsy" value, all non-nil, non-false values are truthy
+
+ In an =if= statement and any other Boolean context, only =false= and =nil= get
+ treated as false.  Everything else is treated as true.  This /anything else is
+ true/ rule also applies to collections.  For example, all vectors, even empty
+ ones, are treated as =true=.
+
+*** =do= and =when=
+
+ Clojure's =if= expression is limited to one expression for the truthy leg and
+ one expression for the falsy leg.  If you want to do several things, you can
+ wrap those things in a =do= to group them as a single expression.  They
+ evaluate to the value of the last expression in the =do= block.
+
+ A =when= expression is like an =if= statement, but only supports doing something
+ when the conditional is =true= and automatically supports multiple statements
+ without needing a do.  =when= returns =nil= when the conditional isn't truthy.
+
+ #+begin_src clojure
+ (if (> 7 val)
+   (do
+     (println "This is four expressions.")
+     (println "All grouped together as one")
+     (println "That prints some stuff and then evaluates to 44")
+     44))
+
+ (when preferred-customer
+   (println "Hello returning customer!")
+   (println "Welcome back to Blotts Books!"))
+ #+end_src
+
+*** Dealing with Multiple Conditions: =cond= and =case=
+
+ =cond= is a general purpose multi-conditional statement.  It takes pairs
+ of expressions.  Each pair is a predicate expression and a value expression.
+ It finds the first truthy predicate and evaluates the matching value expression.
+ It returns =nil= if none of the predicates are truthy.
+
+ The =case= statement is =cond='s sibling.  It tests a value with = against
+ several possible matches.  If nothing matches, the expression evaluates to the
+ last, unpaired expression.  If you leave out the catch-all expression, =case=
+ will generate an error is there is no match.  The values being compared to in
+ a =case= must be constants.
+
+ #+begin_src clojure
+ ;; :else is just a handy truthy value, it could be anything non-nil/non-false
+ ;; using :else for the final predicate is a Clojure convention
+ (defn shipping-charge [preferred-customer order-amount]
+   (cond
+     preferred-customer 0.0
+     (< order-amount 50.0) 5.0
+     (< order-amount 100.0) 10.0
+     :else (* 0.1 order-amount)))
+
+ (defn customer-greeting [status]
+   (case status
+     :gold      "Welcome, welcome, welcome back!!!"
+     :preferred "Welcome back!"
+                "Welcome to Blotts Books"))
+ #+end_src
+
+*** Throwing and Catching
+
+ By default, an exception will terminate your program immediately.  You can
+ choose to handle exceptions with =try= and =catch=.  You can throw an exception
+ with =throw=.  The =ex-info= function takes a string describing the problem
+ and a (possibly empty) map containing any other pertinent information.  It
+ throws an exception of type =clojure.lang.ExceptionInfo=, so that's what you
+ would need to catch if you want to handle it yourself.
+
+ #+begin_src clojure
+ (try
+   (publish-book book)
+   (catch ArithmeticException e (println "Math problem."))
+   (catch StackOverflowError e (println "Unable to publish...")))
+
+ (defn publish-book [book]
+   (when (not (:title book))
+     (throw
+       (ex-info "A book needs a title!" {:book book})))
+   ;; Publishing code
+ )
+ #+end_src
+
+*** In the Wild
+
+ #+begin_src clojure
+ ;; from Leiningen
+ (when (real-directory? f)
+   (doseq [child (.listFiles f)]
+     (delete-file-recursively child silently)))
+ ;; also from Leiningen
+ (if (.isDirectory entry)
+   (.mkdirs f)
+   (do (.mkdirs (.getParentFile f))
+       (io/copy (.getInputStream jar entry) f)))
+ ;; another small Leiningen example
+ (if (vector? task) task [task])
+
+ ;; from Korma, to convert a Clojure value to a SQL string
+ (defn str-value [v]
+   (cond
+     (map? v) (map-val v)
+     (keyword? v) (field-str v)
+     (nil? v) "NULL"
+     (coll? v) (coll-str v)
+     :else (parameterize v)))
+ ;; elsewhere in Korma, we find this case
+ (case (:type query)
+   :insert (update-in query [:values] #(map prep-fn %))
+   :update (update-in query [:set-fields] prep-fn)
+   query)
+ #+end_src
+
+*** Staying Out of Trouble
+
+ Please note: the /false and nil are false and everything else is true/ rule is
+ a vital part of programming in Clojure; it isn't some weird aberration that
+ will bite you if you aren't careful.  Consider =and=.  It returns the first
+ falsy value, or the last value if all values are truthy.  Authors of libraries
+ routinely return some value to indicate truthiness rather than =true=, and you
+ will miss that is your testing for = =true= or testing with =true?=.  Just
+ test for truthiness, and you'll be fine.
+
+ And a style comment.  Close off parentheses on the final line of code.  Don't
+ grant each closing parentheses it's own line.
+
+ #+begin_src clojure
+ (and true 1984)         ​; Evaluates to 1984, which is truthy.​
+ (and 2001 ​"Emma"​)       ​; Evaluates to "Emma", again truthy.​
+ (and 2001 nil ​"Emma"​)   ​; Evaluates to nil, which is falsy.​
+
+ ;; the following isn't just word, it's /wrong/
+ (if (= (some-predicate? some-argument) true)
+   (some-other-function))
+ #+end_src
+
+** More Capable Functions
+*** One Function, Different Parameters
+
+ Clojure supports multi-arity functions.  Often the function with the most
+ arguments actually does the work and the other arities are for /filling in the
+ defaults/ and call the most argument version with defaults specified.
+
+ Clojure also supports varargs functions by putting an & in your parameter list.
+ The arguments after the & all show up in the next parameter as a collection.
+ You can optionally specify some ordinary arguments before the &.  For variadic
+ functions, you only have one function body, where for multi-arity functions,
+ you have a body for each arity.
+
+ #+begin_src clojure
+ ;; multi-arity functions.  this function will work with one or two parameters
+ (defn greet
+   ([to-whom] (println "Welcome to Blotts Books" to-whom))
+   ([message to-whom] (println message to-whom)))
+
+ ;; the way we defined greet is redundant.  often multi-arity functions calls
+ ;; other arities of themselves to handle actions
+ (defn greet
+   ([to-whom] (greet "Welcome to Blotts Books" to-whom))
+   ([message to-whom] (println message to-whom)))
+
+ ;; varargs or variadic functions
+ (defn print-any-args [& args]
+   (println "My arguments are: " args))
+
+ (defn print-first-and-rest [x & xs]
+   (println "my first argument is" x "and the rest are" xs))
+
+ (print-first-and-rest "Milly" "grew" 10 "feet" "tall")
+ ;; -> my first argument is Milly and the rest are (grew 10 feet tall)
+ #+end_src
+
+*** Multimethods
+
+ Sometimes you want to vary your function's behavior based on some other
+ aspect of the values that get passed to it.  Imagine we were retrieving book
+ data from different sources.  Some of the books are maps like
+ ={:title "War and Peace" :author "Tolstoy"}= while some are maps with different
+ keys like ={:book "Emma" :by "Austen"}= and others are vectors like
+ =["1984" "Orwell"]=.  We could clearly handle this by converting them all
+ to be the same format, but our normalization function might get complicated.
+
+ Multimethods are another way to deal with this type of situation.  Multimethods
+ let you have a single function with multiple implementations, much like multi-
+ arity functions.  Multimethods let you pick the implementation based on any
+ characteristic of its arguments.  If the dispatch function can't categorize
+ its input, it generates an exception, unless there is a :default defined that
+ catches /everything else/.
+
+ In a sense multimethods are a generalization of the kind of type-based
+ polymorphism that you find in most object-oriented programming languages.
+ Multimethods are more general int he sense that you get to decide which
+ criteria to choose to pick the implementation, rather than being restricted to
+ type based dispatch.  All the parts of a multimethod do not need to be defined
+ in the same file, so they are open to extension later.
+
+ #+begin_src clojure
+ ;; We need a function to categorize the different sets of arguments
+ (defn dispatch-book-format [book]
+   (cond
+     (vector? book) :vector-book
+     (contains? book :title) :standard-map
+     (contains? book :book) :alternative-map))
+
+ ;; now we define our multimethod to use =dispatch-book-format=
+ (defmulti normalize-book dispatch-book-format)
+
+ ;; then we define our different methods
+ (defmethod normalize-book :vector-book [book]
+   {:title (first book) :author (second book)})
+
+ (defmethod normalize-book :standard-map [book]
+   book)
+
+ (defmethod normalize-book :alternative-map [book]
+   {:title (:book book) :author (:by book)})
+
+ ;; if our books had a key for published, we could dispatch based on
+ ;; publication year to compute royalties
+ (defn dispatch-published [book]
+   (cond
+     (< (:published book) 1928) :public-domain
+     (< (:published book) 1978) :old-copyright
+     :else :new-copyright))
+
+ (defmulti compute-royalties dispatch-published)
+
+ (defmethod compute-royalties :public-domain [book]
+   0)
+
+ (defmethod compute-royalties :old-copyright [book]
+   ;; Compute the royalties based on old copyright law).
+   )
+
+ (defmethod compute-royalties :new-copyright [book]
+   ;; Compute the royalties based on the new copyright law).
+   )
+
+ ;; For more extensibility, you can dispatch based upon the value
+ ;; of a key in a map.  That way you don't have to modify the dispatch
+ ;; function to handle new types.  Image we have books like follows:
+ (def books [{:title "Pride and Prejudice" :author "Austen" :genre :romance}
+             {:title "World War Z" :author "Brooks" :genre :zombie}])
+
+ ;; remember, you can use keys like functions on maps
+ ;; this dispatches based on the value returned by applying :genre
+ (defmulti book-description :genre)
+
+ (defmethod book-description :romance [book]
+   (str "The heart warming new romance by " (:author book)))
+
+ (defmethod book-description :zombie [book]
+   (str "The heart consuming new zombie adventure by " (:author book)))
+
+ ;; now, much later, we have a new book in the :zombie-romance genre
+ (def ppz {:title "Pride and Prejudice and Zombies"
+           :author "Grahame-smith"
+           :genre :zombie-romance})
+
+ ;; we don't have to modify any of the original code.
+ ;; we just define a new method
+ (defmethod book-description :zombie-romance [book]
+   (str "The heart warming and consuming new romance by " (:author book)))
+ #+end_src
+
+*** Deeply Recursive
+
+ A normal recursive function in Clojure can StackOverflow with as little as
+ 4000 or so entries to process.  We use =loop= and =recur= to write tail
+ recursive functions that aren't limited by stack space.  =recur= without
+ =loop= loops back to the function call and replaces the arguments of the
+ function with its arguments.  =recur= with =loop= loops back to the =loop=
+ and replaces it definitions values with the =recur= arguments.
+
+ #+begin_src clojure
+ ;; Here's our data
+ (def books
+   [{:title "Jaws"  :copies-sold 2000000}
+    {:title "Emma"  :copies-sold 3000000}
+    {:title "2001"  :copies-sold 4000000}])
+
+ ;; here is a tail recursive function to add up the total number of copies-sold
+ (defn sum-copies
+   ([book] (sum-copies books 0))
+   ([books total]
+     (if (empty? books)
+       total
+       (recur
+         (rest books)
+         (+ total (:copies-sold (first books)))))))
+
+ ;; we could write this without a multi-arity function using =loop=
+ (defn sum-copies
+   (loop [books books total 0]
+     (if (empty? books)
+       total
+       (recur
+         (rest books)
+         (+ total (:copies-sold (first books)))))))
+
+ ;; Note: loop/recur is a pretty low level tool
+ ;; There's often an easier way to accomplish the same task
+ (defn sum-copies [books]
+   (apply + (map :copies-sold books)))
+ #+end_src
+
+*** Docstrings
+
+ A documentation string or docstring is a regular string that you can insert
+ just after the function name in a =defn=.  In the REPL, you can retrieve the
+ docstring for any function with the built-in =doc= macro.  Functions, records,
+ macros, and even =def='s support docstrings.  The docstring always follows the
+ function name, so a docstring applies to an entire multi-arity function and
+ comes before any of the parameter lists.
+
+ #+begin_src clojure
+ ;; the docstring goes between the function name and its parameters
+ (defn average
+   "Return the average of a and b."
+   [a b]
+   (/ (+ a b) 2.0))
+
+ (doc average)
+ ;; -------------------------
+ ;; user/average
+ ;; ([a b])
+ ;;   Return the average of a and b.
+
+ (def ISBN-LENGTH "Length of an ISBN code." 13)
+
+ (doc ISBN-LENGTH)
+ ;; -------------------------
+ ;; user/ISBN-LENGTH
+ ;;   Length of an ISBN code.
+ #+end_src
+
+*** Pre and Post Conditions
+
+ To set up a =:pre= condition you add a map with a =:pre= key after the
+ arguments of a function.  The value should be a vector of expressions.  You'll
+ get a runtime exception if any of the expressions are falsy when the function
+ is called.  You can also specify a =:post= condition which checks the value
+ returned from the function.  =:post= goes in the same map as =:pre=.  Use
+ =%= to refer to the return value in =:post= conditions.
+
+ #+begin_src clojure
+ ;; let's make sure all our books have titles and authors
+ ;; we're also verifying that the return value of =ship-book= is Boolean
+ ;; We use % to stand in for the return value in post conditions
+ (defn publish-book [book]
+   {:pre [(:title book) (:author book)]
+    :post [(boolean? %)]}
+   (print-book book)
+   (ship-book book))
+ #+end_src
+
+*** Staying Out of Trouble
+
+ Be careful to avoid overlaps when mixing multi-arity and variadic functions.
+ Clojure is smart enough to not let us define functions with overlapping
+ arguments.  Also, don't confuse a multi-arity function with a function that
+ just has multiple expressions in the body.  Look for the vectors of parameters
+ at the start.  Also, be sure to put a space after your & when defining
+ variadic functions.  =[& args]= is a variadic function that puts its arguments
+ in =args=.  =[&args]= won't compile, since we'll try to refer to our arguments
+ as =args= which is undefined.  Even worse is if you actually tried to refer
+ to your arguments as =&args= and never pass more than one argument to your
+ function, then it will compile and =&args= will be a single parameter for the
+ function.
+
+*** In the Wild
+
+ #+begin_src clojure
+ ;; = is a great multi-arity function from Clojure itself
+ ;; Code edited a bit for clarity
+ (defn =
+   "Equality.  Returns true if x equals y, false if not.  Same as Java
+    x.equals(y) except it also works for nil, and compares numbers and
+    collections in a type-independent manner.  Clojure's immutable data
+    structures define equals() (and thus =) as a value, not an identity
+    comparison."
+   ([x] true)
+   ([x y] (clojure.lang.Util/equiv x y))
+   ([x y & more]
+     (if (clojure.lang.Util/equiv x y)
+       (if (next more)
+         (recur y (first more) (next more))
+         (clojure.lang.Util/equiv y (first more)))
+       false)))
+
+ ;; The ClojureScript source contains =to-url=, a multimethod
+ ;; this version is slightly simplified
+ ;; dispatch based on results of class, much like other OO language polymorphism
+ (defmulti to-url class)
+
+ (defmethod to-url File [f] (.toURL (.toURI f)))
+ (defmethod to-url URL [url] url)
+ (defmethod to-url String [s] (to-url (io/file s)))
+ #+end_src)
+
+** Functional Things
+*** Functions Are Values
+
+ Functions are first class values in Clojure and can be passed to and returned
+ from other functions.
+
+*** Functions on the Fly
+
+ =fn= declares an anonymous function.  There is also a shorthand way to declare
+ and anonymous function called function literals.
+ =#(when (= (:genre %1) :adventure) %1)=  In the shorthand you cannot declare
+ parameter names, so you refer to them by position with %1, %2, etc.  If you
+ refer to a %11 in the body of your function literal, Clojure will expect it
+ to take 11 arguments (even if it ignores the first 10 of them).  You can
+ use just % for %1.  Function literals and =fn= produce the same type of
+ anonymous function.  Lean towards function literals for short, simple functions
+ and use =fn= when there are more than a couple of parameters.  By all means use
+ =defn= to define a function with a name if the name will help you understand
+ the purpose of a function or if you plan to use it in more than one place.
+
+ The idea of a function remembering the bindings that existed when it was
+ defined is called a /closure/.  A function /closes/ over the scope in which it
+ was defined.
+
+*** A Functional Toolkit
+**** =apply= calls a function with the values of a collection as its arguments
+
+ #+begin_src clojure
+ (+ 1 2 3 4)                 ; Gives you 10.
+ (def the-function +)
+ (def args [1 2 3 4])
+ (apply the-function args)   ; Gives you 10.
+
+ ;; apply is useful for transformations
+ (def v ["The number " 2 " best selling " "book."])
+ (apply str v)
+ ;; -> "The number 2 best selling book."
+ (apply list v)
+ ;; -> ("The number " 2 " best selling " "book.")
+ ;; apply vector is like vec
+ (apply vector (apply list v))
+ ;; -> ["The number " 2 " best selling " "book."]
+ #+end_src
+
+**** =partial= lets you partially apply a function
+
+ Partial returns a new function that takes less arguments.
+
+ #+begin_src clojure
+ (def my-inc (partial + 1))
+ #+end_src
+
+**** =complement= wraps a function you supply with a call to =not=
+
+ =complement= reverses a predicate.
+
+**** =every-pred= and's together predicate functions
+*** In the Wild
+
+ #+begin_src clojure
+ ;; you pass a function to update to update values in a map
+ ;; updates takes a map, a key, and a function to apply to the old value to
+ ;; create the new value.  Here we're just incrementing :copies
+ (def book {:title "Emma" :copies 1000})
+ (def new-book (update book :copies inc))
+
+ ;; update-in works like update but can drill through layers of nested map
+ (def by-author
+   {:name "Jane Austen"
+    :book {:title "Emma" :copies 1000}})
+ (def new-by-author (update-in by-author [:book :copies] inc))
+
+ ;; Ring uses first class functions for handlers
+ (ns ring-example.core
+   (:require [ring.adapter.jetty :as jetty]))
+ (defn handler [request]
+   {:status 200
+    :headers  {"Content-Type" "text/html"}
+    :body "Hello from your web application!"})
+ (defn -main []
+   (jetty/run-jetty handler {:port 8080}))
+
+ ;; Ring also works with middleware that takes a handler function as a parameter
+ ;; and returns a new handler function.  That way you can layer additional
+ ;; features onto your handlers
+ (defn log-value
+   "Log the message and the value.  Returns the value."
+   [msg value]
+   (println msg value)
+   value)
+
+ (defn wrap-logging
+   "Return a function that logs the response."
+   [msg handler]
+   (fn [request]
+     (log-value msg (handler request))))
+
+ ;; and another handler to specify content type
+ ;; assoc-in is like update-in, but it adds a new key/value instead of updating
+ ;; and existing one
+ (defn wrap-content-type
+   "Return a function that sets the response content type."
+   [handler content-type]
+   (fn [request]
+     (assoc-in
+       (handler request)
+       [:header "Content-Type"]
+       content-type)))
+
+ ;; traditionally Ring applciations call the final, fully wrapped handler app
+ (defn handler [request]
+   {:status 200
+    :body "Hello from your web application!"})
+
+ ;; here we log the final wrapped response
+ ;; we could change the order of calls to log the response before the
+ ;; Content-Type header gets added by wrap-content-type
+ (def app
+   (wrap-logging
+     "Final response: "
+     (wrap-content-type handler "text/html")))
+
+ ;; or we could log both before and after wrap-content-type
+ (def app
+   (wrap-logging
+     "Final response: "
+     (wrap-content-type
+       (wrap-logging "Initial response: " handler)
+       "text/html")))
+ #+end_src
+
+*** Staying Out of Trouble
+
+ "The functional programmer's Prime Directive is simple: try to write functions
+ that /don't care/ about the context in which they are called.  In practice
+ this means you should avoid writing functions that rely on or generate side
+ effects.  In functional programming, the best functions are the ones that look
+ only at their arguments and produce only their return value."
+
+ In other words, try to use pure functions, functions that neither rely on or
+ generate side effects.
+
+** =let=
+*** A Local Temporary Place for Your Stuff
+
+ You call =let= like a function and pass it a vector of name value pairs and
+ an expression.  In the expression you can use the named defined in the vector.
+ The bindings manufactured by a =let= go away outside of its body.  You can
+ have more than one expression in the body of a =let=.  The =let= will
+ evaluate to the value of its last expression.
+
+ =let= will bind each name to its corresponding value, starting with the first
+ one.  Each named becomes available immediately after it's bound.  There's no
+ need for a =let*= to refer back to previously defined variables.
+
+ #+begin_src clojure
+ ;; consider this code.  it could be hard to understand after some time
+ ;; away from it.  we need intention revealing names
+ (defn compute-discount-amount [amount discount-percent min-charge]
+   (if (> (* amount (- 1.0 discount-percent)) min-charge)
+     (* amount (- 1.0 discount-percent))
+     min-charge))
+
+ ;; compare to this which is far more clear
+ (defn compute-discount-amount [amount discount-percent min-charge]
+   (let [discount (* amount discount-percent)
+         discounted-amount (- amount discount)]
+     (if (> discounted-amount min-charge)
+       discounted-amount
+       min-charge)))
+ #+end_src
+
+*** =let= Over =fn=
+
+ A function can still close over values defined in a =let= block.
+ The pattern of /compute it in a let, use it in an fn/ is a great way to build
+ anonymous functions that are both efficient and clear.  It's efficient because
+ you can use an outside =let= to compute everything you need to construct the
+ anonymous function.  It's clear because inside your anonymous function you can
+ use descriptive names for precomputed values.
+
+ #+begin_src clojure
+ ;; suppose we had this table of per-user discounts
+ (def user-discounts
+   {"Nicholas" 0.10 "Jonathan" 0.07 "Felicia" 0.05})
+
+ ;; we'll define a function that returns a function that calculates
+ ;; the charge with discount for a user, so we don't have to keep
+ ;; passing this table around all over our code
+ (defn compute-discount-amount [amount user-name user-discounts min-charge]
+   (let [discount-percent (user-discounts user-name)]
+     ;; we're returning  this function; it can use discount-percent
+     (fn [amount]
+       (let [discount (* amount discount-percent)
+             discounted-amount (- amount discount)]
+         (if (> discounted-amount min-charge)
+           discounted-amount
+           min-charge)))))
+
+ ;; Get a price function for Felicia
+ (def compute-felicia-price (mk-discount-price-f "Felicia" user-discounts 10.0))
+ ;; ... do some other stuff, then compute a price
+ (compute-felicia-price 20.0)
+ #+end_src
+
+*** Variations on the Theme: =if-let= and =when-let=
+
+ An =if-let= doesn't have a condition.  It has a binding, and it conditionally
+ executes when that binding is truthy (and non-nil, non-false value).  It's
+ good for avoid =nil='s.  It still takes an optional final expression to
+ evaluate to when the binding is falsy.
+
+ #+begin_src clojure
+ (def anonymous-book {:title "Sir Gawain and the Green Knight"})
+ (def with-author {:title "Once and Future King" :author "White"})
+
+ ;; Let's say we need a function to return the uppercase author name
+ (defn uppercase-author [book]
+   (if-let [author (:author book)]
+     (.toUpperCase author)
+     "ANONYMOUS"))
+
+ ;; there's also when-let, with no optional false value, just =nil=
+ (defn uppercase-author [book]
+   (when-let [author (:author book)]
+     (.toUpperCase author)))
+ #+end_src
+
+*** In the Wild
+
+ #+begin_src clojure
+ ;; code from Ring to parse parameters
+ (defn parse-params [params encoding]
+   (let [params (codec/form-decode params encoding)]
+     (if (map? params) params {})))
+
+ ;; also from Ring, if there is a query string, pull out the params
+ ;; otherwise specify empty maps for params and query-params
+ (defn assoc-query-params
+   "Parse and assoc parameters from the query string
+    with the request."
+   [request encoding]
+   (merge-with merge request
+     (if-let [query-string (:query-string request)]
+       (let [params (parse-params query-string encoding)]
+         {:query-params params, :params params})
+       {:query-params {}, :params {}})))
+
+ ;; here's a large =let= expression from Incanter
+ ;; notice how =if= is just another expression that can be embedded in an
+ ;; expresion, and the neat way it uses =or= to set values or choose defaults
+ ;; it show that if you have an intricate set of step-by-step values to compute
+ ;; you can do it in a =let= and bind intermediate values to descriptive names
+ (let [opts (if options (apply assoc {} options) {})
+       data (or (:data opts) $data)
+       _x (data-as-list x data)
+       nbins (or (:nbins opts) 10)
+       theme (or (:theme opts) :default)
+       density? (true? (:density opts))
+       title (or (:title opts) ​""​)
+       x-lab (or (:x-label opts) (str ​'x​))
+       y-lab (or (:y-label opts)
+                 (​if​ density? ​"Density"​ ​"Frequency"​))
+       series-lab (or (:series-label opts) (str ​'x​))
+       legend? (true? (:legend opts))
+       dataset (HistogramDataset.)]
+
+  ​ ;; Do something heroic with x-lab and density?​
+  ​ ;; and title and...​
+   )
+ #+end_src
+
+*** Staying Out of Trouble
+
+ Keep in mind that values bound by a =let= are only available in the body of
+ the =let=.  Also keep in mind that an inner =let= can mask a binding in an
+ outer =let=.  You can even override a value defined earlier in the same =let=.
+
+** Def, Symbols, and Vars
+*** A Global, Stable Place for Your Stuff
+
+ =def= is for longer-lasting, more stable name-to-value bindings.  A binding
+ created with =def= will last until either you change it or the program
+ terminates.  A =def= binds a symbol to a value.  In Clojure, a symbol is a
+ real object that takes up bytes in memory.  Symbols are like keywords, except
+ where keywords always evaluate to themselves, symbols are typically bound
+ to some other value.  You can prevent evaluation of a symbol by preceding it
+ with a single quote: ='author=.
+
+*** Bindings Are Things Too
+
+ The bindings between symbols and values are also ordinary values.  When you
+ evaluate a =def=, Clojure creates a /var/ to represent the binding between
+ symbol and value.  You can think of a /var/ as having two slots, one for a
+ symbol and one for a value.  You can also get at a var by preceding the
+ symbol with #' like =#'author=.  So when you are dealing with a =def=, you are
+ dealing with three separate values: the symbol, the value, and the var that
+ binds them together.
+
+ #+begin_src clojure
+ (def author "Austen")
+ (def the-var #'author)  ; the value of the-var is now a var
+ (.get the-var)          ; Get the value of the var: "Austen"
+ (.-sym the-var)         ; Get the symbol of the var: author
+ #+end_src
+
+*** Varying Your Vars
+
+ We can =def= and re-=def= our vars.  This is for productivity.  Most Clojure
+ happens at a REPL, and you might need to bind a value to a symbol for a little
+ while and then redefine that symbol to another value.  In production code,
+ you should =def= your vars once and leave them alone.
+
+ If you need to temporarily change the value of a =def=, you can use =binding=.
+ It looks a lot like =let= but it will temporarily set the symbols with the
+ supplied values as it evaluates the expressions in its body.  You should
+ =def= your variable as dynamic if you plan to use it with =binding=, like
+ =(def ^:dynamic *debug-enabled* false)=.  It is also a convention in Clojure
+ that dynamic var names should begin and end with * (earmuffs).  Dynamic vars
+ require a little more overhead, so you should use them judiciously.
+
+ You can also use =set!= to change the value of a dynamic variable within
+ a binding.  Speaking of dynamic vars, this brings up dynamic vars in the REPL
+ there is *1, *2, and *3, bound to the last, the second-to-last, and the
+ third-to-last result of evaluation by the REPL.  There is also *e, bound to
+ the last exception encountered in the REPL.  There's no real reason to =set!=
+ those since they're set automatically, but they are useful.
+
+ #+begin_src clojure
+ ;; if we plan to use a var in binding, we should declare it dynamic
+ (def ^:dynamic *debug-enabled* false)
+
+ (defn debug [msg]
+   (if *debug-enabled*
+     (println msg)))
+
+ ;; the value in the binding persists to the called function in the body
+ ;; any function called by some-troublesome-function will also see the
+ ;; new temporary value for *debug-enabled*
+ (binding [*debug-enabled* true]
+   (debug "Calling that darned function")
+   (some-troublesome-function-that-needs-logging)
+   (debug "Back from that darned function"))
+ #+end_src
+
+*** Staying Out of Trouble
+
+ Don't try to use vars as regular variables.  Clojure has other, better tools
+ for modeling changing state in the world.  Use vars to weave parts of your
+ program together with intention revealing names.  =def= and =defn= your values
+ and functions and /leave them alone/.  You should not be redefining a variable
+ or using =binding= very often.  Also note that =let= does not create actual
+ vars, so you can't refer to a value bound in a let with the #' syntax to
+ access its var.
+
+*** In the Wild
+
+ #+begin_src clojure
+ ;; these are from Clojure boot up, it is before defn is defined
+ (def second (fn second [x] (first (next x))))
+ (def ffirst (fn ffirst [x] (first (first x))))
+
+ ;; dynamic vars are harder to find, but here's *print-length*
+ ;; it defaults to nil, but you can override that in a binding
+ (def ^:dynamic
+  ^{:doc "*print-length* controls how many items of each collection the
+   printer will print. If it is bound to logical false, there is no
+   limit. Otherwise, it must be bound to an integer indicating the maximum
+   number of items of each collection to print. If a collection contains
+   more items, the printer will print items up to the limit followed by
+   '...' to represent the remaining items. The root binding is nil
+   indicating no limit."
+    :added "1.0"}
+  *print-length* nil)
+
+ ;; your code is ran by Clojure like this automatically
+ (binding [*print-length* nil]
+   (run-your-code))
+ ;; so you can use =set!= to override the value of *print-length*
+ (def books ["Emma" "2001" "Jaws" "Oliver Twist"])
+ (set! *print-length* 2)
+ books
+ ["Emma" "2001" ...]
+ #+end_src
+
+** Namespaces
+*** A Place for Your Vars
+
+ vars live in /namespaces/.  A Clojure namespace conceptually is just a big
+ lookup table of vars, indexed by their symbols.  There's always a current
+ namespace and that's where new definitions with =def= are registered.
+ When Clojure starts, it makes a fresh namespace called =user= and makes it
+ the current namespace.
+
+ You can always create a new name space with =ns=.
+ =ns= creates a new namespace and makes it the current namespace.  If you
+ supply =ns= with the name of an existing namespace, it will skip creation and
+ just switch to the given namespace.
+
+ By default, the vars in one namespace are completely separate from the vars
+ in another.  When you need a var from another namespace, you can access it
+ using a /fully qualified symbol.  To write a full qualified symbol you start
+ with the namespace follow it with a slash, and follow that with the symbol name.
+
+ #+begin_src clojure
+ (ns pricing)             ; create pricing namespace
+ (def discount-rate 0.05) ; define pricing/discount-rate
+ (ns user)                ; switch back to user
+ (pricing/discount-rate)  ; -> 0.05  accessing pricing/discount-rate from user
+ #+end_src
+
+*** Loading Namespaces
+
+ You need to make sure a namespace is loaded before you try to use it.  Your
+ Clojure install comes with =clojure.data=.  It has the function =diff= that
+ compares two data structures and tells you which values are only in the first,
+ which are only in the second, and which are in both.  To load =clojure.data=
+ you =require= it.
+
+ #+begin_src clojure
+ (def literature ["Emma" "Oliver Twist" "Possession"])
+ (def horror ["It" "Carrie" "Possession"])
+
+ (require 'clojure.data)
+ (clojure.data/diff literature horror)
+	 [[​"Emma"​ ​"Oliver Twist"​] [​"It"​ ​"Carrie"​] [nil nil ​"Possession"​]]
+ #+end_src
+
+*** A Namespace of Your Own
+
+ Imagine we started a new project with =lein new app blottsbooks=.  Then in
+ $PROJECT_ROOT/src/blottsbooks/core.clj it starts with a namespace declaration.
+ =(ns blottsbooks.core (:gen-class))=.  The correspondence between directory
+ and filename and namespace name is required.  =blottsbooks.core= namespace
+ lives in /src/blottsbooks/core.clj.  If we wanted to add a pricing namespace,
+ we would put it in /src/blottsbooks/pricing.clj and call it
+ =blootsbooks.pricing=.
+
+ If you have any dashes (-) in your namespace name, they
+ are converted to underscores (_) when looking for the matching filename.  So
+ =blottsbooks.current-pricing= livings in /src/blottsbooks/current_pricing.clj.
+
+ You can include the =:require= keyword in an =ns= declaration to require while
+ declaring the namespace.  Often we only use =require= when working at the REPL
+ and we do other =require='ing through the keyword when declaring our namespace.
+ Note that when using =require= you must quote the argument, like
+ =(require 'clojure.data)=, but when using =:require= you do not.  You can use
+ =:as= and =:refer= to modify how =:require= loads the namespace.  With =:as=
+ you can give it an alias to access it by.  With =:refer= you can make certain
+ vars available without a namespace.  You can also use =:as= and =:refer= with
+ =require=, like =(require '[clojure.data :as cd])=.  In both cases, it is bad
+ practice to overuse =:refer=.  But you could do
+ =(require '[blottsbooks.pricing :refer [discount-price]]= to access
+ =discount-price= without a namespace prefix.  =:refer= will overwrite functions
+ of the same name in the current namespace.  There's also =:refer :all= which
+ you should also try not to use.
+
+ #+begin_src clojure
+ (ns blottsbooks.core
+   (:require blottsbooks.pricing)
+   (:gen-class))
+
+ (defn -main []
+   (println
+     (blottsbooks.pricing/discount-price
+       {:title "Emma" :price 9.99})))
+
+ ;; we could have giving blottsbooks.pricing an alias
+ (ns blottsbooks.core
+   (:require [blottsbooks.pricing :as pricing])
+   (:gen-class))
+ pricing/discount-price    ; -> value of blottsbooks.pricing/discount-price
+ #+end_src
+
+*** Namespaces, Symbols, and Keywords
+
+ =*ns*= always contains the current namespace.  You can lookup any existing
+ namespace with =(find-ns 'user)=.  You can discover all the things defined
+ in a namespace with =(ns-map (find-ns 'user))= or just =(ns-map *ns*)= to see
+ what's defined in the current namespace.  You have to =require= the namespace
+ before you use =find-ns= on it.  So you can't do
+ =(ns-map (find-ns 'clojure.data))= unless you've first done
+ =(require 'clojure.data)=.  You don't have to use =find-ns= with =ns-map=, so
+ you could just do =(ns-map 'clojure.data)=.
+
+ The namespace is part of the symbol in a fully qualified symbol name.  You
+ can get just the namespace with =(namespace 'pricing/discount-print)=.  Keywords
+ have room for a namespace too, like =:blottsbooks.pricing/author=, which can
+ be automatically filled in my just double the colon up front =::author=.
+ Adding a namespace to a keyword can help prevent collisions, but in practice,
+ most keywords go without namespace.
+
+*** Adding Dependencies to Leiningen
+
+ If you want to use another project, you need to add it to the =:dependencies=
+ section of $PROJECT_ROOT/project.clj.
+
+ #+begin_src clojure
+ ;; blottsbooks/project.clj
+ (defproject blottsbooks "0.1.0-SNAPSHOT"
+   :description "FIXME: write description"
+   :url "http://example.com/FIXME"
+   :license {:name "Eclipse Public License"
+             :url "http://www.eclipse.org/legal/epl-v10.html"}
+   :dependencies [[org.clojure/clojure "1.10.0"]
+                  [korma "0.4.0"]]
+   :main ^:skip-aot blottsbooks.core
+   :target-path "target/%s"
+   :profiles {:uberjar {:aot :all}})
+
+ ;; now you can start a repl with "lein repl" and require korma
+ ;; lein starts you in the project core namespace instead of user
+ blottsbooks.core=> (require '[korma.db :as db])
+ ;; now refer to db/whatever from korma.db
+ #+end_src
+
+*** In the Wild
+
+ #+begin_src clojure
+ ;; after creating a namespace, Clojure automatically does the following:
+ (require '[clojure.core :refer :all])
+ ;; that's why we don't need to say clojure.core/println or clojure.core/first
+ ;; all these functions live in /src/clojure/core.clj of the clojure project.
+
+ ;; you can do multiple requires in a single namespace definition
+ ;; you can also put a docstring on a namespace
+ (ns my.ns.example
+   "This is a docstring, FYI :D"
+   {:author "John Doe"
+    :last-update-date "23-10-2017"}
+   (:require [clojure.string :as str]
+             [com.example.httplib :as httplib]
+             [com.example.otherlib :as otherlib]))
+   (:import [java.util Date Random])
+ #+end_src
+
+*** Staying Out of Trouble
+
+ Their is no hierarchy of namespaces.  As far as Clojure is concerned,
+ =clojure.core= and =clojure.data= have no relation.
+
+ Also note that =require= won't reload a namespace that is already loaded, which
+ is what you want in production, but not development.  You need to add the
+ =:reload= keyword to require to always reload an existing namespace.
+ =(require :reload '[blottsbooks.pricing :as pricing])=.  If you change the name
+ of a function and then reload, you'll still have the old name hanging around,
+ unless you do =(ns-unmap 'blottsbooks.pricing 'old-name)= first.
+
+ Note, =:reload= reloads everything in the namespace.  If there is slow code
+ or code with side effects that you only want to run once, you can define it
+ with =defonce= instead of =def=.  If you change something defined with
+ =defonce= and need to reload it, you can =(ns-unmap 'namespace 'def-once-name)=
+ and then =:reload= the namespace.
+
+* Part 2 - Intermediate
+** Sequences
+*** One Thing After Another
+
+The generic collection wrapper in Clojure is the /sequence/.  This is why
+=count= works with vectors, lists, maps, and sets.  A /sequence/ is the
+list looking return type of =rest=.  To wrap your collection in a sequence,
+just use =seq=.  Calling =seq= on a sequence is a no-op.  =seq= will return
+=nil= when given an empty collection.  The /empty sequence becomes nil/
+behavior is useful since =nil= is a falsy value that can signify an empty
+collection.
+
+*** A Universal Interface
+
+You can use =first= and =rest= or =first= and =next= to get at elements in
+a sequence.  The difference between =next= and =rest= is that while =rest=
+of an empty sequence is an empty sequence, =next= of an empty sequence is
+=nil=.  Most of the time =rest= works fine, but sometimes you want a =nil=
+at the end of your collection.
+
+=cons= will tack a new element on the front of your sequence.  =first=,
+=rest=, =next=, and =cons= are pretty much all you can do with a sequence.
+(Well except all the library functions that work on sequences...)
+=rest=, =next=, and =cons= also always return sequences, so sequences are
+good to know about!
+
+#+begin_src clojure
+;; using operations available on sequences, it is easy to rewrite count
+(defn my-count [col]
+  (let [the-seq (seq col)]
+    (loop [n 0 s the-seq]
+      (if (seq s)
+        (recur (inc n) (rest s))
+        n))))
+#+end_src
+
+*** A Rich Toolkit
+
+The real power of sequences lies in the mountain of useful library functions
+that take any type of collection, convert it to a sequence, then do something
+interesting with it.  If you have a seqable collection (a collection that you
+can use with =seq=) and it is in the wrong order, you can =sort= it.  Likewise
+for =reverse=.  Sequences themselves are seqable, so you can feed the output
+of =sort= into =reverse= to get your titles sorted in the other direction.
+
+=partition= chops up a big sequence into a sequence of smaller sequences.
+=interleave= weaves two sequences together into one.  And =interpose= sprinkles
+a separator value between the elements of a sequence.  =sort=, =reverse=,
+=parition=, =interleave=, and =interpose= all turn a collection into a seq
+and then work on it with =first=, =rest=, or =cons=.  They return results
+that are seqs too.
+
+#+begin_src clojure
+(def titles ["Jaws" "Emma" "2001" "Dracula"])
+(sort titles) ; -> ("2001" "Dracula" "Emma" "Jaws")
+(reverse titles) ; -> ("Dracula" "2001" "Emma" "Jaws")
+(reverse (sort titles)) ; -> ("Jaws" "Emma" "Dracula" "2001")
+(partition 2 titles) ; -> (("Jaws" "Emma') ("2001" "Dracula"))
+
+(def titles ["Jaws" "2001"])
+(def authors '("Benchley" "Clarke"))
+(interleave titles authors) ; -> ("Jaws" "Benchley" "2001" "Clarke")
+
+(def scary-animals ["Lions" "Tigers" "Bears"]
+(interpose "and" scary-animals) ; -> ("Lions" "and" "Tigers" "and" "Bears")
+#+end_src
+
+*** Made Richer with Functional Values
+
+The real power of sequences comes in to play when you mix in the
+/functions are values/ idea.  Then we get =filter=, =some=, =map=, =for=,
+and =reduce=.
+
+=filter= takes a predicate and a seqable collection and gives you back a
+sequence of items that meet the predicate.  You will get an empty seq back
+if nothing satisfies the predicate.
+
+=some= takes a predicate and a seqable collection and returns the first item
+that passes the predicate or =nil= if it cannot find anything.  =some= works
+great with =if= tests, because =nil= is falsy.
+
+=map= takes a function and a seqable collection and returns a sequence with
+the function applied to each element of the collection.  =map= often works
+well if you =comp= (compose) a series of functions to be the argument to =map=.
+
+=for= builds new sequences from old sequences.
+
+=reduce= takes a function and a seqable collection and applies the function to
+pairs of elements, often to return a single summary value.
+
+#+begin_src clojure
+(filter neg? '(1 -22 3 -99 4 5 6 -77)) ; -> (-22 -99 -77)
+(some neg? '(1 -22 3 -99 4 5 6 -77))   ; -> -22
+(some neg? '(1 2 3 4))                 ; -> nil
+
+(def some-numbers [1, 53, 811])
+(def doubled (map #(* 2 %) some-numbers)) ; double has twice all our numbers
+(map :title books)    ; to just get a seq of titles from a list of book maps
+(map (fn [book] (count (:title book))) books) ; returns a seq of title lengths
+(map (comp count :title) books)               ; does the same with comp
+(for [b books] (count (:title b)))            ; does the same with for
+;; a for loop sets b to each value in books and collects the results of the body
+(reduce + 0 some-numbers)   ; adds up some-numbers, from initial value 0
+(reduce + some-numbers)     ; does the same, but uses the first elt as initial
+
+(defn hi-price [hi book]
+  (if (> (:price book) hi)
+    book
+    hi))
+(reduce hi-price 0 books)   ; returns the highest priced book
+#+end_src
+
+*** Composing a Solution
+
+#+begin_src clojure
+(​def​ books
+  [{:title ​"Deep Six"​ :price 13.99 :genre :sci-fi :rating 6}
+   {:title ​"Dracula"​ :price 1.99 :genre :horror :rating 7}
+   {:title ​"Emma"​ :price 7.99 :genre :comedy :rating 9}
+   {:title ​"2001"​ :price 10.50 :genre :sci-fi :rating 5}])
+;; imagine we want the top 3 rated books like "Emma // Dracula // Deep Six"
+;; sort-by will sort the list lowest to hightest rating, then reverse will
+;; reverse that.  then we can =take= 3 items off the sequence and we have
+;; the top 3.  but then we map :title across that to get just the titles
+;; and interpose " // " between each title, but then we still have a seq
+;; like ("Emma" " // " "Dracula" " // " "Deep Six"), so we want to apply
+;; str with those arguments
+(defn format-top-titles [books]
+  (apply str
+    (interpose " // "
+      (map :title (take 3 (reverse (sort-by :rating books)))))))
+(format-top-titles books)  ; -> "Emma // Dracula // Deep Six"
+#+end_src
+
+*** Threading Macros
+
+Clojure provides =->= and =->>=, the thread first and thread last macro.
+It allows you to feed data through a series of transformations from top
+to bottom rather than having to read a series of nested function calls in
+reverse order.  =->= feeds your data as the first argument and =->>= as the
+last argument.
+
+#+begin_src clojure
+;; here is the last example re-written with ->>
+(defn format-top-titles [books]
+  (->>
+    books
+    (sort-by :rating)
+    reverse
+    (take 3)
+    (map :title)
+    (interpose " // ")
+    (apply str)))
+#+end_src
+
+*** Other Sources of Sequences
+
+You can turn a lot of things into sequences other than maps, vectors, lists,
+and sets.  =line-seq= will turn the contents of a file into a sequence.  It
+turns the file into a sequence of strings, one string per line.
+
+Let's say instead of a file you had a string and you want to pull out the bits
+that match a regular expression.  Clojure has built in regex literals that
+are written as a string prefixed with #.  =re-matches= will tell you if a regex
+matches a string.  =re-seq= will generate a sequence of strings that match
+a regex in a given string.
+
+#+begin_src clojure
+(require '[clojure.java.io :as io])
+
+;; if we had our authors names in a file named authors.txt, the following
+;; would check to see if an author was listed
+(defn listed-author? [author]
+  (with-open [r (io/reader "authors.txt")]
+    (some (partial = author) (line-seq r))))
+
+; A regular expression that matches Pride and Prejudice followed by anything
+(def re #"Price and Prejudice.*")
+(def title "Pride and Prejudice and Zombies")
+(if (re-matches re title)
+  (println "We have a classic!"))
+
+;; this matches a single word
+(re-seq #"\w+" title) ; -> ("Pride" "and" "Prejudice" "and" "Zombies")
+#+end_src
+
+*** In the Wild
+
+#+begin_src clojure
+;; code from Overtone that is part of generating a sound envelope
+(map #(+ %1 bias) [0 0 level (* level sustain) 0])
+
+;; this is from ClojureScript
+(defn seq->js-array [v]
+  (str "[" (apply str (interpose ", " (map pr-str v))) "]"))
+#+end_src
+
+*** Staying Out of Trouble
+
+Clojure has large assortment of function to do interesting things with sequences.
+We haven't even mentioned =butlast= (return all but the last element) and
+=zipmap- (build a map from two sequences).  Until your familiar with what is
+available, you'll tend to reinvent the wheel.  If your using =loop= and =recur=
+to move through a sequence one item at a time, there's often and easier way
+to do what your doing.
+
+Also note that when you turn a map into a sequence, it loses the ability to
+look up items by key.  =conj= is a notable function that doesn't return
+sequences.  So you can =conj= and then still use a map.  You can convert your
+map back from a seq with =(into {} sequence-to-transform-back)=.
+
+** Lazy Sequences
+*** Sequences Without End
+
+=repeat= can return an infinite repeated list of a value.  Because they are lazy
+the sequences returned by =repeat= can be infinite.
+
+A /lazy sequence/ is one that waits to be asked before it generates its
+elements.  An /unbounded sequence/ is a lazy sequence that, in theory, can
+go forever.  Not all lazy sequences are unbounded; you can have a three element
+lazy sequence.  But all unbounded sequences are lazy.
+
+=take= is very useful for dealing with unbounded sequences.  It lets you take
+the first N items from the sequence.
+
+#+begin_src clojure
+(def jack "All work and no play makes Jack a dull boy.")
+(def repeated-text (repeat jack))
+(first repeated-text)     ; -> "All work and no play makes Jack a dull boy."
+(nth repeated-text 10)    ; -> "All work and no play makes Jack a dull boy."
+(nth repeated-text 10202) ; -> "All work and no play makes Jack a dull boy."
+(take 20 repeated-text)   ; -> 20x "All work and no play makes Jack a dull boy."
+#+end_src
+
+*** More Interesting Laziness
+
+=cycle= takes a collection and returns a lazy sequence of the items in the
+collection repeated over and over. =(take 7 (cycle [1 2 3]))= returns
+=(1 2 3 1 2 3 1)=.
+
+=iterate= takes a function and a starting values and returns a sequence that
+starts with the starting value, then has the function applied to the starting
+values, then the function applied to the result of applying the function to
+the starting values, etc.  =(def number (iterate inc 1))= let's us define
+all the positive integers.
+
+*** Lazy Friends
+
+=take= itself is lazy, so although it returns the first N items from a sequence,
+it doesn't actually grab anything until you ask for it (by using the result or
+printing it out in the REPL).
+=(def many-nums (take 1000000000 (iterate inc 1)))= doesn't immediately
+generate a billion item collection in memory.  So
+=(println (take 20 (take 1000000000 (iterate inc 1))))= prints out the first
+20 numbers and is very fast.
+
+=map= is lazy, and so is =interleave=.  So we can safely map across or
+interleave infinite sequences.  =(def evens (map #(*2 %) (iterate inc 1)))=
+then =(take 20 evens)= will give you the first 20 even integers.  And
+=(take 10 (interleave numbers evens))= will give you 10 numbers alternating
+source between numbers and evens.
+
+*** Laziness in Practice
+
+Lazy sequences are the ultimate /pay only for what you use/ programming
+technique.  Below we set ourselves up with an infinite list of books, but
+we only pay the CPU and memory price for however many books we actually use,
+since it is only when we grab something from the sequence that the
+data gets generated.
+
+#+begin_src clojure
+;; Pretend we need a lot of books to test with.  Let's make infinite titles
+(def numbers (iterate inc 1))
+(def titles (map #(str "Wheel of Time, Book " %) numbers))
+;; now infinite authors
+(def first-names ["Bob" "Jane" "Chuck" "Leo"])
+(def last-names ["Jordan" "Austen" "Dickens" "Tolstoy" "Poe"])
+(defn combine-names [fname lname]
+  (str fname " " lname))
+(def authors
+  (map combine-names
+    (cycle first-names)
+    (cycle last-names)))
+;; so now we need infinite books
+(defn make-book [title author]
+  {:author author :title title})
+(def test-books (map make-book titles authors))
+#+end_src
+
+*** Behind the Scenes
+
+The key tool to build a lazy sequence from scratch is =lazy-seq=.  It's like
+=seq= but it holds off on evaluating anything until you start pulling items
+off the sequence it returns.
+
+Under the hood, =lazy-seq= uses macros to wrap what its given in an anonymous
+function that only gets called when it is used.  This /delay to the last
+possible second/ behavior is the key to laziness.
+
+#+begin_src clojure
+;; the real 'repeat' has several arities, but we'll just implement the
+;; infinite version here
+(defn my-repeat [x]
+  (cons x (lazy-seq (my-repeat x))))
+
+;; and we can do iterate
+(defn my-iterate [f x]
+  (cons x (lazy-seq (my-iterate f (f x)))))
+
+;; let's do a lazy map
+(defn my-map [f col]
+  (when-not (empty? col)
+    (cons (f (first col))
+             (lazy-seq (my-map f (rest col))))))
+#+end_src
+
+*** Slurp and Spit
+
+This is an out of place aside about =slurp= and =spit=.  =slurp= is the
+universal /I need to read something/ friend.
+=(slurp "http://russolsen.com/index.html")= will return the text at the URL.
+=(slurp "/tmp/chapter1.txt")= will get the text in chapter1.txt.
+
+=spit= is for writing out.  =(split "/tmp/chapter1.txt" "It was a dark...")=
+will write out the string to the file.
+
+*** Staying Out of Trouble
+
+Be careful that you don't evaluate any infinite sequences at the REPL.  You
+might want to =set!= =*print-length*= when playing with infinite sequences.
+
+You also should be careful to avoid side effects when working with lazy
+sequences, because your code might run at unexpected times.  You can use
+=doall= to force evaluation of a lazy sequence.  =doseq= will also
+evaluate each element of a lazy sequence, but it doesn't try to hold
+on to the whole thing.  =doseq= is a lot like =for=, if =for= wasn't lazy.
+
+*** In the Wild
+
+Laziness is so common, it is probably worth pointing out some things that
+aren't lazy.  =count= realizes its sequence.   So does =sort= and =reverse=.
+
+#+begin_src clojure
+;; from nREPL
+;; repeatedly is like repeat, but it calls a function over and over
+;; this turns a series of side effect-driven message events into
+;; a lazy sequence to be processed by Clojure
+(repeatedly #(transport/recv transport timeout))
+#+end_src
+
+** Destructuring
+*** Pry Open Your Data
+
+The idea here is that we can put a pattern in the left hand side of the
+assignment and let the right hand side match parts of itself against the
+patterns, so =(let [[painter novelist] artists] ...)= extracts the first
+and second elements of the vector artists and binds them to names
+painter and novelist.  This scales too, so we could bind four vector elements
+to names with =(let [[painter novelist composer poet] artists] ...)=.
+
+#+begin_src clojure
+(def artists [:monet :austen])
+;; let's say we want to separate those, we could do this:
+(let [painter (first artists)
+      novelist (second artists)]
+  (println "The painter is:" painter
+           "and the novelist is:" novelist))
+;; destructuring gives us another way to take the vector apart
+(let [[painter novelist] artists]
+  (println "The painter is:" painter
+           "and the novelist is:" novelist))
+#+end_src
+
+*** Getting Less than Everything
+
+If we are only interested in three elements of a four element vector, we only
+have to provide three variables to bind values to.
+=(let [[painter novelist composer] artists]) ...)= assigns the first three
+elements of artists to painter, novelist, and composer, and ignores any
+elements at the fourth spot or beyond.
+
+If we want to ignore some of the leading elements, the convention is to bind
+them to the underscore, which is meant to be an /I don't really care about this/
+symbol name.  =(let [[_ _ composer poet] artists] ...)= binds the third and
+fourth element of artists to composer and poet and ignores the first two
+elements.
+
+Consider =(def pairs [[:monet :austen] [:beethoven :dickinson]])=.  We could
+bind the first value of each vector to a name with
+=(let [[[painter] [composer]] pairs]) ...)=, and we ignore the second element
+in each case.  We could bind the first item of the first pair and second of the
+second with =(let [[[painter] [_ poet]] pairs] ...)=
+
+*** Destructuring in Sequence
+
+Destructuring works with any of Clojure's sequential data types.  Even if we
+are destructuring a list, we use square brackets around our destructuring
+pattern.  The square brackets stand for the delimiter around any sequential
+data type.  You can destructure any Clojure item that can be turned into
+a sequence, so this includes strings.
+
+=(let [[one two] '(:monet :austen :beethoven :dickinson) ...)= gives you
+=:monet= bound to =one= and =:austen= bound to =two=.
+=(let [[c1 c2 c3 c4] "Jane"] ...)= gives you the letters \J, \a, \n, and \e
+bound to =c1=, =c2=, =c3=, and =c4=.
+
+*** Destructuring Function Arguments
+
+Destructuring isn't limited to let.  You can use destructuring to drill into
+the arguments passed to a function.  You can even mix and match normal and
+destructured arguments.
+
+#+begin_src clojure
+;; the first argument is normal, the second tries to match two items
+;; from a vector
+(defn artist-description [shout [novelist poet]]
+  (let [msg (str "Novelist is " novelist
+                 " and the poet is " poet)]
+    (if shout (.toUpperCase msg) msg)))
+(artist-description 't [:austen :dickinson])  ; -> "NOVELIST IS :austen AND..."
+#+end_src
+
+*** Digging into Maps
+
+Destructuring also works with maps.  You can match by key.  You use curly
+braces instead of square brackets, and the key comes after the var when you do
+it the "long way".  Map destructuring is all about keys so the order of the
+symbol/key pairs doesn't matter.  There is a shorthand way to use =:keys= and
+a vector of variable names that match the key names to destructure a map.
+
+#+begin_src clojure
+(def artist-map {:painter :monet :novelist :austen})
+
+;; here is the long way to do it
+(let [{painter :painter writer :novelist} artist-map]
+  ...) ; we have access to the values :monet as painter and :austen as writer
+
+;; this works the same, but has less duplicate naming
+(let [{:keys [painter writer]} artist-map]
+  ...) ; we have :monet as painter and :austen as writer again
+#+end_src
+
+*** Diving into Nested Maps
+
+When using the long form of destructuring with maps, it's always variable then
+key in the pattern, or inner map pattern then key.
+
+#+begin_src clojure
+;; destructuring also works with nested maps
+(def austen {:name "Jane Austen"
+             :parents {:father "George" :mother "Cassandra"}
+             :dates {:born 1775 :died 1817}})
+
+(let [{{dad :father mom :mother} :parents} austen]
+  (println "Jane Austen's dad's name was" dad)
+  (println "Jane Austen's mom's name was" mom))
+
+;; We could get Jane's name and her mother's name, along with birth year
+(let [{name :name
+      {mom :mother} :parents
+      {dob :born} :dates} austen]
+  ...)
+#+end_src
+
+*** The Final Frontier: Mixing and Matching
+
+#+begin_src clojure
+;; you can destructure this map with a vector of maps
+(def author {:name "Jane Austen"
+             :books [{:title "Sense and Sensibility" :published 1811}
+                     {:title "Emma" :publish 1815}]})
+(let [{name :name [_ book] :books} author]
+  (println "The author is" name)
+  (println "One of the author's books is" book))
+
+;; or this vector of maps
+(def authors [{:name "Jane Austen" :born 1775}
+              {:name "Charles Dickens" :born 1812}]
+(let [[{dob-1 :born} {dob-2 :born}] authors]
+  (println "One author was born in" dob-1)
+  (println "The other author was born in" dob-2))
+#+end_src
+
+*** Going Further
+
+When destructuring a map with keys, people tend to use symbols that look
+like the map keys.  The =:keys= form says that you are going with the
+convention of using the keyword names as your local names, so you don't
+have to repeat the key name.  You can even do part of a match with =:keys=
+and the rest without.  =:keys= is a special value that introduces a
+/same symbol as key/ vector for the match.  In a normal match, we don't have
+keys on the left-hand side of the match.
+
+When destructuring with =let=, the original un-destructured map is kept
+around in the variable uses to introduce the map to the match.  With
+function argument deconstruction, you lose that reference to the entire map.
+You can destructure a map while keeping a reference to the original map
+with the =:as= form.
+
+#+begin_src clojure
+(def romeo {:name "Romeo" :age 16 :gender :male}
+(defn character-desc [{:keys [name gender] age-in-years :age}]
+  (str "Name: " name " age: " age-in-years " gender: " gender))
+(character-desc romeo)
+;; -> "Name: Romeo age: 16 gender: :male"
+
+;; this is legal with =let=
+(defn add-greeting [character]
+  (let [{:keys [name age]} character]
+    (assoc character :greeting
+                     (str "Hello, my name is " name " and I am " age "."))))
+
+;; we don't have a variable referring to the full map in functional
+;; destructuring, unless we use :as
+(defn add-greeting [{:keys [name age] :as character}]
+  (assoc character :greeting
+                   (str "Hello, my name is " name " and I am " age "."))))
+#+end_src
+
+*** Staying Out of Trouble
+
+Digging too far into a complex data structure with a single destructuring
+expression is a sure way to make your code confusing.  Also, you cannot use
+destructuring in a =def=, unless you introduce a =let=.
+
+#+begin_src clojure
+(def reader-favs [{:name "Charlie" :fav-book
+                                   {:title "Carrie" :author ["Stephen" "King"]}}
+                  {:name "Jennifer" :fav-book
+                                    {:title "Emma" :author ["Jane" "Austen"]}}]
+;; it is legal to get the full name of the atuhor of the second reader's
+;; favorite book as follows
+(defn format-a-name [[_ {{[fname lname] :author} :fav-book}]]
+  (str fname " " lname))
+
+;; but it's more readable to break it into steps
+(defn format-a-name [[_ second-reader]]
+  (let [author (-> second-reader :fav-book :author)]
+    (str (first author) " " (second author))))
+
+;; destructuring in a =def= through use of =let=
+(def author {:name "Jane Austen" :born 1775})
+(def author-name
+  (let [{n :name} author] n))
+#+end_src
+
+*** In the Wild
+
+#+begin_src clojure
+;; from Korma, this uses =:or= which we haven't seen before
+;; =:or= introduces a map of default values that will be used instead
+;; of =nil= values if the passed in map is missing the given keys
+(defn mysql
+  "Create a database specification for a mysql database.  Opts should include
+   keys for :db, :user, and :password.  You can also optionally set host and
+   port.  Delimiters are automatically set to \"`\"."
+  [{:keys [host port db make-pool?]
+    :or {host "localhost", port 3306, db "", make-pool? true}
+    :as opts}]
+  ;; Do something with host, port, db, make-pool? and opts
+)
+#+end_src
+
+** Records and Protocols
+*** The Trouble with Maps
+
+Maps have two drawbacks which come from their /I can deal with anything/
+flexibility.  First, there is a performance penalty to pay for that flexibility.
+Second, there is a cost in terms of code coherence and documentation.  You
+could have anything in a map, and you don't know what's there without looking
+at it.
+
+*** Striking a More Specific Bargain with Records
+
+Records are like maps with predefined keys.  You have to predefine a record
+type using =defrecord=.
+
+=(defrecord FictionalCharacter[name appears-in author])= defines a record type
+of FictionalCharacter with three fields, one for the character's name, one
+for the fictional work the character appears in, and one for the author.
+Behind the scenes, =defrecord= has created several functions.  In this example,
+we get =->FictionalCharcter= and =map->FictionalCharacter=.
+
+After the record type is defined, there are several ways to create instances
+of it. =->FictionalCharacter= takes values for each of the fields of the
+record in the order they were specified upon definition and gives you back
+a new record instance.  It will print in the REPL like:
+"#records.core.FictionalCharacter{:name "John Watson"
+                                  :appears-in "Sign of the Four"
+                                  :author "Doyle"}"
+Alternately, you could define a character from a map using
+=map->FictionalCharacter=.  Just make sure your map has keyword arguments that
+match the names of the fields in the record.
+
+#+begin_src clojure
+(defrecord FictionalCharacter[name appears-in author])
+
+(def watson (->FictionalCharacter "John Watson" "Sign of the Four" "Doyle"))
+;; alternately, we could define a record from a map
+(def elizabeth (map->FictionalCharacter {:name "Elizabeth Bennet"
+                                         :appears-in "Pride & Prejudice"
+                                         :author "Austen"}))
+#+end_src
+
+*** Records Are Maps
+
+Once you have your record instances, you can treat them just like maps with
+keyword keys.  Any function that works with a map will work with a record.
+You can also use =assoc= to modify the values in your record.  You can also
+associate brand-new, not-in-the-record-type keys in your record instances.
+Extra fields are just extra.  They don't become new record fields or get the
+speed boost of record fields.
+
+#+begin_src clojure
+(:name elizabeth)     ; => "Elizabeth Bennet"
+(:appears-in watson)  ; => "Sign of the Four"
+(count elizabeth)     ; => 3
+(keys watson)         ; => (:name :appears-in :author)
+(def specific-watson (assoc watson :appears-in "Sherlock Holmes"))
+(def more-about-watson (assoc watson :address "221B Baker Street"))
+#+end_src
+
+*** The Record Advantage
+
+Record field access is faster than map key access.  The performance advantage
+is worth considering if your dealing with more than tens of thousands of
+a type.  They also make your code clearer.  You can tell at a glance that
+watson refers to a FictionalCharacter and has at least the three defined
+properties.  You can even use =class= to see what type a record is.  So
+in our examples =(class watson)= would be "user.FictionalCharacter" and we
+could define another record so that =(class watson-2)= was
+"user.SuperComputer".  You can also use =instance?= to see if a value has a
+particular type, like =(instance? FictionalCharcter watson)= is =true=.
+
+Note: =class= and =instance?= are useful tools for poking around in the REPL,
+but you should generally avoid using them in real code.
+
+*** Protocols
+
+A Clojure protocol is a set of /how to behave/ rules expressed in code.
+Imagine instead of just =FictionalCharacter='s, we had an =Employee= record
+type with the three fields =first-name=, =last-name=, and =department=.
+Let's say we had =Employee='s and =FictionalCharacter='s floating around in
+the same program.  Let's say we want a way to treat these two types
+the same when it's convenient.
+
+Here's a protocol that might work for both:
+
+#+begin_src clojure
+(defprotocol Person
+  (full-name [this])
+  (greeting [this msg])
+  (description [this]))
+#+end_src
+
+This defines a protocol called =Person= and creates three new functions:
+=full-name=, =greeting=, and =description=.  The functions are all polymorphic,
+so what they do depends on the /type/ of their first argument.  Currently,
+they do nothing.  They need to be implemented for each record type.
+
+#+begin_src clojure
+(defrecord FictionalCharacter[name appears-in author]
+  Person
+  (full-name [this] (:name this))
+  (greeting [this msg] (str msg " " (:name this)))
+  (description [this]
+    (str (:name this) " is a character in " (:appears-in this))))
+
+(defrecord Employee [first-name last-name department]
+  Person
+  (fullname [this] (str first-name " " last-name))
+  (greeting [this msg] (str msg " " (:first-name this)))
+  (description [this]
+    (str (:first-name this) " works in " (:department this))))
+#+end_src
+
+Each method must have at least one parameter, =this= which refers to the record
+we're operating on.  They can also take other parameters.  =this= must be the
+first parameter.  Now we can define some instances of our records and use our
+Protocol related functions.
+
+#+begin_src clojure
+(def sofia (->Employee "Sofia" "Diego" "Finance"))
+(def sam (->FictionalCharacter "Sam Weller" "The Pickwick Papers" "Dickens"))
+(full-name sofia)        ; -> "Sofia Diego"
+(description sam)        ; -> "Sam Weller is a character in The Pickwick Papers"
+(greeting sofia "Hello!" ; -> "Hello! Sofia"
+;; we can still use our keywords to access other fields of the record
+(:author sam)            ; -> "Dickens"
+#+end_src
+
+*** Decentralized Polymorphism
+
+You can define and implement protocols after the fact.  Let's imagine we have
+an application with =Employee=, =FictionalCharacter=, and =SuperComputer=
+record types, and we need to make a marketing slogan for all three.  We can
+start by defining a =Marketable= protocol.  We don't have to go back and
+modify the record definitions to implement the protocol; we can use
+=extend-protocol= to implement the protocol for existing types separate
+from their type definitions.  You can also extend a protocol to types that
+aren't records, like String.  So this makes protocols and records very
+flexible.  You can cook up new protocols as you need them and use
+=extend-protocol= to implement your new protocol on any existing type
+without touching the original definition of that type.
+
+#+begin_src clojure
+(def protocol Marketable
+  (make-slogan [this]))
+
+(extend-protocol Marketable
+  Employee
+    (make-slogan [e] (str (:first-name e) " is the BEST employee!"))
+  FictionalCharacter
+    (make-slogan [fc] (str (:name fc) " is the GREATEST character!"))
+  SuperComputer
+    (make-slogan [sc] (str "This computer has " (:no-cpus sc) " CPUs!")))
+
+;; we can also extend the protocol to String and Boolean
+(extend-protocol Marketable
+  String
+    (make-slogan [s] (str \" s \" " is a string!  WOW!"))
+  Boolean
+    (make-slogan [b] (str b " is one of the two surviving Booleans!")))
+#+end_src
+
+*** Record Confusion
+
+Records are Clojure's approach to building a structured, composite data
+type with predefined fields.  Similarly, protocols are Clojure's take on
+type-based polymorphism - the idea that we can have a single operation
+implemented different ways by different types.  So it's no surprise they
+look similar to classes and object (records) and abstract types or
+interfaces (protocols) from the object-oriented world.
+
+There are some big difference.  Record types are still immutable.  They also
+don't do inheritance.  Also, records and protocols are independent of each
+other in time and space.  At any moment you could decide to implement some
+protocol on any record type.  It's also of note that many significant programs
+get along fine without records and protocols.  Start without them, with normal
+maps and functions, and see how things go.
+
+Both protocols and multimethods are approaches to polymorphism.  However, each
+multimethod is a standalone operation, where each protocol is a bundle of
+related operations.  Multimethods support completely arbitrary dispatch, and
+protocols distance based on type.  If you don't need all the generality of
+a multimethod, you might be better off using a protocol.
+
+*** In the Wild
+
+#+begin_src clojure
+;; from the Clostache templating library, you need a template string and
+;; a map of values to make Clostach work
+(require 'clostache.parser)
+
+(def template "The book {{title}} is by {{author}}")
+
+(def values {:title "War and Peace" :author "Tolstoy"})
+
+;; you use =render= to populate the template with your values
+(clostache.parser/render template values)
+;; -> "The book War and Peace is by Tolstoy"
+
+;; we can conditionally include or omit parts of the output with sections
+(def data {:author "Tolstoy" :show-author true})
+
+(def section-templ "{{#show-author}} by {{author}} {{/show-author}}")
+
+;; if you dig into the source, sections are support by record values
+(defrecord Section [name body start end inverted])
+
+;; =render-section= treats the =section= value like any map
+(defn- render-section
+  [section data partials]
+    (let [section-data ((keyword (:name section)) data)]
+      (if (:inverted-section)
+        (if (or (and (seqable? section-data)
+                     (empty? section-data))
+                (not section-data))
+            (:body section))
+        ; Lots of code omitted)
+)))
+
+;; the Component library has a great example of a protocol
+(defprotocol Lifecycle
+  (start [component]
+    "Begins operation of this component.  Synchronous, does not return until
+     component is started.  Returns an updated version of this component.")
+  (stop [component]
+    "Ceases operation of this component.  Synchronous, does not return until
+     the component is stopped.  Returns an updated version of this component."))
+
+;; =reify= takes a protocol name and some method implementations and creates
+;; a one-off implementation of that protocol
+(def test-component (reify Lifecycle
+                      (start [this]
+                        (println "Start!")
+                        this)
+                      (stop [this]
+                        (println "Stop!")
+                        this)))
+;; =reify= would allow you to implement just part of the protocol, for example
+;; if we only wanted to implement the =start= method, that would be fine.
+;; if someone called =stop= on it, the component would throw an exception.
+#+end_src
+
+*** Staying Out of Trouble
+
+The easier mistake to make with a record is to attempt to get a value into a
+field by miss.
+
+#+begin_src clojure
+;; this looks plausible
+(map->FictionalCharacter {:full-name "Elizabeth Bennet"
+                          :book "Pride & Prejudice"
+                          :written-by "Austen"})
+;; but the fields for FictionalCharacter are name, appears-in, and author
+;; so this creates a six field record with all the record fields set to =nil=
+#+end_src
+
+You can run into the same type of problem trying to =assoc= fields in a record
+and using the wrong key.
+
+You also have to watch it with protocols, because it is obvious that you're
+binding the name of the protocol, but you're also binding the functions that
+make up the protocol to names in your namespace.  The compiler will warn you
+that you're overwriting a function name.  You also need to watch for protocols
+with functions of the same name, because they'll overwrite each other.  When
+in doubt, put each protocol in its own namespace.
+
+Records also have a more generic cousin called /types/ that are defined with
+=deftype=.  A type doesn't inherit all the map-like behavior that a record
+does.  You have to define all its behavior.  Types are a language feature
+you may never use.
+
+** Tests
+*** Spotting Bugs with clojure.test
+
+In a Clojure project, you normally puts tests in the tests subdirectory and
+put the tests for a namespace in a parallel -test module.  So =inventory.core=
+has an =inventory.core-test= namespace of tests.  In test namespaces, it is
+standard to =:refer :all= of the =clojure.test= namespace for use.
+
+You can define tests with =deftest=.  You do assertions with =is= and =are=.
+You supply =is= with an expression, and if it is truthy the test passes.  If
+not, it fails.   =deftest= binds a no argument function to the test name that
+you can call to run the test.  From our REPL, we could
+=(require '[inventory.core-test :as ct])= then =(ct/test-finding-books)=.
+It will quietly return =nil= on success, or give an informative exception on
+failure.  You can have multiple =is= checks in one test.  You can also
+organize your tests into sub-tests with =testing=.
+
+#+begin_src clojure
+;; First we need code to test.  In project/src/inventory/core.clj
+(ns inventory.core)
+
+(defn find-by-title
+  "Search for a book by title, where title is a string and books is a
+   collection of books maps, each of which must have a :title entry"
+  [title books]
+  (some #(when (= (:title %) title) %) books))
+
+(defn number-of-copies-of
+  "Return the number of copies in inventory of the given titles, where title
+   is a string and books is a collection of book maps, each of which must
+   have a :title entry"
+  [title books]
+  (:copies (find-by-title title books)))
+
+;; now our test code in project/tests/inventory/core_test.clj
+(ns inventory.core-test
+  (:require [clojure.test :refer :all])
+  (:require [inventory.core :as i]))
+
+;; this can be our test inventory
+(def books [{:title "2001"   :author "Clarke" :copies 21}
+            {:title "Emma"   :author "Austen" :copies 10}
+            {:title "Misery" :author "King"   :copies 101}])
+
+(deftest test-finding-books
+  (is (not (nil? (i/find-by-title "Emma" books)))))
+
+(deftest test-basic-inventory
+  (testing "Finding books"
+    (is (not (nil? (i/find-by-title "Emma" books))))
+    (is (nil? (i/find-by-title "XYZZY" books))))
+  (testing "Copies in inventory"
+    (is (= 10 (i/number-of-copies-of "Emma" books)))))
+#+end_src
+
+*** Testing Namespaces and Projects
+
+=clojure.test= provides the =run-tests= function to run all the tests in a
+namespace.  =run-tests= without any arguments will run all the tests in the
+current namespace.  You can pass it either a namespace value or a namespace
+name as a symbol and it will run all the tests in that namespace.
+
+You can also run all the tests in all the namespaces of a project from
+the command line with =lein test=.  It even supplies a nice summary of the
+results.
+
+#+begin_src clojure
+(require '[clojure.test :as test])
+
+(test/run-tests)
+(test/run-tests *ns*)
+(test/run-tests 'inventory.core-test)
+#+end_src
+
+*** Property-Based Testing
+
+Property-Based testing lets us state a property that we want to test along with
+a description of the input data for which that property should hold.  The
+=test.check= library helps build these sorts of tests.
+
+=test.check= provides /generators/ that generate more or less random test data
+to help verify properties.  =string-alphanumeric=, for example, can generate
+random alphanumeric strings to use as book titles.  You can pass a generator
+to =sample= and it'll give you the next ten values of the generator.
+
+#+begin_src clojure
+(require '[clojure.test.check.generators :as gen])
+
+(gen/sample gen/string-alphanumeric)
+;; -> ("" "Q" "h" "q" "7" "ap" "6" "fdKMQ" "KcuWd" "h20")
+
+;; you can use =such-that= to modify an existing generator
+;; we want non-empty strings for title and author
+;; and a pos-int greater than 0 for number of copies
+(def title-gen (gen/such-that not-empty gen/string-alphanumeric))
+(def author-gen (gen/such-that not-empty gen/string-alphanumeric))
+(def copies-gen (gen/such-that (complement zero?) gen/pos-int))
+
+;; now we pass these generators to the hash-map generator to make a book
+(def book-gen
+  (gen/hash-map :title title-gen :author author-gen :copies copies-gen))
+
+;; and a vector of books is an inventory
+(def inventory-gen
+  (gen/not-empty (gen/vector book-gen)))
+
+;; this gives us both an inventory and a book from said inventory
+(def inventory-and-book-gen
+  (gen/let [inventory inventory-gen
+            book (gen/elements inventory)]
+    {:inventory inventory :book book}))
+#+end_src
+
+*** Checking Properties
+
+#+begin_src clojure
+;; let's say we wanted to test that each positive integer is smaller
+;; than the next positive integer.  this will generate 50 test cases
+(tc/quick-check 50
+  (prop/for-all [i gen/pos-int]
+    (< i (inc i))))
+
+;; so here's the test for our inventory and book we defined
+;; basically we say For all the inventory/book combinations we care to
+;; generate, looking for a book in the inventory with a given title
+;; should produce a book with that title.
+(tc/quick-check 50
+  (prop/for-all [i-and-b inventory-and-book-gen]
+    (= (i/find-by-title (-> i-and-b :book :title) (:inventory i-and-b))
+       (:book i-and-b))))
+
+;; there is smooth integration of quick-check with clojure.test via
+;; =defspec= from =clojure.test.check.clojure-test= namespace
+(require '[clojure.test.check.clojure-test :as ctest])
+(ctest/defspec find-by-title-finds-books 50
+  (prop/for-all [i-and-b inventory-and-book-gen]
+    (= (i/find-by-title (-> i-and-b :book :title) (:inventory i-and-b))
+       (:book i-and-b))))
+#+end_src
+
+*** Staying Out of Trouble
+
+Traditional unit tests are obvious, but they are also constrained by patience
+and imagination.  Generative tests cover a lot more possibilities.  It is
+a good idea to use both.  A little bit of testing goes a long way.
+
+*** In the Wild
+
+#+begin_src clojure
+;; Clojure has great tests
+;; =are= lets you build parameterized tests
+(deftest test-add
+  (are [x y] (= x y)
+    (+) 0
+    (+ 1) 1
+    (+ 1 2) 3
+    (+ 1 2 3) 6
+
+    (+ -1) -1
+    (+ -1 -2) -3
+    (+ -1 +2 -3) -2
+
+    (+ 1 -1) 0
+    (+ -1 1) 0
+    ;; Much of the test omitted).
+  ))
+
+(deftest test-cons
+  ;; Some of the test omitted
+  (are [x y] (= x y)
+    (cons 1 nil) '(1)
+    (cons nil nil) '(nil)
+
+    (cons \a nil) '(\a)
+    (cons \a "") '(\a)
+    (cons \a "bc") '(\a \b \c)
+
+    (cons 1 ()) '(1)
+    (cons 1 '(2 3)) '(1 2 3)
+
+    (cons 1 []) [1]
+    (cons 1 [2 3]) [1 2 3]
+    ;; More of the test omitted...
+))
+
+(defspec longrange-equal-range 100
+  (prop/for-all [start gen/int
+                 end gen/int
+                 step gen/s-pos-int]
+    (= (clojure.lang.Range/create start end step)
+       (clojure.lang.LongRange/create start end step))))
+#+end_src)
+
+** Spec
+*** This Is the Data You're Looking For
+
+=clojure.spec= is built to validate the data that you pass to your code.  At
+its most basic, a =clojure.spec= is a sort of regular expression facility for
+Clojure data.  In exactly the same way you can use a regular expression to
+express a pattern - perhaps an A followed by any number of Bs - that either
+will or won't match some string, you can use =clojure.spec= to express a
+pattern - perhaps a collection consisting of only numbers - that either will
+or won't match some Clojure data.
+
+Note: spec is well integrated with Clojure, but it is a separate library.
+You'll need to include it as a dependency to use it.  The current version
+of the project is called spec.alpha.
+
+The key function supplied by spec is =valid?=.  It takes a predicate and a
+value and tells you if the value passes the predicate.  You can use
+=clojure.spec/and= to combine several predicates.  There is also a
+=clojure.spec/or= that will allow you to match either /this/ or /that/.
+It requires its arguments in pairs, a keyword followed by a predicate.  The
+keyword is used to give helpful feedback when the spec fails to match.  Both
+=and= and =or= will accept specs rather than just simple predicates.
+
+Also worth mentioning is =clojure.spec/?=, which makes the next spec or
+predicate optional, like =(s/? string?)=.
+
+#+begin_src clojure
+;; Example, we're dealing with book maps like this
+{:title "Getting Clojure" :author "Olsen" :copies 1000000}
+
+;; we could write a function to validate our book map
+(defn book? [x]
+  (and
+    (map? x)
+    (string? (:author x))
+    (string? (:title x))
+    (pos-int? (:copies x))))
+;; but we don't want to do this for all possible data types
+;; so instead let's use spec
+(ns inventory.core
+  (:require [clojure.spec.alpha :as s]))
+
+(s/valid? number? 44)     ; -> true
+(s/valid? number? :hello) ; -> false
+(def n-gt-10 (s/and number? #(> % 10)))
+(s/valid? n-gt-10 1)      ; -> false
+(s/valid? n-gt-10 11)     ; -> true
+;; and can take more than two predicates
+(def n-gt-10-lt-100
+  (s/and number? #(> % 10) #(< % 100)))
+(def n-or-s (s/or :a-number number? :a-string string)?)
+(def n-gt-10-or-s (s/or :greater-10 n-gt-10 :a-symbol symbol)?))
+#+end_src
+
+*** Spec'ing Collections
+
+=clojure.spec/coll-of= verifies something is a collection and takes a predicate
+or spec to verify what it's a collection of.  =clojure.spec/cat= lets you
+specify that /this/ should follow /that/ in a collection.  We can also
+write map specs using =clojure.spec/keys=, which takes a keyword and a vector
+of keys (with the namespace included in the key).  It takes several keywords,
+but =:req-un= means the keywords are required and matching unqualified is fine.
+There is also an =:opt-un= for unqualified keywords that are optional.
+
+#+begin_src clojure
+(def coll-of-strings (s/coll-of string?)) ; matches '("Alice" "in" "Wonderland")
+(def coll-of-n-or-s (s/coll-of n-or-s))   ; matches ["Emma" 1815 "Jaws" 1974]
+;; how about four element collections of alternating strings and numbers
+(def s-n-s-n (s/cat :s1 string? :n1 number? :s2 String? :n2 number?))
+(s/valid? s-n-s-n ["Emma" 1815 "Jaws" 1974])  ; -> true
+;; this will match any map that has :title, :author, and :copies keys
+;; additional keys don't cause problems, but missing any of the three will fail
+(def book-s
+  (s/keys :req-un [:inventory.core/title
+                   :inventory.core/author
+                   :inventory.core/copies]))
+#+end_src
+
+*** Registering Specs
+
+=clojure.spec/def= allows you to register your spec in a JVM-wide spec
+registry, so if anyone wants to know what you're talking about when you say
+"book", it can look it up.  That's why we do things with the full namespace.
+Once a spec is registered, you can use the keyword as a spec.
+
+#+begin_src clojure
+(s/def
+  :inventory.core/book
+  (s/keys
+    :req-un
+    [:inventory.core/title :inventory.core/author :inventory.core/copies]))
+;; Validate a book againt a registered spec
+(s/valid? :inventory.core/book {:title "Dracula" :author "Stoker" :copies 10})
+;; note that ::book is the same as :inventory.core/book when we are in
+;; the inventory.core namespace, so we can refer to our spec as ::book there
+(ns inventory.core)
+(s/def ::book (s/keys :req-un [::title ::author ::copies]))
+#+end_src
+
+*** Spec'ing Maps (Again)
+
+When you specify the keys to a map, =clojure.spec= will try to look up the
+fully qualified keys in the registry.  If it doesn't find a spec registered
+under that key, that's fine.  But if it does, it validates the value
+associated with that key in the map against the spec.
+
+#+begin_src clojure
+(s/def ::title string?)
+(s/def ::author string?)
+(s/def ::copies int?)
+(s/def ::book (s/keys :req-un [::title ::author ::copies]))
+#+end_src
+
+*** Why Doesn't It Match?
+
+To help you find out why a value doesn't match a spec, there is the
+=clojure.spec/explain= function.  It takes the same arguments as =valid?=
+(a predicate or spec and a value).  If the spec matches, =explain= just
+prints "Success!", but if it doesn't, it tells you what val fails which
+predicate.  =explain= prints its results and always returns =nil=.
+
+There is also =clojure.spec/conform= which will tell you about a successful
+match.  If it doesn't match, =conform= just returns the keyword
+=:clojure.spec.alpha/invalid=, but if it does match, =conform= gives
+you a detailed explanation of the match.  For simple specs, this is just
+the matching value, but for a spec with descriptive keywords, it will use
+the keywords to explain the match.  Unlike =explain=, =conform= actually
+returns results rather than printing its findings.
+
+#+begin_src clojure
+;; let's redefine our running example of a book spec
+(s/def ::title string?)
+(s/def ::author string?)
+(s/def ::copies int?)
+(s/def ::book (s/keys :req-un [::title ::author ::copies]))
+
+(s/explain ::book {:author :austen :title :emma :copies 10})
+;; :austen - failed: string? in: [:author] at: [:author] spec: :user/author
+;; :emma - failed: string? in: [:title] at: [:title] spec: :user/title
+#+end_src
+
+*** Function Specs
+
+=clojure.spec/fdef= lets you describe what should go into and come out of a
+function completely separate from the function definition.  There is a
+significant performance penalty for checking function arguments, so it is
+turned off by default.  You can turn it on in testing by using the
+=clojure.spec.test.alpha/instrument= function.
+
+#+begin_src clojure
+(s/def :inventore.core/inventory (s/coll-of ::book))
+
+;; define find-by-title function
+(defn find-by-title
+  [title inventory]
+  (some #(when (= (:title %) title) %) inventory))
+
+;; register a spec for the find-by-title function
+(s/fdef find-by-title
+  :args (s/cat :title ::title
+               :inventory ::inventory))
+
+;; there is a significant performance penalty for checking function arguments
+;; so it is disabled by default.  we can turn it on
+(require '[clojure.spec.test.alpha :as st])
+(st/instrument 'inventory.core/find-by-title)
+;; Now if you call the function with invalid arguments, you'll get a
+;; descriptive exception about the spec failing
+#+end_src
+
+*** Spec-Driven Tests
+
+In spec'ing the arguments for a function, you're providing enough information
+for =test.check= to generate arguments for the function.  Then you can use
+=clojure.spec.test.alpha/check= to quickcheck your function.
+
+#+begin_src clojure
+(defn book-blurb [book]
+  (str "The best selling book " (:title book) " by " (:author book)))
+
+;; we're seeing some new parameters for =fdef=
+;; :ret validates the return value
+;; :fn allows you to provide a function that takes the args and return value
+;; of the function and performs any check on it.  check-return is for that
+(defn check-return [{:keys [args ret]}]
+  (let [author (-> args :book :author)]
+    (not (neg? (.indexOf ret author)))))
+
+(s/fdef book-blurb :args (s/cat :book ::book)
+                   :ret (s/and string? (partial re-find #"The best selling"))
+                   :fn check-return)
+
+(require '[clojure.spec.test.alpha :as stest])
+;; it seems by default it runs with 1000 randomly generated books
+(stest/check 'inventory.core/book-blurb)
+#+end_src
+
+*** Staying Out of Trouble
+
+One of the easiest mistakes to make with =clojure.spec= is mistyping a keyword
+while registering a spec.
+
+Also, keep in mind that the =clojure.spec= registry is global to the JVM, so
+other Clojure processes on the same JVM can see registered specs.  The specs
+need to be registered before you can use them.
+
+#+begin_src clojure
+;; example of typo.  in this case, books are required to have a :title keyword
+;; but it could be anything, because we registered our =string?= predicate
+;; to ::titlo not ::title
+(s/def ::author string?)
+(s/def ::titlo string?)   ; Oops
+(s/def ::copies pos-int?)
+(s/def ::book (s/keys :req-un [::title ::author ::copies]))
+(s/fdef find-by-title
+  :args (s/cat :title ::title
+               :inventory ::inventory))
+#+end_src
+
+*** In the Wild
+
+#+begin_src clojure
+;; what do the request maps in Ring contain?
+(s/def :ring/request
+  (s/keys :req-un [:ring.request/server-port
+                   :ring.request/server-name
+                   :ring.request/remote-addr
+                   :ring.request/uri
+                   :ring.request/scheme
+                   :ring.request/protocol
+                   :ring.request/headers
+                   :ring.request/request-method]
+          :opt-un [:ring.request/query-string
+                   :ring.request/body]))
+;; what's in the server-port field?
+(s/def :ring.request/server-port (s/int-in 1 65535))
+(s/def :ring.request/server-name string?)
+(s/def :ring.request/remote-addr string?)
+
+;; =clojure.specs.alpha= contain the specs for Clojure itself
+;; this is the argument spec for defn
+(s/def ::defn-args
+  (s/cat :name simple-symbol?
+         :docstring (s? string?)
+         :meta (s? map?)
+         :bs (s/alt :arity-1 ::args+body
+                    :arity-n (s/cat :bodies (s/+ (s/spec ::args+body))
+                                            :attr (s/? map?)))))
+
+;; and the function spec for defn
+(s/fdef clojure.core/defn
+  :args ::defn-args
+  :ret any?)
+#+end_src
+
+* Part 3 - Advanced
+** Interoperating with Java
+*** A Peek at Java
+
+Java is all about objects.  A Java object is a little bundle of data and code
+that typically represents a /thing/, possibly some real world object like a
+book or else something more abstract like a stack or queue.  The data in
+objects is organized as /fields/, named values attached to the object.  So
+an object representing a book might have fields called =title= and =author=.
+
+Every Java object is associated with a class.  An object's class determines
+what fields and which methods the object carries.  Classes also normally
+specify a /constructor/, code that gets called when a new object is created.
+The constructor initializes fields and gets it ready for use.
+
+Most Java code comes packages in /methods/, which are named, function-like bits
+of code defined inside of classes.  An object representing a book might have
+=publish= and =payRoyalties= methods.
+
+It's generally considered bad practice to expose the data fields of an object
+directly to the outside world.  Typically they are declare private and then
+made accessible through methods like =getTitle= and =getAuthor=.
+
+Java organizes classes into an inheritance tree where every class except the
+one at the top of the tree has a parent, or /superclass/, which supplies
+default methods and fields.  =java.lang.Object= sits at the top of the
+hierarchy and has no superclass.  It is the ancestor of all Java classes.
+A superclass represents a more generalized version of the concept while
+the subclass represents something more specific.
+
+Finally, most classes in Java are organized into /packages/, which are roughly
+analogous to Clojure's namespaces.  Our =Book= class might be in
+=com.russolsen.blottsbooks= package.  The package is parts of the class's
+/fully qualified classname/, which in the example would be
+=com.russolsen.blottsbooks.Book=.  Packages normally are the reverse of
+domain names to make collisions less likely.
+
+#+begin_src java
+// in /src/com/russolsen/blottsbooks/Publication.java
+package com.russolsen.blottsbooks;
+
+public class Publication {
+    private String title;
+    private String author;
+
+    public Publication(String t, String a) {
+        title = t;
+        author = a;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public String getAuthor() {
+        return author;
+    }
+}
+
+// in /src/com/russolsen/blottsbooks/Book.java
+package com.russolsen.blottsbooks;
+
+// Book inherits author and title and the getters for those from Publication
+public class Book extends Publication {
+    private int numberChapters;
+
+    public Book(String t, String a, int nChaps) {
+        super(t, a);
+        numberChapters = nChaps;
+    }
+
+    public int getNumberChapters() {
+        return numberChapters;
+    }
+}
+#+end_src)}
+
+*** Now for Accessing Java from Clojure
+
+Java comes with =java.io.File= to represent files.  You can create an instance
+by passing in a string that is the path to the file.  To create an object
+from the =File= class in Clojure, we called =java.io.File.=, the classname with
+a dot on the end, and pass it the string argument.
+
+Once we have the =File= object, we can call its methods with the Clojure
+=.method-name= syntax, like =(.exists authors)= to call the exists method and
+see if the file exists.  You just stick a "." in front of the method name and
+use it like a Clojure function.
+
+We can also access an object's public fields from clojure.  For example, with
+=java.awt.Rectangle=, you can access =width= or =height= with =(.-width rect)=
+and =(.-height rect))= after defining a =Rectangle= =rect=.  So your accessing
+it like =(.-<field> <instance>)=.
+
+#+begin_src clojure
+(def authors (java.io.File. "authors.txt"))
+
+(if (.exists authors)
+  (println "Our authors file is there.")
+  (println "Our authors file is missing."))
+
+(.setReadable author true)
+(if (.canRead authors)
+  (println "We can read it!"))
+
+(def rect (java.awt.Rectangle. 0 0 10 20))
+(println "Width:" (.-width rect))
+(println "Height:" (.-height rect))
+#+end_src
+
+*** Packages
+
+We've been using fully qualified classnames like =java.io.File= and
+=java.awt.Rectangle=.  To shorten these up, Clojure provides =import=.
+Like =require=, it can be used on it's own, like =(import java.io.File)=, or
+it can appear as a keyword in a namespace declaration.  You would only use it
+on its own in a REPL.  For a single import, no quoting is needed for either
+form.
+
+If you need a number of classes from the same package you can do it with
+a single expression.  You need to quote the list in the REPL =import= form,
+but no quoting is required in the namespace =:import=.
+
+You do not need to import =java.lang=.  Clojure automatically imports it in
+all namespaces.  Thus you can use =String= and =Boolean= without import or
+long names.
+
+#+begin_src clojure
+;; single import
+(import java.io.File)      ; from the REPL
+(ns read-authors
+  (:import java.io.File))  ; in a file
+
+(def authors (File. "authors.txt"))
+
+;; several imports
+(import '(java.io File InputStream))    ; from the REPL
+(ns read-authors
+  (:import (java.io File InputStream))) ; in a file
+#+end_src
+
+*** Class Methods and Fields
+
+In a Clojure program you can access static methods and fields by writing
+=class/field=.  For example, we would refer to File.separator as
+=File/separator=.  You can access static methods just like static fields,
+=class/method=.
+
+#+begin_src clojure
+(java.io.File/separator)
+;; -> "/"
+
+(def temp-authors-file (java.io.File/createTempFile "authors_list" ".txt"))
+#+end_src
+
+*** In the Wild
+
+The syntax for adding a Java dependency to project.clj is the same as for
+adding a Clojure dependency.
+
+#+begin_src clojure
+;; add [com.google.code.gson/gson "2.8.0] to project.clj dependencies
+;; then start lein repl
+(import com.google.gson.Gson)
+(def gson-obj (Gson.))
+(.toJson gson-obj 44)   ; -> "44"
+(.toJson gson-obj {:title "1984" :author "Orwell"})
+;; -> {{\":title\":\"1984\", \":author\":\"Orwell\"}"
+
+;; we can also explore Clojure using Clojure, since it is a Java program
+(def v [1 2 3])
+(.count v)       ; -> 3
+(def c (cons 99 [1 2 3]))
+(class c)        ; -> clojure.lang.Cons
+(.first c)       ; -> 99
+(.more c)        ; -> (1 2 3)
+#+end_src
+
+*** Staying Out of Trouble
+
+=.method= and =class/staticMethod= are special forms; they aren't normal
+functions.  So you cannot bind =.method= to another name with =def=, for
+example.  You can use the built in =memfn= to turn a Java method into a
+Clojure function.  =(.exists)= is not a function, but =(memfn exists)= is.
+
+You don't want to wrap all you're Java interop with Clojure functions by
+using =defn=.  The rule of thumb is only add a wrapper when it adds something,
+otherwise use interop.
+
+Remember, most Java objects are mutable.  Avoid dealing with mutable objects
+when you can.  Try ot turn them into something immutable if at all possible.
+=vec= takes Java style collections and returns a vector.
+
+#+begin_src clojure
+(def files [(File. "authors.txt") (File. "titles.txt")])
+;; files have a .exists method, we can map with it using memfn
+(map (memfn exists) files)   ; -> list of booleans
+
+(def jv-favorite-books (java.util.Vector.))
+(.addElement jv-favorite-books "Emma")
+(.addElement jv-favorite-books "Andromeda Strain")
+(.addElement jv-favorite-books "2001")
+;; oops, I've been mutating!
+(def thankfully-immutable-books (vec jv-favorite-books))
+#+end_src
+
+** Threads, Promises, and Futures
+*** Intro to Threads
+
+A thread is a little computing engine that turns code into action.  Every
+program run on the JVM was pushed along by a thread.  The thread you get
+by default is called the /main thread/ in the Java world.
+
+The Java class =Thread= will take any code that implements =Runnable= and
+run it in a separate thread from the /main thread/.  Clojure functions
+implement =Runnable=.  You create a =Thread= by passing it a runnable.  Then
+you cause it to actually run the code by calling the =start= method on the
+=Thread= object.
+
+#+begin_src clojure
+(defn do-something-in-a-thread []
+  (println "Hello from the thread.")
+  (Thread/sleep 3000)
+  (println "Goodbye from the thread."))
+
+(def the-thread (Thread. do-something-in-a-thread))
+
+;; Now run it
+(.start the-thread)
+;; often we just do (.start (Thread. do-something-in-a-thread))
+#+end_src
+
+*** Race Conditions
+
+Threads are independent engines of computation, so you cannot tell how long
+they will take to complete their code.  If you start two threads in a row, you
+have on way of knowing which will be done first.  This is called a
+/race condition/.  Race conditions can occur anytime you have two or more
+threads making changes to a shared resource.
+
+*** Good Fences Make Happy Threads
+
+Our first line of defense against race conditions is immutable data structures.
+If the threads can't modify the share resource, there is no race condition.
+Dynamic vars are also a non-issue, because they are kept safely separated by
+thread.  Clojure dynamic vars live in thread local storage.
+
+*** Promise Me a Result
+
+Sometimes we want a result back from a thread or just want to know when its
+done.  You can call =join= and your program will pause, returning only when
+the thread you pass =join= is finished.  =join= always returns =nil= though.
+
+A more practical way to get a result out of a thread is a promise.  You can set
+the result of a promise with =deliver=.  Once it is set, there is no changing
+it.  To get the value in your promise, you can =deref= the promise.  Using
+=@= is a short-hand way to =deref= a value.  If you try to =deref= a promise
+with no value, =deref= will pause until there is a value.
+
+#+begin_src clojure
+(def the-result (promise))
+(deliver the-result "Emma")
+(println "The value in my promise is" @the-result) ; same as (deref the-result)
+
+;; new example - promises in use
+(def inventory [{:title "Emma" :sold 51 :revenue 255}
+                {:title "2001" :sold 17 :revenue 170}
+                ;; Lots of other books
+               ])
+
+(defn sum-copies-sold [inv]
+  (apply + (map :sold inv)))
+
+(defn sum-revenue [inv]
+  (apply + (map :revenue inv)))
+
+(let [copies-promise (promise)
+      revenue-promise (promise)]
+  (.start (Thread. #(deliver copies-promise (sum-copies-sold inventory))))
+  (.start (Thread. #(deliver revenue-promise (sum-revenue inventory))))
+  ;; Do some other stuff in main thread
+  (println "The total number of books sold is" @copies-promise)
+  (println "The total revenue is" @revenue-promise))
+#+end_src
+
+*** A Value with a Future
+
+/future/ is a prepackaged version of firing a computation off in another
+thread then getting the result back via promise.  A future is like a promise
+that brings its own thread.  You still use =@= or =deref= to access the
+result of a future.  As with promise, dereferencing a future that hasn't
+completed yet will block.
+
+#+begin_src clojure
+(def revenue-future
+  (future (apply + (map :revenue inventory))))
+(println "The total revenue is" @revenue-future)
+#+end_src
+
+*** Staying Out of Trouble
+
+If you just want to get some background processing done, use a future, not a
+promise.  If you need more control, consider one of the threadpool facilities
+supplied by Java.  =java.util.concurrent.Executors= has a number of static
+methods for building thread pools.  Threads are a fairly expensive resource
+to create in terms of both time and memory, so pooling them is a good idea.
+Clojure's built-in future's are backed by a similar thread pool.
+
+Note: =deref= and =@= will block forever if the value is never supplied.  You
+can set a timeout for =deref= like =(deref revenue-promise 500 :failure)=, and
+it is a good idea to do so in production code.
+
+#+begin_src clojure
+(import java.util.concurrent.Executors)
+
+;; Create a pool with at most three threads.
+;; if you throw more than three tasks at the pool, they'll just queue up
+(def fixed-pool (Executors/newFixedThreadPool 3))
+
+(defn a-lot-of-work []
+  (println "Simulating function that takes a long time.")
+  (Thread/sleep 1000))
+
+(defn even-more-work []
+  (println "Simulating function that takes a long time.")
+  (Thread/sleep 1000))
+
+(.execute fixed-pool a-lot-of-work)
+(.execute fixed-pool even-more-work)
+#+end_src
+*** In the Wild
+
+#+begin_src clojure
+;; a simple placeholder application for our book store with Compojure
+;; Compojure works in a multithreaded Java webserver environment, but the
+;; code contains no special pleading to work with the multithreaded environment
+(ns storefront.handler
+  (:require [compojure.core :refer :all]
+            [compojure.handler :as :handler]))
+
+(defroutes main-routes
+  (GET "/" [] "Welcome to Blotts Books!!")
+  (GET "/book" [title author]
+    (str "Sorry " title " By " author " is not available.")))
+
+(def app (handler/site main-routes))
+
+;; we're using the defroutes macro
+(defmacro defroutes
+  "Define a Ring handler function from a sequence of routes.  The name may
+   optionally be followed by a docstring and metadata map."
+  [name & routes]
+  (let [[name routes] (macro/name-with-attributes name routes)]
+    `(def ~name (routes ~@routes))))
+
+(defmacro GET "Generate a `GET` route."
+  [path args & body]
+  (compile-route :get path args body))
+
+(defn compile-route
+  "Compile a route in the form `(method path bindings & body)` into a function.
+   Used to create custom route macros."
+  [method path bindings body]
+  `(make-route
+    ~method
+    ~(prepare-route path)
+    (fn [request#]
+      (let-request [~bindings request#] ~@body))))
+
+;; pmap farms out map work in paralle with futures
+(pmap some-computationally-intensive-f a-collection)
+
+;; this is a simplified implementation of pmap
+(defn toy-pmap [f coll]
+  (let [futures (doall (map #(future (f %)) coll))]
+    (map deref futures)))
+#+end_src
+
+** State
+*** It's Made of Atoms
+
+You create an atom by calling the =atom= function and passing it an initial
+value.  You get the value back out by prefixing the atom name with =@=.
+=deref= on the atom would work also.  The =swap!= function takes an atom
+and a function, it applies the function to the atoms value, then updates the
+atoms value to the return value of the function.  =swap!= will pass any
+additional arguments into the function.
+
+The update mechanism in =swap!= is thread safe.  First =swap!= grabs the value
+of the atom.  Then it calls the update function to get a new value for the atom.
+Next, it checks that the value hasn't changed and if not, replaces the value
+with the new value and we're done.  If the value has changed, =swap!= will
+grab the current value again and start the process over.  All of this happens
+on the thread that called =swap!=, so when =swap!= returns, you know your
+update has been applied to the value in the atom.
+
+#+begin_src clojure
+(def counter (atom 0))
+
+(defn greeting-message [req]
+  (swap! counter inc)
+  (if (= @counter 500)
+    (str "Congrats!  You are the " @counter "visitor!")
+    (str "Welcome to Blotts Books!")))
+#+end_src
+
+*** Swapping Maps
+
+You can wrap an atom around any Clojure value, including maps.
+
+An atom is a container for a mutable value.  You can get the value with
+=deref= or =@= and you update it with =swap!=.  There really is not much to
+them.  Conceptually simple and easy to use, atoms should be the first tool
+you reach for when you need to manage some mutable state.
+
+#+begin_src clojure
+(ns inventory)
+
+(def by-title (atom {}))
+
+(defn add-book [{title :title :as book}]
+  (swap! by-title #(assoc % title book)))
+
+(defn del-book [title]
+  (swap! by-title #(dissoc % title)))
+
+(defn find-book [title]
+  (get @by-title title))
+#+end_src
+
+*** Refs: Team-Oriented Atoms
+
+One drawback to atoms is that an atom stands alone.  What if we needed to
+track both the total number of books in inventory along with each book by
+title using two atoms.  We couldn't atomically update both.  That's when we
+use refs.  You get to the value of a ref with =deref= or =@=.  The difference
+between refs and atoms is that you can update a number of refs in a single
+database transaction-like operation.  The ref updating function is =alter=, and
+much like =swap!=, it takes a ref and an update function.  Any other arguments
+are passed to the function.  They key difference between atoms and refs is that
+all calls to =alter= must happen within the body of a call to =dosync=.  The
+changes inside of a =dosync= will either all happen together or not at all.
+Refs share the same basic update and conflict-resolution strategies of atoms,
+but on a large scale.  Like atom update function, ref update functions may be
+called more than once, so try to take actions without side effects.
+
+In addition to =alter=, you can update a ref with =ref-set=, which just sets
+its value without checking the old value.  It takes a ref and a new value.
+=ensure= can be used in a transaction to make sure that a variable not being
+changed doesn't get changed anywhere else during the transaction.
+
+#+begin_src clojure
+(ns inventory)
+
+(def by-title (ref {}))
+
+(def total-copies (ref 0))
+
+(defn add-book [{title :title :as book}]
+  (dosync
+    (alter by-title #(assoc % title book))
+    (alter total-copies + (:copies book))))
+#+end_src
+
+*** Agents
+
+Let's say our inventory system has a new requirement.  We need to notify the
+corporate inventory system of each change in inventory.  With an atom or ref,
+the notification function could get called multiple times due to retries.
+
+Like atoms, agents are stand-alone value containers.  And as with atoms and
+refs, you get at the value in an agent with =@= or =deref=.
+
+Agents use the same /change via a function/ update pattern we saw with atoms
+and refs.  Their function to call is =send= or =send-off= (=send-off= for
+blocking operations).  The atomic =swap!= is synchronous (you know your atom
+has been updated, because it returned), but the =send= is asynchronous.  Every
+agent has a queue of functions associated with it and when you call =send=
+your operation gets added to the end of the queue.  Sometime later, a thread
+will pop your operation off the queue and the agent value will get updated.
+
+It is likely that =send= will return before the update is complete.  The less
+visible - but critical - implication of the timing is that the update function
+will be called exactly once.  So it could have an operation with side effects.
+
+#+begin_src clojure
+(ns inventory)
+
+(def by-title (agent {}))
+
+(defn add-book [{title :title :as book}]
+  (send
+    by-title
+    (fn [by-title-map]
+      (notify-inventory-change :add book)
+      (assoc by-title-map title book))))
+#+end_src
+
+*** Choose Wisely
+
+The first rule: If your value is mostly stable over the life of the program,
+perhaps with some thread-local variations, then put it in a var with =def=.
+
+The second rule: If you have a number of mutable values that need to be
+updated together - and those updates don't involve side effects - the use refs.
+Remember, it's refs that give you that database-like ability to build
+transactions.
+
+The third rule: If there are side effects that need to happen as you update
+your mutable state, then use an agent.  You should also consider using an
+agent if your update function is slow.  That way the slowness occurs in a
+background thread.
+
+The last rule: If you have a mutable value but your updates is side effect free
+and you don't need to keep several values consistent, then use an atom.  And
+rejoice, because atoms are simple and easy to use.  In most cases you can use
+atoms.  If you are thinking about mutable state, your first thought should
+be an atom.
+
+*** In the Wild
+
+#+begin_src clojure
+;; The Clojure language plugin for the LightTable editors has a great example
+;; of using an atom to track some fairly complex data
+(def my-settings (atom {:name "}clj"
+                        :dir (fs/absolute-path fs/*cwd*)
+                        :type "lein-light-nrepl"
+                        :commands [:editor.eval.clj
+                                   :editor.clj.doc
+                                   :editor.cljs.doc
+                                   :editor.clj.hints
+                                   ;; Many keywords omitted...
+                                   :editor.eval.cljs
+                                   :cljs.compile]}))
+;; Lots of code omitted.
+(defn settings! [setts]
+  (swap! my-settings merge setts))
+
+;; we often bind atoms globally with =def=
+;; memoize uses a locally bound atom
+(defn memoize
+  "Returns a memoized version of a referentially transparent function.  The
+   memoized version of the function keeps a cache of the mapping from arguments
+   to results and, when calls with the same arguments are repeated often, has
+   higher performance at the expense of higher memory use."
+  [f]
+  (let [mem (atom {})]
+    (fn [& args]
+      (if-let [e (find @mem args)]
+        (val e)
+        (let [ret (apply f args)]
+          (swap! mem assoc args ret)
+          ret)))))
+
+;; here's a use of refs from Overtone
+(defn metronome
+  [bpm]
+  (let [start (ref (now))
+        bar-start (ref @start)
+        bpm   (ref bpm)
+        bpb   (ref 4)]
+    (Metronome. start bar-start bpm bpb)))
+
+;; now this code changes the beats per minute
+(dosync
+  (ensure bpb)
+  (let [cur-beat      (metro-beat metro)
+        cur-bar       (metro-bar metro)
+        new-tick      (beat-ms 1 new-bpm)
+        new-tock      (* @bpb new-tick)
+        new-start     (- (metro-beat metro cur-beat) (* new-tick cur-beat))
+        new-bar-start (- (metro-bar metro cur-bar) (* new-tock cur-bar))]
+    (ref-set start new-start)
+    (ref-set bar-start new-bar-start)
+    (ref-set bpm new-bpm)))
+
+;; Overtone also has an interesting use of =agent=
+(def samples (load-samples "~/Desktop/tech/*.wav"))
+
+(defn start-samples
+  "Starts all samples playing at init-vol.  Returns a seq containing info
+   regarding all running samples.  Samples start playing 1s after this fn
+   is called to ensure that they are all started in sync"
+  []
+  (at (+ 1000 (now))
+      (doall
+        (reduce (fn [res samp]
+                  (let [id (loop-synth samp 0)]
+                    (conj res {:ampl 0
+                               :id id
+                               :samp samp})))
+                []
+                samples))))
+
+(def playing-samples* (agent (start-samples)))
+#+end_src
+
+*** Staying Out of Trouble
+
+Consider =(def title-atom (atom "Pride and Prejudice"))=.  It creates two value
+containers.  The first is a var, which get bound to the name =title-atom.  The
+value of that var is another container, an atom.  And inside the atom is the
+string "Pride and Prejudice".  If we =swap!= another value in, perhaps like
+this: =(swap! title-atom #(str % " and Zombies"))=, it is still the same var
+bound to the same name and pointing at the same atom.  It's the value inside
+the atom that has changed.
+
+Another thing to watch out for is what happens when an update fails.  With
+atoms and refs, it's easy.  The whole update fails and an exception gets
+thrown in your main thread.  With agents, it is more complex.  If an agent
+update function fails, then that update has no effect on the value of the
+agent.  Then the agent enters a failed state and will immediately reject
+any further =send= calls by raising the exception that caused the original
+failure.  You can check the state of your agent with =agent-error= and use
+=restart-agent= to get it back to normal.
+
+#+begin_src clojure
+;; If agent is dead then restart it with a new value
+;; and clear any pending updates
+(if (agent-error title-agent)
+  (restart-agent
+    title-agent
+    "Poseidon Adventure"
+    :clear-actions true))
+#+end_src
+
+Sometimes you just want your agents to go away, because the JVM won't shutdown
+with live threads still around.  =shutdown-agents= will shut down the agents
+in the agent thread pool and allow the JVM to exit.  It is a great idea to
+call =shutdown-agents= just before the end of any program that uses agents.
+
+** Read and Eval
+*** Code is Data
+
+Clojure code looks like Clojure data because in Clojure code is data.
+Clojure function calls don't just look like lists; they are lists.
+Languages that support this /code equals data/ equation are said to be
+/homoiconic/.
+
+*** Reading and Evaluating
+
+=read= is simple.  It reads whatever input you give it and returns the
+equivalent Clojure data structure.  =read= without any parameters reads
+from standard-in.  =read-string= will read from a string.  If you
+type =(read)= in the REPL, it will wait for you to type something in.
+55 becomes 55, and "hello" becomes "hello".
+
+=eval= turns data structure into action.  It takes data you pass it, which
+should look like Clojure code, and compiles and runs it as Clojure code.
+=eval= attempts to evaluate whatever you pass it as Clojure code.
+Numbers, strings, and keywords evaluate to themselves.  =eval= can also
+evaluate symbols or call functions.
+
+#+begin_src clojure
+(def fn-name 'print-greeting)
+(def args (vector 'preferred-customer))
+(def the-println (list 'println "Welcome back!"))
+(def body (list 'if 'preferred-customer theprintln))
+
+(eval (list 'defn fn-name args body))
+
+(eval (list 'print-greeting true))
+;; "Welcome back!"
+#+end_src
+
+*** The Homoiconic Advantage
+
+#+begin_src clojure
+;; Need to read a file full of Clojure code?  No problem
+(ns codetool.core
+  (:require [clojure.java.io :as io]))
+
+(defn read-source [path]
+  (with-open [r (java.io.PushbackReader. (io/reader path))]
+    (loop [result []]
+      (let [expr (read r false :eof)]
+        (if (= expr :eof)
+          result
+          (recur (conj result expr)))))))
+
+;; or how about writing your own REPL
+(defn my-repl []
+  (loop []
+    (println (eval (read)))
+    (recur)))
+#+end_src
+
+*** An Eval of Your Own
+
+#+begin_src clojure
+(defn eval-symbol [expr]
+  (.get (ns-resolve *ns* expr)))
+
+(defn eval-vector [expr]
+  (vec (map reval expr)))
+
+(defn eval-list [expr]
+  (let [evaled-items (map reval expr)
+        f (first evaled-items)
+        args (resst evaled-items)]
+    (apply f args)))
+
+;; still needs maps, and ifs, and...
+(defn reval [expr]
+  (cond
+    (string? expr) expr
+    (keyword? expr) expr
+    (number? expr) expr
+    (symbol? expr) (eval-symbol expr)
+    (vector? expr) (eval-vector expr)
+    (list? expr) (eval-list expr)
+    :else :completely-confused))
+#+end_src
+
+*** In the Wild
+
+#+begin_src clojure
+;; Metadata is data that you can hang on Clojure symbols and collections,
+;; data that in some way enhances your value without being part of the value
+;; it can be added in two ways.  =with-meta= or =^:keyword=.  equivalent:
+(def books1 (with-meta ["Emma" "1984"] {:favorite-books true}))
+(def books1 ^:favorite-books ["Emma" "1984"])
+;; you can use =meta= to retrieve metadata
+(meta books1)     ; -> {:favorite-books true}
+;; metadata doesn't effect the actual value.  two otherwise equal values
+;; with different metadata are still equal values
+(def books2 (with-meta ["Emma" "1984"] {:favorite-books true}))
+(def books3 (with-meta ["Emma" "1984"] {:favorite-books false}))
+(= books2 books3) ; -> true
+;; we've already seen metadata with dynamic vars
+(def ^:dynamic *print-length* nil)
+;; Clojure stashes the docstring of a function in the metadata of the symbol
+;; metadata is a plain map, so you can do mapish things with it
+(def md (meta books3))
+(count md)        ; -> 1
+(vals md)         ; -> (false)
+#+end_src
+
+*** Staying Out of Trouble
+
+Don't use =eval=!  In real life, people tend to reserve =eval= for development
+tools like the REPL and for those rare moments when you need to programmatically
+generate and execute code.  Reserve =eval= for when you have no idea what
+runtime code you want to execute until some runtime data tells you.
+
+=read= can be more useful, but you only want to use it on data that you
+trust.  It falls prey to arbitrary code execution exploits.  If you want
+to read data from an untrusted source, use =clojure.edn.read=.
+
+** Macros
+*** An Example Where Functions Fall Short
+
+Imagine you have a number rating system for books: positive for good books,
+negative for bad books, and zero if you are completely indifferent to a book.
+You could easily see yourself writing code like =print-rating= below.  But
+imagine =cond='s like that started popping up all over our program.
+
+We might want to
+extract the conditional test out to an =arithmetic-if= function like A below.
+It looks like it works fine if you try it with keywords
+=(arithmetic-if 0 :great :meh :boring)=, but if you try something with
+side effects, all of your side effects happen when the function evaluates
+its arguments, no matter the value of n.  That's why =if= is a special form
+instead of just a function.
+
+You could instead write your =arithmetic-if= to take function arguments, like
+B below.  It would work, but it's odd.  Especially if your just trying to
+return some constants.  You can see how it works to redefine =print-rating=
+below it.  Can we do better?
+
+#+begin_src clojure
+(defn print-rating [rating]
+  (cond
+    (pos? rating)  (println "Good book!")
+    (zero? rating) (println "Totally indifferent.")
+    :else          (println "Run away!")))
+
+;; arithmetic-if A
+(defn arithmetic-if-a [n pos zero neg]
+  (cond
+    (pos? n) pos
+    (zero? n) zero
+    (neg? n) neg))
+
+;; arithmetic-if B
+(defn arithmetic-if-b [n pos-f zero-f neg-f]
+  (cond
+    (pos? n) (pos-f)
+    (zero? n) (zero-f)
+    (neg? n) (neg-f)))
+
+;; new print-rating
+(defn print-rating [rating]
+  (arithmetic-if-b rating
+    #(println "Good book!")
+    #(println "Totally indifferent.")
+    #(println "Run away!")))
+#+end_src
+
+*** Macros to the Rescue
+
+Macros let you transform code just before it gets compiled.  Macros are just
+functions.  They are only special in that they are part of the compilation
+process.  Macros are applied to the /code/, not to the runtime data.
+
+#+begin_src clojure
+(defmacro arithmetic-if [n pos zero neg]
+  (list 'cond (list 'pos? n) pos
+              (list 'zero? n) zero
+              :else neg))
+#+end_src
+
+*** Easier Macros with Syntax Quoting
+
+Syntax quoted templates are just plain old Clojure data - vectors and lists
+and the like - with a few special tweaks.  Tweak number one is that you set
+off syntax-quoted expressions with a backquote character.  Tweak number two
+is that /your value here/ marker.  Syntax quoting using a tilde =~= to mark
+the places where values should be inserted.  Also, to help minimize name
+confusion, syntax quoting outputs fully qualified symbols.
+
+Some other features of syntax quoting are worth mentioning.  You can name
+variables with =#= on the end to get a generated, unique symbol for an
+internally used variable.  There's also =~@var=, where var is a variable name.
+The =~@= means splice in the contents of the var, without the first set of
+parentheses.
+
+One handy tool to see what your macros are doing is =macroexpand-1=.  You
+can call =(macroexpand-1 '(artihmetic-if 100 :pos :zero :neg))=, and it will
+tell you what code the macro expands to.  It should be the first thing you
+reach for if a macro is behaving unexpectedly.
+
+#+begin_src clojure
+;; new, improved arithmetic-if
+;; really the same as last one, but easier syntax (no =list= or ')
+(defmacro arithmetic-if [n pos zero neg]
+  `(cond
+    (pos? ~n) ~pos
+    (zero? ~n) ~zero
+    :else ~neg))
+
+(defmacro our-defn [name args & body]
+  `(def ~name (fn ~args ~@body)))
+#+end_src
+
+*** In the Wild
+
+#+begin_src clojure
+;; macros make up part of Clojure core
+(defmacro when
+  [test & body]
+  (list 'if test (cons 'do body)))
+
+(defmacro cond
+  [& clauses]
+    (when clauses
+      (list 'if (first clauses)
+            (if (next clauses)
+                (second clauses)
+                (throw (IllegalArgumentException.
+                       "cond requires an evennumber of forms")))
+            (cons 'clojure.core/cond (next (next clauses))))))
+
+(defmacro and
+  ([] true)
+  ([x] x)
+  ([x & next]
+    `(let [and# ~x]
+      (if and# (and ~@next) and#))))
+#+end_src
+
+*** Staying Out of Trouble
+
+Macros make themselves felt at the moment the macro is expanded through
+anything they execute in their body and the moment when the generated code is
+executed, since that's what they leave behind.
+
+Macros are gone at runtime.  Only the code they generated is left behind.  So
+they don't, for example, show up in stacktraces.
+
+Macros also don't play well with our functional tools.  They aren't functions.
+You can't =map= a macro.  If you can solve a problem concisely with ordinary
+functions, do that, and don't use a macro.
+
+#  LocalWords:  FictionalCharacter Spec'ing spec'ing

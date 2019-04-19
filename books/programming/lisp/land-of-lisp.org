@@ -2383,6 +2383,11 @@ these will the following function:
 #+begin_src lisp
 ;; We're going to define a simple request handler to provide our serve function
 (defun hello-request-handler (path header params)
+  ;; the next two lines weren't in the book.  they were added to make the
+  ;; request handler work with modern browsers.
+  ;; https://stackoverflow.com/questions/55526032/getting-err-invalid-http-response-using-web-server-code-in-land-of-lisp-with-cli?noredirect=1#comment97794796_55526032
+  (format t "HTTP/1.1 200 OK~C~C" #\return #\linefeed)
+  (format t "~C~C" #\return #\linefeed)
   (if (equal path "greeting")
       (let ((name (assoc 'name params)))
         (if (not name)
@@ -2399,6 +2404,8 @@ without even starting up the server.  Below is a session seeing how it works:
 ;; Loading file /Users/Lewis/git/books/land-of-lisp/web-server.lisp ...
 ;; Loaded file /Users/Lewis/git/books/land-of-lisp/web-server.lisp
 T
+;; Interactions below would now have the HTTP/1.1 header that we've added
+;; to make this request handler work with modern browsers
 [83]> (hello-request-handler "lolcats" '() '())
 Sorry...  I don't know that page.
 "Sorry...  I don't know that page."
@@ -3106,8 +3113,8 @@ the code with =force= to force evaluation.
 **** Commented source code in dice-of-doom-v2.lisp
 ** Chapter 19 and 20
 
-I read these, but I didn't follow along with code, because it was using the
-web server, which I couldn't get to work properly or get any help on from
-StackOverflow.  Not sure why the web server is acting weird, but all this
-code is ten years old, so it's surprising the rest all works so well.
-
+These two chapters both focused on adding functionality to Dice of Doom.  They
+didn't really introduce any big new ideas.  To see how Dice of Doom changed,
+refer to dice_of_doom_v3.lisp for web features and dice_of_doom_v4.lisp for
+more players and actual dice rolling.  It was pretty cool to see how little
+we had to modify things to introduce these new features.

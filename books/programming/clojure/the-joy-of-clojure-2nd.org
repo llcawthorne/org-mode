@@ -1,0 +1,103 @@
+* Foundations
+** Clojure philosophy
+*** The Clojure way
+**** Freedom to focus
+**** Empowerment
+
+Clojure has value to the degree that it lets you build interesting and useful
+applications.
+
+**** Clarity
+
+|---------------------------------------+------------------------------|
+| Conflated                             | Separated                    |
+|---------------------------------------+------------------------------|
+| Object with mutable fields            | Values/from identities       |
+| Class acts as a namespace for methods | Function namespaces from     |
+|                                       | type namespaces              |
+| Inheritance hierarchy made of classes | Hierarchy of names from data |
+|                                       | and functions                |
+| Data and methods bound together       | Data objects from functions  |
+| lexically                             |                              |
+| Method implementations embedded       | Interface declarations from  |
+| throughout the class inheritance      | function implementations     |
+| chain                                 |                              |
+|---------------------------------------+------------------------------|
+
+**** Consistency
+
+Clojure works to provide consistency of syntax and of data structures.
+
+Consistency of syntax can be seen in the similarity of the =for= and =doseq=
+macros.  The same syntax was used to keep things consistent.
+
+Consistency of data structures is the deliberate design of all of Clojure's
+persistent collection types to provide interfaces as similar to each other
+as possible, as well as to make them as broadly useful as possible.
+
+*** Why a(nother) Lisp?
+
+Computer programmers are perpetually in search of beauty, and, more often than
+not, this beauty presents itself in the form of simplicity.  Lisp was first
+defined in McCarthy's 1960 paper by seven functions and two special forms.
+
+*** Functional programming
+
+Functional programming concerns and facilitates the application and composition
+of functions.  Further, for a language to be considered functional, its notion
+of function must be /first-class/.
+
+*** Why Clojure isn't especially object-oriented
+
+By allowing (and even promoting) unrestrained mutation via /variables/,
+the imperative model doesn't directly support concurrency.  Clojure instead
+focuses on functional programming, immutability, and the distinction between
+state, time, and identity.
+
+OOP has useful features, like polymorphism.  Polymorphism is the ability of a
+function or method to perform different actions depending on the type of its
+arguments or a target object.  Clojure provides polymorphism through protocols
+and multimethod.  Protocols let you attach a set of behaviors to any number of
+existing types and classes; they're similar to what are sometimes called
+mix-ins, traits or interfaces in other languages and are more open and
+extensible than polymorphism in many languages.
+
+If Clojure isn't oriented around classes, then how does it provide
+encapsulation?  Clojure has /closures/, which are an excellent way to
+group functions with their supporting data.  You can also declare functions
+that are private to a namespace with =defn-=.  You can also encapsulate data
+in =let= blocks and supporting functions in =letfn= blocks.
+
+The final strike against viewing everything as an object is that mathematicians
+view little (if anything) as objects.  Mathematics is built on the relationships
+between one set of elements and another through the application of functions.
+
+** Drinking from the Clojure fire hose
+
+If you need a quick review of basic Clojure syntax, Chapter 2 of /The Joy of
+Clojure/ is worth a re-read.
+
+Note: I just read two books on Clojure, so as much as I am looking forward
+to this book, I'll have to come back to it later.
+
+** Dipping your toes in the pool
+* Data types
+** On scalars
+** Collection types
+* Functional programming techniques
+** Being lazy and set in your ways
+** Functional programming
+* Large-scale design
+** Macros
+** Combining data and code
+** Mutation and concurrency
+** Parallelism
+* Host symbiosis
+** Java.next
+** Why ClojureScript?
+* Tangential considerations
+** Data-oriented programming
+** Performance
+** Thinking programs
+** Clojure changes the way you think
+* The end
