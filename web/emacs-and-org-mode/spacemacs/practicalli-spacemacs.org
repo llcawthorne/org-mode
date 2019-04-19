@@ -97,4 +97,77 @@ Hit SPC b b.  Navigate to buffer names you want to delete by moving the cursor
 with C-j and C-k.  Mark a buffer for deletion using C-SPC.  Then once all 
 buffers are marked, hit M-D to delete marked buffers. 
 
-* 
+* Clojure REPL
+** , ' or , s i to start a REPL from a clj file
+** , e e to evaluate the previous Clojure expression
+** , e f to show the results of evaluating the current Clojure expression
+** SPC m s i or , s i is Cider Jack-in
+** SPC m s I or , s I is Cider Jack-in ClojureScript
+** SPC m s s or , s s is switch between REPL and code
+** SPC m s q or , s q is Cider Quit
+** , s X to reset the REPL without restarting it
+** SPC m e b or , e b to evaluate buffer
+* Refactor Code
+** SPC m r for main refactoring menu
+** Managing Library Dependencies
+*** SPC m r a p or , r a p to add a project dependency (ap)
+*** Open project.clj, then SPC m r u p or , r u p to update dependency versions (up)
+*** Open project.clj, then SPC m r s p or , r s p to sort project dependencies (sp)
+** Managing Namespace
+*** SPC m r a r or , r a r to add require to namespace declaration (ar)
+*** SPC m r a m or , r a m to add missing Clojure library (am)
+
+Basically, if you use =str/trim= without having a 
+=:require [clojure.string :as str]=, you can go to the =str/trim= and hit
+SPC m r a m or , r a m to add the =:require [clojure.string :as str]= to the 
+namespace declaration.
+
+*** SPC m r a i or , r a i to add import to namespace declaration (ai)
+*** SPC m r c n or , r c n to clean namespace (cn) - removes unused imports and requires
+** Collections - convert between types
+*** Place cursor on open ( { [ or # and use one of the following:
+*** SPC m r c [ or , r c [ to convert to vector
+*** SPC m r c { or , r c { to convert to map
+*** SPC m r c # or , r c # to convert to set
+*** SPC m r c ( or , r c ( to convert to list
+*** SPC m r c ' or , r c ' to convert to quoted list
+** There's also some formatting refactors, but they are seldom needed
+* Spacemacs Comments
+** SPC ; ; - toggle comment current line
+** g c c - toggle comment current line
+** g c a p - toggle comment selected paragraphs
+** g c SPC y - comment up to a line with avy
+** g y - paste a commented copy of the current line above
+** v select region g c - select a region and comment it
+** M-; - create a new comment line or add comment to end of line
+*** M-; toggles comments
+*** C-SPC then M-; to comment out current line
+** Put #_ in front of a form to comment it with reader comment macro
+*** , e e and , e f will still evaluate code with reader comment macro in front
+** 42 i ; ESC will create a line of 42 ; characters
+* Testing
+** SPC m t a or , t a to run all tests in corresponding test namespace
+** , T t to toggle auto test mode
+*** after which, you can just , e b and it will automatically run tests
+* Magit
+** This section was mostly work in progress
+** SPC g s - runs Magit status, g r - will refresh Magit status
+*** it has a lot of subcommands bound in the new window
+*** S is stage, I think
+*** c is commit
+*** a for amend
+** SPC g t opens the Git Timemachine transient state
+* Debugging
+** , d v - opens cider-inspector on the current symbol
+** Sayid debugger
+*** optional package, include =clojure-enable-sayid t= in =clojure :variables= in .spacemacs
+*** SPC m d b - instrument expression at point
+*** SPC m d e - display last stacktrace
+*** SPC m d r - reload namespaces
+*** SPC m d v - inspect expression at point
+* Snippets
+** Type trigger then press M-/ to expand
+** Add your own with SPC SPC helm-yas-create-snippet-on-region
+** Or add your own to ~/.spacemacs.d/snippets/modename-mode/
+** I didn't like their coverage; look up a tutorial on yasnippet
+

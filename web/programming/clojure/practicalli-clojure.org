@@ -1,0 +1,21 @@
+Notes on Practicalli Clojure
+https://practicalli.github.io/clojure/
+
+* Clojure
+** Study Group Videos
+
+[[https://pacticalli.github.io/clojure/study-guide.html][Clojure Study Group]]
+
+** Big Ideas of Clojure (Videos)
+
+[[https://www.infoq.com/presentations/Simple-Made-Easy][Rich Hickey - Simple Made Easy]]
+[[https://vimeo.com/223240720/][Stuart Halloway - Clojure in 10 Big Ideas]]
+
+** File Extensions Used
+
+clj - Clojure for JVM
+cljs - ClojureScript
+cljc - code that will run on the JVM and JavaScript engines
+** Come Back to this Book
+
+Looks basic.  Come back when you need to review basics.

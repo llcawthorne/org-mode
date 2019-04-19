@@ -1,0 +1,780 @@
+Notes on Practicalli Clojure Webapps
+https://practicalli.github.io/clojure-webapps/
+
+* Make a New Project
+** Without template: lein new project-name
+
+For this project, we'll run "lein new todo-list".
+
+** With template: lein new template-name project-name
+*** Good web templates include
+
+- [[https://github.com/weavejester/compojure-template][compojure]]
+- [[http://www.luminusweb.net][luminus]]
+- [[https://github.com/duct-framework/duct][duct]]
+- [[https://github.com/pedestal/pedestal][pedestal-service]]
+
+** With compojure template: lein new compojure project-name
+* Create a webserver with Ring
+** What is Ring?
+
+The Ring library can start an embedded Java server (eg. Jetty, Tomcat) to
+listen for requests from a browser.  Each browser request received is 
+converted into a request map, a Clojure map with keys and values.  The
+request map is passed to a handler function, which returns a response map.
+
+** Add Ring Dependency
+
+Add it to the :dependencies vector in your project.clj.
+
+#+begin_src clojure
+;; full project.clj for example app
+(defproject todo-list "0.1.0-SNAPSHOT"
+  :description "A Todo List server-side webapp using Ring & Compojure"
+  :url "https://github.com/llcawthorne/practicalli-clojure-webapps/todo-list"
+  :license {:name "Creative Commons Attribution Share-Alike 4.0 International"
+            :url "https://creativecommons.org/licenses/by-sa/4.0/"}
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [ring "1.7.1"]]
+  :repl-options {:init-ns todo-list.core})
+#+end_src
+
+*** Looking up Libraries & current version
+
+https://clojars.org/
+
+** Configure =main= namespace
+
+Add key =:main= with value =todo-list.core= to =defproject= in project.clj.
+With this set, lein run will execute =-main- in =todo-list.core=.
+
+** Include Ring in the Namespace
+
+Delete what is currently in src/todo_list/core.clj  and put the following:
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]))
+#+end_src
+
+** Add a main function to run Jetty
+
+To start with, we're going to hardcode the response map.  It has keys
+=:status=, =:body=, and =:headers=.  =:status= is the result of the request,
+eg. 200 OK, 404 Not Found, etc.  =:body= is the content to be returned 
+(web page, json, etc).  =:headers= is a map of standard headers included in
+any web browser response.
+
+The =-main= function takes command-line arguments.  We are using it here to
+set the port number.  The =-main= declaration goes under the =ns= in 
+src/todo_list/core.clj.
+
+#+begin_src clojure
+(defn -main
+  "A very simple web server using Ring & Jetty"
+  [port-number]
+  (jetty/run-jetty
+   (fn [request] {:status 200
+                  :body "<h1>Hello, Clojure World</h1> <p>Welcome to your first Clojure app.  This message is returned regardless of the request, sorry</p>"
+                  :headers {}})
+   {:port (Integer. port-number)}))
+#+end_src
+
+** Run webserver: "lein run 8000"
+* Create a handler function
+** What is a handler function
+
+We already wrote a simple handler function.  It just takes a map (the request)
+and returns a response map.  What we have so far though ignores the request.
+We're going to factor that out into another function rather than have it as
+an inline anonymous function.  Below is what you want your 
+src/todo_list/core.clj file to look like now.
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]))
+
+(defn welcome
+  "A ring handler to process all requests sent to the webapp"
+  [request]
+  {:status 200
+   :body
+   "<h1>Hello, Clojure World</h1>
+    <p>Welcome to your first Clojure app.  This
+    message is returned regardless of request, sorry</p>"
+   :headers {}})
+
+(defn -main
+  "A very simple web server using Ring & Jetty"
+  [port-number]
+  (jetty/run-jetty
+   welcome
+   {:port (Integer. port-number)}))
+#+end_src
+
+** Add Error message when request not found
+
+We're going to add an =if= to our handler function so it only handles the
+default route (/) and routes everything else to a 404 page.
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]))
+
+(defn welcome
+  "A ring handler to process all requests sent to the webapp"
+  [request]
+  (if (= "/" (:uri request))
+    {:status 200
+     :body
+     "<h1>Hello, Clojure World</h1>
+     <p>Welcome to your first Clojure app.</p>"
+     :headers {}}
+    {:status 404
+     :body "<h1>This not the page you are looking for</h1>
+            <p>Sorry, the page you requested was not found!</p>"
+     :headers {}}))
+
+(defn -main
+  "A very simple web server using Ring & Jetty"
+  [port-number]
+  (jetty/run-jetty
+   welcome
+   {:port (Integer. port-number)}))
+#+end_src
+
+* Middleware in Ring
+
+Ring middleware can wrap handlers or other middleware to provide new features.
+=wrap-reload= middleware enables live reloading by detecting file changes
+and reloaded affected functions into the namespace.
+
+Middleware in =ring/ring-core= includes =wrap-cookies=, =wrap-file=, 
+=wrap-file-info=, =wrap-flash=, =wrap-keyword-params=, =wrap-multipart-params=,
+=wrap-nested-params=, =wrap-params=, and =wrap-session=.  Middleware in
+=ring/ring-devel= includes =wrap-lint=, =wrap-reload=, and 
+=wrap-stacktrace=.
+
+When you use the lein compojure template, it includes =ring/site-defaults=
+which sets some sensible site defaults including anti-forgery tokens and other
+features.  See [[https://github.com/ring-clojure/ring-defaults/blob/master/src/ring/middleware/defaults.clj][ring-defaults]] for everything that is included.
+
+** =wrap-reload=
+
+We need to make three changes to enable =wrap-reload=.  First, add it as a
+dependency at the top of your core.clj file.
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]))
+#+end_src
+
+Now we want to define a =-dev-main= function that will only be used in
+development mode.
+
+#+begin_src clojure
+(defn -dev-main
+  "A very simple web server using Ring & Jetty that reloads code changes via the development profile of Leiningen"
+  [port-number]
+  (jetty/run-jetty (wrap-reload #'welcome)
+                   {:port (Integer. port-number)}))
+#+end_src
+
+Now we need to configure the new =-dev-main= in our =:dev= profiles in 
+Leiningen.  Put the following in project.clj
+
+#+begin_src clojure
+  :profiles {:dev
+             {:main todo-list.core/-dev-main}}
+#+end_src
+
+Now run your server and changes to the =welcome= function should reload 
+automatically.  You still need to restart the server if you change the main
+function or add dependencies to the project.
+
+* Compojure
+** What is Compojure?
+
+Compojure is a library that works with Ring to manage routing and http method
+switching.  It also has convenience functions that make it easier to generate
+Ring responses.
+
+In Compojure, each route is an HTTP method paired with a URL-matching pattern, 
+an argument list, and a body.
+
+#+begin_src clojure
+(defroutes myapp
+  (GET "/" [] "Show something")
+  (POST "/" [] "Create something")
+  (PUT "/" [] "Replace something")
+  (PATCH "/" [] "Modify something")
+  (DELETE "/" [] "Annihilate something")
+  (OPTIONS "/" [] "Appease something")
+  (HEAD "/" [] "Preview something"))
+#+end_src
+
+Compojure route definitions are just functions which accept request maps
+and return response maps.
+
+#+begin_src clojure
+(myapp {:uri "/" :request-method :post})
+;; -> {:status 200
+;;     :headers{"Content-Type" "text/html;charset=utf-8}
+;;     :body "Create something"}
+#+end_src
+
+The body could be a function, which must accept the request as a parameter:
+
+#+begin_src clojure
+(defroutes myapp
+  (GET "/" [] (fn [req] "Do something with req")))
+#+end_src
+
+Or you can use the request directly:
+
+#+begin_src clojure
+(defroutes myapp
+  (GET "/" req "Do something with req"))
+#+end_src
+
+Route patterns may include named parameters:
+
+#+begin_src clojure
+(defroutes myapp
+  (GET "/hello/:name" [name] (str "Hello " name)))
+#+end_src
+
+You can adjust what each parameter matches by supplying a regex:
+
+#+begin_src clojure
+(defroutes myapp
+  (GET ["/file/:name.:ext" :name #".*", :ext #".*"] [name ext]
+    (str "File: " name ext)))
+#+end_src
+
+** Adding Dependency
+
+First you need to add Compojure to =:dependencies= in project.clj.  Remember
+that you need to restart web server after updating dependencies.
+
+#+begin_src clojure
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [ring "1.7.1"]
+                 [compojure "1.3.4"]]
+#+end_src
+
+** Using Compojure in the project
+
+Add Compojure to the namespace
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [compojure.core :refer [defroutes GET]]
+            [compojure.route :refer [not-found]]))
+#+end_src
+
+And let's refactor welcome to just say hello and not peer directly into the
+request anymore.  We'll move the 404 logic out too.
+
+#+begin_src clojure
+(defn welcome
+  "A ring handler to process all requests sent to the webapp"
+  [request]
+  {:status 200
+   :body
+   "<h1>Hello, Clojure World</h1>
+    <p>Welcome to your first Clojure app.
+       I now update automatically.</p>
+    <p>I now use defroutes to manage incoming requests</p>"
+   :headers {}})
+#+end_src
+
+Add a defroutes function
+
+#+begin_src clojure
+(defroutes app
+  (GET "/" [] welcome)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+Now update =-main= and =-dev-main= to call =app= instead of the =welcome=
+function.
+
+#+begin_src clojure
+(defn -main
+  "A very simple web server using Ring & Jetty"
+  [port-number]
+  (jetty/run-jetty app
+   {:port (Integer. port-number)}))
+
+(defn -dev-main
+  "A very simple web server using Ring & Jetty that reloads code changes via the development profile of Leiningen"
+  [port-number]
+  (jetty/run-jetty (wrap-reload #'app)
+                   {:port (Integer. port-number)}))
+#+end_src
+
+** Adding a goodbye route
+
+Add another route to display a goodbye message
+
+#+begin_src clojure
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/goodbye" [] goodbye)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+Don't forget to write the handler function for the goodbye route
+
+#+begin_src clojure
+(defn goodbye
+  "A song to wish you goodbye"
+  [request]
+  {:status 200
+   :body "<h1>Walking back to happiness</h1>
+          <p>Walking back to happiness with you</p>
+          <p>Said, Farewell to loneliness I knew</p>
+          <p>Laid aside foolish pride</p>
+          <p>Learnt the truth from tears I cried</p>"
+   :headers {}})
+#+end_src
+
+You don't even have to restart the server to see your change, since we're
+using =wrap-reload=.
+
+** Add an about route
+
+#+begin_src clojure
+(defn about
+  "Information about the website developer"
+  [request]
+  {:status 200
+   :body "I am an awesome Clojure developer, well getting there..."
+   :headers {}})
+
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+** Show request info
+
+Let's make a way to see everything included in the =request= object.
+
+#+begin_src clojure
+(defn request-info
+  "View the information contained in the request, useful for debugging"
+  [request]
+  {:status 200
+   :body (pr-str request)
+   :headers {}})
+
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (GET "/request-info" [] request-info)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+** Variable Path Elements
+
+#+begin_src clojure
+(defn hello
+  "A simple personalized greeting showing the use of variable path elements"
+  [request]
+  (let [name (get-in request [:route-params :name])]
+    {:status 200
+     :body (str "Hello " name ".  I got your name from the web URL")
+     :headers {}}))
+
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (GET "/request-info" [] request-info)
+  (GET "/hello/:name" [] hello)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+** Simple Calculator
+
+#+begin_src clojure
+(def operands {"+" + "-" - "*" * ":" /})
+
+(defn calculator
+  "A very simple calculator that can add, divide, subtract and multiply.  This is done through the magic of variable path elements."
+  [request]
+  (let [a (Integer. (get-in request [:route-params :a]))
+        b (Integer. (get-in request [:route-params :b]))
+        op (get-in request [:route-params :op])
+        f (get operands op)]
+    (if f
+      {:status 200
+       :body (str (f a b))
+       :headers {}}
+      {:status 404
+       :body "Sorry, unknown operator.  I only recognize + - * : (: is for division)"
+       :headers {}})))
+
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (GET "/request-info" [] request-info)
+  (GET "/hello/:name" [] hello)
+  (GET "/calculator/:op/:a/:b" [] calculator)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+* Deploying to Heroku
+** Configure the Leiningen Build
+
+You need to set a couple of options in your project.clj to prepare for Heroku.
+
+#+begin_src clojure
+;; add these two keys and values to defproject in project.clj
+  :min-lein-version "2.0.0"
+  :uberjar-name "todo-list.jar"
+#+end_src
+
+** Add Procfile
+
+Heroku needs to know how to run our app, so we will add a Procfile to the
+project.  Put the following in $PROJECT_ROOT:/Procfile
+
+#+begin_src
+web: java $JVM_OPTS -cp target/todo-list.jar clojure.main -m todo-list.core $PORT
+#+end_src
+
+** Deploy to Heroku
+
+Assuming you've already ran "heroku login", now you just need to:
+
+heroku create
+;; if you have changes in local files
+git add .
+git commit -m "meaningful commit message"
+git push heroku master
+
+* Hiccup - HTML Library
+** What is Hiccup?
+
+Hiccup is a library for generating HTML from Clojure.  Using HTML, we could
+write the following heading:
+
+#+begin_src html
+<h1 class='heading'>I am a heading</h1>
+#+end_src
+
+Hiccup uses vectors to define HTML tags and maps to represent styles and other
+attributes.  So the same heading in Hiccup would be:
+
+#+begin_src clojure
+[:h1 {:class "heading"}
+#+end_src
+
+To use Hiccup, you just need to include it as a dependency in project.clj:
+
+#+begin_src clojure
+                 [hiccup "1.0.5"]
+#+end_src
+
+Then require it at the REPL or in a namespace declaration:
+
+#+begin_src clojure
+(require '[hiccup.core :as markup])
+;; or
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [compojure.core :refer [defroutes GET]]
+            [compojure.route :refer [not-found]]
+            [hiccup.core :as markup]))
+#+end_src
+
+** Writing Hiccup
+
+Basic rules of a hiccup command, the first element of the vector is used as the
+element name.  The second attribute can optionally be a map, in which case it
+is used to supply the element's attributes.  Every other element is considered
+part of the tag's body.
+
+#+begin_src clojure
+(require '[hiccup.core :as markup])
+
+(markup/html [:span {:class "foo"} "bar"])
+;; -> "<span class=\"foo\">bar</span>"
+(markup/html [:script])
+;; -> "<script></script>"
+(markup/html [:p])
+;; -> "<p />"
+;; it provides a css-like shortcut for denoting id and class attributes
+(markup/html [:div#foo.bar.baz "bang"])
+;; -> "<div id=\"foo\" class=\"bar baz\">bang</div>"
+;; when writing multiple lines of Hiccup, wrap them in a [:div ] or (list )
+[:div
+  [:h1 "My Picture Album"]
+  [:img {:src seaside.png} "A sunny seaside view"]
+  [:img {:src pier.png} "A walk along the pier"]]
+;; if the body of the element is a seq, its contents will be expanded out
+;; into the element body, making =map= and =for= more convenient
+(markup/html [:ul
+  (for [x (range 1 4)]
+    [:li x])])
+;; -> "<ul><li>1</li><li>2</li><li>3</li></ul>"
+
+;; Note: Hiccup doesn't escape output text by default.  Use the h function
+;; to escape any output you don't trust
+(markup/html [:p (markup/h (str untrusted_var "!"))])
+#+end_src
+
+** Updating handlers with hiccup
+
+So, we want to add the hiccup dependency to project.clj
+
+#+begin_src clojure
+                 [hiccup "1.0.5"]
+#+end_src
+
+Add hiccup to your namespace (we'll :refer :all instead of importing it :as 
+markup like we did in the earlier example):
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [compojure.core :refer [defroutes GET]]
+            [compojure.route :refer [not-found]]
+            [hiccup.core :refer :all]
+            [hiccup.page :refer :all]))
+#+end_src
+
+Now instead of returning maps, we're just going to return the string from 
+hiccup.  Ring knows what to do.  Note, the first page =welcome= is just an 
+HTML fragment, but the browser can figure out what to do with it.
+
+#+begin_src clojure
+;; =welcome= is just a fragment.  Recall:
+;; =goodbye= does a full page with doctype and everything
+(html [:h1 "Hello, Clojure World"]
+      [:p "Welcome to your first Clojure app, I now update automatically"])
+;; -> "<h1>Hello, Clojure World</h1><p>Welcome to your first Clojure app, I now update automatically</p>"
+
+;; content below from updated todo-list/core.clj
+(defn welcome
+  "A ring handler to process all requests sent to the webapp"
+  [request]
+  (html [:h1 "Hello, Clojure World"]
+        [:p "Welcome to your first Clojure app, I now update automatically"])
+
+(defn goodbye
+  "A song to wish you goodbye"
+  [request]
+  (html5 {:lang "en"}
+         [:head (include-js "myscript.js") (include-css "mystyle.css")]
+         [:body
+          [:div [:h1 {:class "info"} "walking back to happiness"]]
+          [:div [:p "Walking back to happiness with you"]]
+          [:div [:p "Said, Farewell to loneliness I knew"]]
+          [:div [:p "Laid aside foolish pride"]]
+          [:div [:p "Learnt the truth from tears I cried"]]]))
+#+end_src
+
+** Create a new handler
+
+#+begin_src clojure
+(defn trying-hiccup
+  [request]
+  (html5 {:lang "en"}
+         [:head (include-js "myscript.js") (include-css "mystyle.css")]
+         [:body
+          [:div [:h1 {:class "info"} "This is Hiccup"]]
+          [:div [:p "Take a look at the HTML generated in this page, compared
+                     to the about page"]]
+          [:div [:p "Style-wise there is no difference between the pages as we
+                     haven't added anything in the stylesheet, however, the
+                     hiccup page generates a more complete page in terms of
+                     HTML"]]]))
+
+(defroutes app
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (GET "/request-info" [] request-info)
+  (GET "/hello/:name" [] hello)
+  (GET "/calculator/:op/:a/:b" [] calculator)
+  (GET "/hiccup" [] trying-hiccup)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+* Refactor namespace
+** =todo-list.core= is getting full!
+** Base routes in handlers.clj
+
+We'll move all our handlers to handlers.clj.  We could make a handlers folder
+and split these up by type, the combine them all with =routes= in core.clj.
+
+#+begin_src clojure
+(ns todo-list.handlers
+  (:use
+   [compojure.core :refer [defroutes GET]]
+   [compojure.route :refer [not-found]]
+   [hiccup.core]
+   [hiccup.page]))
+
+(defn welcome
+  "A ring handler to process all requests sent to the webapp"
+  [request]
+  (html [:h1 "Hello, Clojure World"]
+        [:p "Welcome to your first Clojure app, I now update automatically"]))
+
+(defn goodbye
+  "A song to wish you goodbye"
+  [request]
+  (html5 {:lang "en"}
+         [:head (include-js "myscript.js") (include-css "mystyle.css")]
+         [:body
+          [:div [:h1 {:class "info"} "walking back to happiness"]]
+          [:div [:p "Walking back to happiness with you"]]
+          [:div [:p "Said, Farewell to loneliness I knew"]]
+          [:div [:p "Laid aside foolish pride"]]
+          [:div [:p "Learnt the truth from tears I cried"]]]))
+
+(defn about
+  "Information about the website developer"
+  [request]
+  {:status 200
+   :body "I am an awesome Clojure developer, well getting there..."
+   :headers {}})
+
+(defn request-info
+  "View the information contained in the request, useful for debugging"
+  [request]
+  {:status 200
+   :body (pr-str request)
+   :headers {}})
+
+(defn hello
+  "A simple personalized greeting showing the use of variable path elements"
+  [request]
+  (let [name (get-in request [:route-params :name])]
+    {:status 200
+     :body (str "Hello " name ".  I got your name from the web URL")
+     :headers {}}))
+
+(def operands {"+" + "-" - "*" * ":" /})
+
+(defn calculator
+  "A very simple calculator that can add, divide, subtract and multiply.
+   This is done through the magic of variable path elements."
+  [request]
+  (let [a (Integer. (get-in request [:route-params :a]))
+        b (Integer. (get-in request [:route-params :b]))
+        op (get-in request [:route-params :op])
+        f (get operands op)]
+    (if f
+      {:status 200
+       :body (str (f a b))
+       :headers {}}
+      {:status 404
+       :body "Sorry, unknown operator.  I only recognize + - * : (: is for division)"
+       :headers {}})))
+
+(defn trying-hiccup
+  [request]
+  (html5 {:lang "en"}
+         [:head (include-js "myscript.js") (include-css "mystyle.css")]
+         [:body
+          [:div [:h1 {:class "info"} "This is Hiccup"]]
+          [:div [:p "Take a look at the HTML generated in this page, compared
+                     to the about page"]]
+          [:div [:p "Style-wise there is no difference between the pages as we
+                     haven't added anything in the stylesheet, however, the
+                     hiccup page generates a more complete page in terms of
+                     HTML"]]]))
+
+
+(defroutes base-routes
+  (GET "/" [] welcome)
+  (GET "/about" [] about)
+  (GET "/goodbye" [] goodbye)
+  (GET "/request-info" [] request-info)
+  (GET "/hello/:name" [] hello)
+  (GET "/calculator/:op/:a/:b" [] calculator)
+  (GET "/hiccup" [] trying-hiccup)
+  (not-found "<h1>This is not the page you are looking for</h1>
+              <p>Sorry, the page you requested was not found!</p>"))
+#+end_src
+
+** Refactored core.clj
+
+=routes= takes the names of all the other defroutes and merges them into one 
+list of handlers.
+
+#+begin_src clojure
+(ns todo-list.core
+  (:require [ring.adapter.jetty :as jetty]
+            [ring.middleware.reload :refer [wrap-reload]]
+            [compojure.core :refer [routes]]
+            [todo-list.handlers :refer [base-routes]]))
+
+(def app
+  (routes #'base-routes))
+
+(defn -main
+  "A very simple web server using Ring & Jetty"
+  [port-number]
+  (jetty/run-jetty app
+   {:port (Integer. port-number)}))
+
+(defn -dev-main
+  "A very simple web server using Ring & Jetty that reloads code changes via the development profile of Leiningen"
+  [port-number]
+  (jetty/run-jetty (wrap-reload #'app)
+                   {:port (Integer. port-number)}))
+#+end_src
+
+* Postgres Database
+** Heroku Postgres Provisioning
+
+Just run "heroku addons:create heroku-postgresql"
+
+** Environment Variables
+
+Run "heroku config" to see the DATABASE_URL.  It will include your username
+and password for accessing the database.
+
+** Using Heroku Toolbelt to access Postgres
+
+Run "heroku pg:info" to see database info, like version, size, number of tables,
+etc.  Run "heroku pg:psql" to connect to Postgres database and run queries.
+Run "heroku pg:reset" if you ever need to reset your data, then afterwards
+do "heroku pg:restart" to restart the database.
+
+* Note on Ending Notes
+
+The book got pretty sketchily filled in from here out, and it mostly focused
+on interacting with Heroku Postgres.  Some of the JDBC stuff was cool, and it's
+something that I want to learn, but it wasn't explain very clearly.  Just some
+snippets of here's an insert statement, etc.  There was an interesting 
+example left in the book of a completely separate compojure-api project with
+swagger and plumatic schema, but it went through it fairly quickly, so
+I ended my notes here.
+
+* The End
+
+#  LocalWords:  clj src defroutes
