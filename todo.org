@@ -12,14 +12,16 @@
 - In agenda, S-left or S-right move the schedule earlier or later
 * Class Tasks                                                                   :class:
 #+CATEGORY: Class
-** Introduction to Mathematical Thinking
-- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-6.pdf][Assignment 6]]
-- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_4.pdf][Problem Set 4]]
-** Programming Languages A                                                      :programming:
-- [X] Finish watching second week's lectures
-- [X] Homework 2
-- [X] Finish watching third week's lectures
-- [X] Homework 3
+** Coursera: Introduction to Mathematical Thinking
+- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/Assignment-1.pdf][Assignment 1]]
+- [ ] [[file:~/git/courses/coursera/intro-to-mathematical-thinking/PS_1.pdf][Problem Set 1]]
+** Coursera: Programming Languages A                                                      :programming:
+- [ ] Finish watching first week's lectures
+- [ ] Homework 1
+- [ ] Finish watching second week's lectures
+- [ ] Homework 2
+- [ ] Finish watching third week's lectures
+- [ ] Homework 3
 - [ ] Finish watching fourth week's lectures
 - [ ] Homework 4
 - [ ] Finish watching fifth week's lectures
@@ -75,11 +77,11 @@ category too.  Clojure has a lot of books, but I plan on focusing on that one
 for a bit, so should make some good progress through it.
 
 ** Clojure                                                                      :programming:
-- [X] /Living Clojure/ iBooks
+- [ ] /Living Clojure/ iBooks
 - [X] /Practicalli: Spacemacs/ [[https://practicalli.github.io/spacemacs/][Book Link]]
-- [X] /Getting Clojure/ iBooks
-- [X] /Programming Clojure/ iBooks
-- [X] /Clojure Distilled/ [[https://yogthos.github.io/ClojureDistilled.html][Web Link]]
+- [ ] /Getting Clojure/ iBooks
+- [ ] /Programming Clojure/ iBooks
+- [ ] /Clojure Distilled/ [[https://yogthos.github.io/ClojureDistilled.html][Web Link]]
 - [ ] /ClojureScript Koans/ [[http://clojurescriptkoans.com/][Web Link]]
 - [ ] /The Joy of Clojure/ iBooks or [[https://livebook.manning.com/#!/book/the-joy-of-clojure-second-edition][Manning]]
   * [ ] /The Joy of Clojure/ Video Edition [[https://learning.oreilly.com/videos/the-joy-of/9781617291418VE][Safari Books]]
@@ -215,7 +217,7 @@ for a bit, so should make some good progress through it.
 - [ ] Udemy Course: ReduceJS [[https://www.udemy.com/redux-js-learn-to-use-redux-js-with-your-react-js-apps/learn/v4/content][Web Link]]
 - [ ] Udemy Course: The Complete Node.js Developer Course [[https://www.udemy.com/the-complete-nodejs-developer-course-2/learn/v4/content][Web Link]]
 ** Mathematics
-- [X] /Introduction to Mathematical Thinking/
+- [ ] /Introduction to Mathematical Thinking/
 - [ ] /How to Read and Do Proofs/ PDF
   * [ ] /How to Read and Do Proofs/ Videos [[http://bcs.wiley.com/he-bcs/Books?action=resource&bcsId=8432&itemId=1118164024&resourceId=33036][Web Link]]
 - [ ] /Mathematics/Calculus/AlgebraTrig.pdf/ PDF ;; review
